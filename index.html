@@ -3,8 +3,173 @@
 <head>
   <meta charset="UTF-8">
   <title>DSA</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 2rem;
+      line-height: 1.6;
+      background: #f5f7fb;
+      color: #1a1a1a;
+    }
+
+    h1 {
+      margin-bottom: 1.25rem;
+    }
+
+    details {
+      margin-bottom: 0.85rem;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    }
+
+    summary {
+      font-weight: 700;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .sub-items {
+      margin-top: 0.9rem;
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .nav-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1rem;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #111827;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .nav-button:hover,
+    .nav-button:focus-visible {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+      transform: translateY(-1px);
+    }
+  </style>
 </head>
 <body>
-  <h1>DSA Site Working</h1>
+  <h1>Data Structures and Algorithms</h1>
+
+  <details>
+    <summary>Arrays</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/ram.html">RAM</a>
+      <a class="nav-button" href="pages/static-arrays.html">Static Arrays</a>
+      <a class="nav-button" href="pages/dynamic-arrays.html">Dynamic Arrays</a>
+      <a class="nav-button" href="pages/stacks.html">Stacks</a>
+    </div>
+  </details>
+
+  <details>
+    <summary>Linked Lists</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/singly-linked-lists.html">Singly Linked Lists</a>
+      <a class="nav-button" href="pages/doubly-linked-lists.html">Doubly Linked Lists</a>
+      <a class="nav-button" href="pages/queues.html">Queues</a>
+    </div>
+  </details>
+
+  <details>
+    <summary>Recursion</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/factorial.html">Factorial</a>
+      <a class="nav-button" href="pages/fibonacci-sequence.html">Fibonacci Sequence</a>
+    </div>
+  </details>
+
+  <details>
+    <summary>Sorting</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/insertion-sort.html">Insertion Sort</a>
+      <a class="nav-button" href="pages/merge-sort.html">Merge Sort</a>
+      <a class="nav-button" href="pages/quick-sort.html">Quick Sort</a>
+      <a class="nav-button" href="pages/bucket-sort.html">Bucket Sort</a>
+    </div>
+  </details>
+
+  <details>
+    <summary>Binary Search</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/search-array.html">Search Array</a>
+      <a class="nav-button" href="pages/search-range.html">Search Range</a>
+    </div>
+  </details>
+
+  <details>
+    <summary>Trees</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/binary-tree.html">Binary Tree</a>
+      <a class="nav-button" href="pages/binary-search-tree.html">Binary Search Tree</a>
+      <a class="nav-button" href="pages/bst-insert-remove.html">BST Insert and Remove</a>
+      <a class="nav-button" href="pages/depth-first-search.html">Depth-First Search</a>
+      <a class="nav-button" href="pages/breadth-first-search.html">Breadth-First Search</a>
+      <a class="nav-button" href="pages/bst-sets-maps.html">BST Sets and Maps</a>
+    </div>
+  </details>
+
+  <details>
+    <summary>Backtracking</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/tree-maze.html">Tree Maze</a>
+    </div>
+  </details>
+
+  <details>
+    <summary>Heap / Priority Queue</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/heap-properties.html">Heap Properties</a>
+      <a class="nav-button" href="pages/push-pop.html">Push and Pop</a>
+      <a class="nav-button" href="pages/heapify.html">Heapify</a>
+    </div>
+  </details>
+
+  <details>
+    <summary>Hashing</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/hash-usage.html">Hash Usage</a>
+      <a class="nav-button" href="pages/hash-implementation.html">Hash Implementation</a>
+    </div>
+  </details>
+
+  <details>
+    <summary>Graphs</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/intro-to-graphs.html">Intro to Graphs</a>
+      <a class="nav-button" href="pages/matrix-dfs.html">Matrix DFS</a>
+      <a class="nav-button" href="pages/matrix-bfs.html">Matrix BFS</a>
+      <a class="nav-button" href="pages/adjacency-list.html">Adjacency List</a>
+    </div>
+  </details>
+
+  <details>
+    <summary>Dynamic Programming</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/dp-1d.html">1-Dimension DP</a>
+      <a class="nav-button" href="pages/dp-2d.html">2-Dimension DP</a>
+    </div>
+  </details>
+
+  <details>
+    <summary>Bit Manipulation</summary>
+    <div class="sub-items">
+      <a class="nav-button" href="pages/bit-operations.html">Bit Operations</a>
+    </div>
+  </details>
 </body>
 </html>
