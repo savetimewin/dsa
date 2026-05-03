@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Max Consecutive Ones — Simple Interactive Visualizer</title>
+  <style>
+    :root {
+      --bg: #242424;
+      --panel: #1f1f1f;
+      --panel2: #2b2b2b;
+      --line: #4b4e55;
+      --text: #ececec;
+      --muted: #b9b9b9;
+      --green: #4bd4b4;
+      --yellow: #ffe282;
+      --purple: #d78be2;
+      --blue: #61aeee;
+      --num: #b7d7a8;
+      --red: #ff6b6b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 22px 18px 48px;
+    }
+    h1 {
+      margin: 0 0 28px;
+      font-size: clamp(34px, 5vw, 42px);
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    h2 {
+      margin: 0 0 14px;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    p {
+      margin: 0;
+      font-size: clamp(20px, 2.2vw, 24px);
+      line-height: 1.55;
+    }
+    .inline-code {
+      display: inline-block;
+      background: #3a3b3d;
+      border: 2px solid #55575c;
+      border-radius: 8px;
+      padding: 1px 10px 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #e3e3e3;
+      font-size: .92em;
+    }
+    .example-title, .constraints-title {
+      margin-top: 44px;
+      margin-bottom: 14px;
+      font-size: clamp(24px, 3vw, 30px);
+      font-weight: 800;
+    }
+    .example {
+      background: #202020;
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin-bottom: 28px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(19px, 2.1vw, 24px);
+      line-height: 1.7;
+    }
+    .label { color: var(--green); font-weight: 800; }
+    ul.constraints {
+      margin: 0 0 48px;
+      padding-left: 34px;
+      font-size: clamp(19px, 2vw, 24px);
+      line-height: 1.8;
+    }
+
+    #playground { margin-top: 48px; }
+    .bottom {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .code-card, .visual-card, .trace-card {
+      background: var(--panel);
+      border: 1px solid #333;
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(0,0,0,.28);
+      overflow: hidden;
+    }
+    .visual-card, .trace-card { padding: 18px; }
+    .code-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #303030;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .dots { display: flex; gap: 7px; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; background: #555; }
+    .dot:nth-child(1) { background: #ff5f56; }
+    .dot:nth-child(2) { background: #ffbd2e; }
+    .dot:nth-child(3) { background: #27c93f; }
+    pre {
+      margin: 0;
+      overflow: auto;
+      font: 26px/1.42 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .code-line {
+      display: block;
+      min-height: 40px;
+      padding: 0 16px;
+      border-left: 2px solid transparent;
+      white-space: pre;
+    }
+    .code-line.hl {
+      background: #262626;
+      border-left-color: var(--green);
+    }
+    .i1 { padding-left: 58px; }
+    .i2 { padding-left: 98px; }
+    .i3 { padding-left: 138px; }
+    .kw { color: var(--purple); font-weight: 700; }
+    .def { color: var(--blue); font-weight: 700; }
+    .name, .type { color: var(--green); }
+    .fn { color: #e7e3a7; }
+    .num { color: var(--num); }
+
+    .section-label {
+      color: var(--green);
+      font: 800 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      margin-bottom: 10px;
+      letter-spacing: .06em;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 16px;
+      align-items: center;
+    }
+    button, select, input {
+      background: #303238;
+      color: #ededed;
+      border: 2px solid #4b4e55;
+      border-radius: 10px;
+      padding: 10px 13px;
+      font: inherit;
+      font-size: 15px;
+    }
+    button { cursor: pointer; font-weight: 750; }
+    button:hover { border-color: var(--green); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    input {
+      min-width: 220px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .array-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 8px;
+    }
+    .cell {
+      width: 68px;
+      background: var(--panel2);
+      border: 2px solid #4c5056;
+      border-radius: 11px;
+      overflow: hidden;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .cell .val {
+      height: 54px;
+      display: grid;
+      place-items: center;
+      font: 850 27px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .cell .idx {
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-top: 1px solid #444;
+      color: #bfc1c5;
+      font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .cell.next {
+      border-color: var(--green);
+      transform: translateY(-4px);
+      box-shadow: 0 0 0 3px rgba(75,212,180,.12);
+    }
+    .cell.one { background: #24362d; border-color: #5ee3a1; }
+    .cell.zero { background: #3a2525; border-color: var(--red); }
+    .cell.best { box-shadow: 0 0 0 3px rgba(94,227,161,.35); border-color: #5ee3a1; }
+    .pointer {
+      min-height: 24px;
+      color: var(--green);
+      font: 800 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .metric {
+      background: var(--panel2);
+      border: 1px solid #45484f;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .metric .k {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #a9abb0;
+    }
+    .metric .v {
+      font: 900 29px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--green);
+    }
+    .explain {
+      background: #222;
+      border-left: 5px solid var(--green);
+      border-radius: 9px;
+      padding: 14px 16px;
+      font-size: 18px;
+      min-height: 86px;
+      line-height: 1.5;
+    }
+    .green { color: var(--green); font-weight: 850; }
+    .red { color: var(--red); font-weight: 850; }
+    .states {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .state {
+      border: 2px solid #3f4248;
+      background: #292929;
+      border-radius: 12px;
+      padding: 13px;
+    }
+    .state.active {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(75,212,180,.11);
+    }
+    .state .big {
+      font-size: 22px;
+      font-weight: 850;
+      margin-bottom: 4px;
+    }
+    .mini-code {
+      background: #1f1f1f;
+      border-radius: 8px;
+      padding: 8px;
+      font: 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre;
+    }
+    .trace-card table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+    .trace-card th, .trace-card td {
+      text-align: left;
+      padding: 10px 9px;
+      border-bottom: 1px solid #3a3a3a;
+    }
+    .trace-card th {
+      color: var(--green);
+      background: #242424;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .trace-card tr.active-row { background: #2a2a2a; }
+    .trace-title {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .run-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      min-height: 96px;
+      padding: 12px;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 12px;
+    }
+    .bar {
+      width: 42px;
+      min-height: 8px;
+      border-radius: 8px 8px 3px 3px;
+      background: #50535a;
+      display: grid;
+      place-items: start center;
+      font-weight: 800;
+      font-size: 13px;
+      padding-top: 5px;
+    }
+    .bar.best { background: var(--green); color: #1e1e1e; }
+
+    @media (max-width: 1020px) {
+      .bottom { grid-template-columns: 1fr; }
+      pre { font-size: 21px; }
+      .i1 { padding-left: 46px; }
+      .i2 { padding-left: 78px; }
+      .i3 { padding-left: 110px; }
+    }
+    @media (max-width: 680px) {
+      main { padding: 16px 10px 28px; }
+      .cell { width: 58px; }
+      .cell .val { height: 48px; font-size: 23px; }
+      .metrics, .states { grid-template-columns: 1fr 1fr; }
+      input { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <h1>Max Consecutive Ones</h1>
+
+      <p>You are given a binary array <span class="inline-code">nums</span>, return the maximum number of consecutive <span class="inline-code">1</span>'s in the array.</p>
+
+      <div class="example-title">Example 1:</div>
+      <div class="example">
+        <div><span class="label">Input:</span> nums = [1,1,0,1,1,1]</div>
+        <div style="height:14px"></div>
+        <div><span class="label">Output:</span> 3</div>
+      </div>
+
+      <div class="example-title">Example 2:</div>
+      <div class="example">
+        <div><span class="label">Input:</span> nums = [1,0,1,1,0,1]</div>
+        <div style="height:14px"></div>
+        <div><span class="label">Output:</span> 2</div>
+      </div>
+
+      <div class="constraints-title">Constraints:</div>
+      <ul class="constraints">
+        <li><span class="inline-code">1 &lt;= nums.length &lt;= 100,000</span></li>
+        <li><span class="inline-code">nums[i]</span> is either <span class="inline-code">0</span> or <span class="inline-code">1</span>.</li>
+      </ul>
+    </section>
+
+    <section id="playground">
+      <div class="bottom">
+        <div class="code-card">
+          <div class="code-toolbar">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+            <div>Python</div>
+          </div>
+          <pre><span class="code-line" data-line="0"><span class="def">class</span> <span class="name">Solution</span>:</span><span class="code-line i1" data-line="1"><span class="def">def</span> <span class="fn">findMaxConsecutiveOnes</span>(self, nums: <span class="type">List</span>[<span class="type">int</span>]) -&gt; <span class="type">int</span>:</span><span class="code-line i2" data-line="2">current = <span class="num">0</span></span><span class="code-line i2" data-line="3">best = <span class="num">0</span></span><span class="code-line i2" data-line="4"><span class="kw">for</span> num <span class="kw">in</span> nums:</span><span class="code-line i3" data-line="5"><span class="kw">if</span> num == <span class="num">1</span>:</span><span class="code-line i3" data-line="6">current += <span class="num">1</span></span><span class="code-line i3" data-line="7">best = max(best, current)</span><span class="code-line i3" data-line="8"><span class="kw">else</span>:</span><span class="code-line i3" data-line="9">current = <span class="num">0</span></span><span class="code-line i2" data-line="10"><span class="kw">return</span> best</span></pre>
+        </div>
+
+        <div>
+          <div class="visual-card">
+            <div class="section-label">INTERACTIVE VISUALIZER</div>
+            <h2>Step through the code</h2>
+
+            <div class="controls">
+              <select id="exampleSelect">
+                <option value="ex1">Example 1: [1,1,0,1,1,1]</option>
+                <option value="ex2">Example 2: [1,0,1,1,0,1]</option>
+                <option value="allOnes">All ones: [1,1,1,1,1]</option>
+                <option value="allZeros">All zeros: [0,0,0,0]</option>
+                <option value="mixed">Mixed: [1,1,0,1,0,1,1,1,0,1]</option>
+                <option value="custom">Custom</option>
+              </select>
+              <input id="customInput" value="1,1,0,1,1,1" />
+              <button id="loadBtn">Load</button>
+            </div>
+
+            <div class="controls">
+              <button id="resetBtn">Reset</button>
+              <button id="backBtn">Back</button>
+              <button id="nextBtn">Next</button>
+              <button id="playBtn">Play</button>
+              <button id="finishBtn">Finish</button>
+            </div>
+
+            <div id="arrayRow" class="array-row"></div>
+            <div id="pointerLabel" class="pointer"></div>
+
+            <div class="metrics">
+              <div class="metric"><div class="k">i</div><div id="mIndex" class="v">-</div></div>
+              <div class="metric"><div class="k">num</div><div id="mNum" class="v">-</div></div>
+              <div class="metric"><div class="k">current</div><div id="mCurrent" class="v">0</div></div>
+              <div class="metric"><div class="k">best</div><div id="mBest" class="v">0</div></div>
+            </div>
+
+            <div id="explain" class="explain">Press <span class="green">Next</span> to process the first number.</div>
+
+            <div class="states">
+              <div id="oneState" class="state">
+                <div class="big">When num == 1</div>
+                <div style="font-size:15px;color:#cfcfcf;margin-bottom:8px;">The streak continues.</div>
+                <div class="mini-code">current += 1
+best = max(best, current)</div>
+              </div>
+              <div id="zeroState" class="state">
+                <div class="big">When num == 0</div>
+                <div style="font-size:15px;color:#cfcfcf;margin-bottom:8px;">The streak breaks.</div>
+                <div class="mini-code">current = 0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="trace-card" style="margin-top:18px;">
+            <div class="section-label">TRACE</div>
+            <table>
+              <thead>
+                <tr><th>i</th><th>num</th><th>current</th><th>best</th><th>action</th></tr>
+              </thead>
+              <tbody id="traceBody"></tbody>
+            </table>
+
+            <div class="trace-title">Completed runs of 1s</div>
+            <div id="runBars" class="run-bars"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const examples = {
+      ex1: [1,1,0,1,1,1],
+      ex2: [1,0,1,1,0,1],
+      allOnes: [1,1,1,1,1],
+      allZeros: [0,0,0,0],
+      mixed: [1,1,0,1,0,1,1,1,0,1]
+    };
+
+    let nums = [...examples.ex1];
+    let step = 0;
+    let playing = false;
+    let timer = null;
+
+    const $ = (id) => document.getElementById(id);
+    const codeLines = [...document.querySelectorAll('.code-line')];
+
+    function parseCustom() {
+      const parts = $('customInput').value.split(',').map(x => x.trim()).filter(Boolean);
+      if (!parts.length) return null;
+      const arr = [];
+      for (const p of parts) {
+        if (p !== '0' && p !== '1') return null;
+        arr.push(Number(p));
+      }
+      return arr;
+    }
+
+    function stopPlay() {
+      playing = false;
+      $('playBtn').textContent = 'Play';
+      if (timer) clearInterval(timer);
+      timer = null;
+    }
+
+    function loadSelected() {
+      stopPlay();
+      if ($('exampleSelect').value === 'custom') {
+        const parsed = parseCustom();
+        if (!parsed) {
+          alert('Use comma-separated 0s and 1s only. Example: 1,1,0,1');
+          return;
+        }
+        nums = parsed;
+      } else {
+        nums = [...examples[$('exampleSelect').value]];
+        $('customInput').value = nums.join(',');
+      }
+      step = 0;
+      render();
+    }
+
+    function snapshot(processed) {
+      let current = 0;
+      let best = 0;
+      let trace = [];
+      let runs = [];
+      let runStart = null;
+      let bestStart = null;
+      let bestEnd = null;
+
+      for (let i = 0; i < processed; i++) {
+        const num = nums[i];
+        let action;
+
+        if (num === 1) {
+          if (current === 0) runStart = i;
+          current += 1;
+          if (current > best) {
+            best = current;
+            bestStart = runStart;
+            bestEnd = i;
+          }
+          action = 'extend streak';
+        } else {
+          if (current > 0) runs.push({ len: current, start: runStart, end: i - 1 });
+          current = 0;
+          runStart = null;
+          action = 'reset streak';
+        }
+
+        trace.push({ i, num, current, best, action });
+      }
+
+      if (processed === nums.length && current > 0) {
+        runs.push({ len: current, start: runStart, end: nums.length - 1 });
+      }
+
+      let currentRun = [];
+      if (processed > 0 && nums[processed - 1] === 1 && runStart !== null) {
+        for (let i = runStart; i < processed; i++) currentRun.push(i);
+      }
+
+      let bestRun = [];
+      if (bestStart !== null) {
+        for (let i = bestStart; i <= bestEnd; i++) bestRun.push(i);
+      }
+
+      return { current, best, trace, runs, currentRun, bestRun };
+    }
+
+    function highlightCode(lastNum) {
+      codeLines.forEach(line => line.classList.remove('hl'));
+      if (step === 0) {
+        [2,3,4].forEach(n => codeLines.find(l => Number(l.dataset.line) === n)?.classList.add('hl'));
+        return;
+      }
+      const active = [4,5];
+      if (lastNum === 1) active.push(6,7);
+      else active.push(8,9);
+      if (step === nums.length) active.push(10);
+      active.forEach(n => codeLines.find(l => Number(l.dataset.line) === n)?.classList.add('hl'));
+    }
+
+    function renderArray(state) {
+      $('arrayRow').innerHTML = '';
+      const activeIndex = step < nums.length ? step : -1;
+
+      nums.forEach((num, i) => {
+        const cell = document.createElement('div');
+        let cls = 'cell';
+        if (i === activeIndex) cls += ' next';
+        if (state.currentRun.includes(i)) cls += ' one';
+        if (i < step && num === 0) cls += ' zero';
+        if (step === nums.length && state.bestRun.includes(i)) cls += ' best';
+        cell.className = cls;
+        cell.innerHTML = `<div class="val">${num}</div><div class="idx">i=${i}</div>`;
+        $('arrayRow').appendChild(cell);
+      });
+
+      $('pointerLabel').innerHTML = step < nums.length ? `next num = nums[${step}]` : `done → return best`;
+    }
+
+    function renderTrace(state) {
+      $('traceBody').innerHTML = '';
+      if (!state.trace.length) {
+        $('traceBody').innerHTML = '<tr><td colspan="5" style="color:#aaa">No steps yet.</td></tr>';
+        return;
+      }
+      state.trace.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        if (idx === state.trace.length - 1) tr.className = 'active-row';
+        tr.innerHTML = `<td>${row.i}</td><td>${row.num}</td><td>${row.current}</td><td>${row.best}</td><td>${row.action}</td>`;
+        $('traceBody').appendChild(tr);
+      });
+    }
+
+    function renderRuns(state) {
+      $('runBars').innerHTML = '';
+      if (!state.runs.length) {
+        $('runBars').innerHTML = '<span style="color:#aaa">No completed run yet.</span>';
+        return;
+      }
+      state.runs.forEach(run => {
+        const bar = document.createElement('div');
+        bar.className = 'bar' + (run.len === state.best ? ' best' : '');
+        bar.style.height = Math.max(26, run.len * 22) + 'px';
+        bar.textContent = run.len;
+        bar.title = `indices ${run.start} to ${run.end}`;
+        $('runBars').appendChild(bar);
+      });
+    }
+
+    function renderExplain(state) {
+      $('oneState').classList.remove('active');
+      $('zeroState').classList.remove('active');
+
+      if (step === 0) {
+        $('explain').innerHTML = 'Start with <span class="green">current = 0</span> and <span class="green">best = 0</span>.';
+        highlightCode(null);
+        return;
+      }
+
+      const i = step - 1;
+      const num = nums[i];
+
+      if (num === 1) {
+        $('oneState').classList.add('active');
+        $('explain').innerHTML = `At index <span class="green">${i}</span>, num is <span class="green">1</span>. The streak continues, so <span class="green">current += 1</span>. Then update <span class="green">best</span> if needed.`;
+      } else {
+        $('zeroState').classList.add('active');
+        $('explain').innerHTML = `At index <span class="green">${i}</span>, num is <span class="red">0</span>. The streak breaks, so <span class="green">current = 0</span>.`;
+      }
+
+      if (step === nums.length) {
+        $('explain').innerHTML += `<br><br>Finished scanning. Return <span class="green">best = ${state.best}</span>.`;
+      }
+
+      highlightCode(num);
+    }
+
+    function render() {
+      const state = snapshot(step);
+      renderArray(state);
+      renderTrace(state);
+      renderRuns(state);
+      renderExplain(state);
+      $('mIndex').textContent = step ? step - 1 : '-';
+      $('mNum').textContent = step ? nums[step - 1] : '-';
+      $('mCurrent').textContent = state.current;
+      $('mBest').textContent = state.best;
+      $('backBtn').disabled = step === 0;
+      $('nextBtn').disabled = step === nums.length;
+      $('finishBtn').disabled = step === nums.length;
+    }
+
+    function nextStep() {
+      if (step < nums.length) {
+        step++;
+        render();
+      }
+      if (step === nums.length) stopPlay();
+    }
+
+    function backStep() {
+      stopPlay();
+      if (step > 0) {
+        step--;
+        render();
+      }
+    }
+
+    function reset() {
+      stopPlay();
+      step = 0;
+      render();
+    }
+
+    function finish() {
+      stopPlay();
+      step = nums.length;
+      render();
+    }
+
+    function play() {
+      if (playing) {
+        stopPlay();
+        return;
+      }
+      if (step === nums.length) step = 0;
+      playing = true;
+      $('playBtn').textContent = 'Pause';
+      timer = setInterval(nextStep, 900);
+    }
+
+    $('exampleSelect').addEventListener('change', () => {
+      if ($('exampleSelect').value !== 'custom') loadSelected();
+    });
+    $('loadBtn').addEventListener('click', () => {
+      if ($('exampleSelect').value !== 'custom') $('exampleSelect').value = 'custom';
+      loadSelected();
+    });
+    $('resetBtn').addEventListener('click', reset);
+    $('backBtn').addEventListener('click', backStep);
+    $('nextBtn').addEventListener('click', () => { stopPlay(); nextStep(); });
+    $('playBtn').addEventListener('click', play);
+    $('finishBtn').addEventListener('click', finish);
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Remove Element — Simple Interactive Visualizer</title>
+  <style>
+    :root {
+      --bg: #242424;
+      --panel: #1f1f1f;
+      --panel2: #2b2b2b;
+      --line: #4b4e55;
+      --text: #ececec;
+      --muted: #b9b9b9;
+      --green: #4bd4b4;
+      --yellow: #ffe282;
+      --purple: #d78be2;
+      --blue: #61aeee;
+      --num: #b7d7a8;
+      --red: #ff6b6b;
+      --orange: #ffbd6e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 22px 18px 48px;
+    }
+    h1 {
+      margin: 0 0 28px;
+      font-size: clamp(34px, 5vw, 42px);
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    h2 {
+      margin: 0 0 14px;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    p {
+      margin: 0 0 26px;
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.55;
+    }
+    .inline-code {
+      display: inline-block;
+      background: #3a3b3d;
+      border: 2px solid #55575c;
+      border-radius: 8px;
+      padding: 1px 8px 3px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #e3e3e3;
+      font-size: .9em;
+    }
+    .note-list {
+      margin: -6px 0 28px;
+      padding-left: 34px;
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.8;
+    }
+    .example-title, .constraints-title {
+      margin-top: 36px;
+      margin-bottom: 14px;
+      font-size: clamp(23px, 3vw, 28px);
+      font-weight: 800;
+    }
+    .example {
+      background: #202020;
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin-bottom: 18px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.7;
+    }
+    .label { color: var(--green); font-weight: 800; }
+    .explain-text {
+      font-size: clamp(17px, 1.8vw, 20px);
+      color: #e3e3e3;
+      margin: 0 0 24px;
+    }
+    ul.constraints {
+      margin: 0 0 48px;
+      padding-left: 34px;
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.8;
+    }
+
+    #playground { margin-top: 48px; }
+    .bottom {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .code-card, .visual-card, .trace-card {
+      background: var(--panel);
+      border: 1px solid #333;
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(0,0,0,.28);
+      overflow: hidden;
+    }
+    .visual-card, .trace-card { padding: 18px; }
+    .code-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #303030;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .dots { display: flex; gap: 7px; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; background: #555; }
+    .dot:nth-child(1) { background: #ff5f56; }
+    .dot:nth-child(2) { background: #ffbd2e; }
+    .dot:nth-child(3) { background: #27c93f; }
+    pre {
+      margin: 0;
+      overflow: auto;
+      font: 26px/1.42 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .code-line {
+      display: block;
+      min-height: 40px;
+      padding: 0 16px;
+      border-left: 2px solid transparent;
+      white-space: pre;
+    }
+    .code-line.hl {
+      background: #262626;
+      border-left-color: var(--green);
+    }
+    .i1 { padding-left: 58px; }
+    .i2 { padding-left: 98px; }
+    .i3 { padding-left: 138px; }
+    .kw { color: var(--purple); font-weight: 700; }
+    .def { color: var(--blue); font-weight: 700; }
+    .name, .type { color: var(--green); }
+    .fn { color: #e7e3a7; }
+    .num { color: var(--num); }
+
+    .section-label {
+      color: var(--green);
+      font: 800 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      margin-bottom: 10px;
+      letter-spacing: .06em;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 16px;
+      align-items: center;
+    }
+    button, select, input {
+      background: #303238;
+      color: #ededed;
+      border: 2px solid #4b4e55;
+      border-radius: 10px;
+      padding: 10px 13px;
+      font: inherit;
+      font-size: 15px;
+    }
+    button { cursor: pointer; font-weight: 750; }
+    button:hover { border-color: var(--green); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    input {
+      min-width: 260px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .array-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 8px;
+    }
+    .cell {
+      width: 68px;
+      background: var(--panel2);
+      border: 2px solid #4c5056;
+      border-radius: 11px;
+      overflow: hidden;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease, opacity .18s ease;
+    }
+    .cell .val {
+      height: 54px;
+      display: grid;
+      place-items: center;
+      font: 850 27px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .cell .idx {
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-top: 1px solid #444;
+      color: #bfc1c5;
+      font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .cell.read {
+      border-color: var(--orange);
+      transform: translateY(-4px);
+      box-shadow: 0 0 0 3px rgba(255,189,110,.13);
+    }
+    .cell.write {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(75,212,180,.13);
+    }
+    .cell.kept { background: #24362d; border-color: #5ee3a1; }
+    .cell.removed { background: #3a2525; border-color: var(--red); opacity: .72; }
+    .cell.beyond { opacity: .42; }
+    .pointer {
+      min-height: 24px;
+      color: var(--green);
+      font: 800 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .metric {
+      background: var(--panel2);
+      border: 1px solid #45484f;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .metric .k {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #a9abb0;
+    }
+    .metric .v {
+      font: 900 29px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--green);
+    }
+    .explain {
+      background: #222;
+      border-left: 5px solid var(--green);
+      border-radius: 9px;
+      padding: 14px 16px;
+      font-size: 18px;
+      min-height: 86px;
+      line-height: 1.5;
+    }
+    .green { color: var(--green); font-weight: 850; }
+    .red { color: var(--red); font-weight: 850; }
+    .orange { color: var(--orange); font-weight: 850; }
+    .states {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .state {
+      border: 2px solid #3f4248;
+      background: #292929;
+      border-radius: 12px;
+      padding: 13px;
+    }
+    .state.active {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(75,212,180,.11);
+    }
+    .state.remove-active {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(255,107,107,.11);
+    }
+    .state .big {
+      font-size: 22px;
+      font-weight: 850;
+      margin-bottom: 4px;
+    }
+    .mini-code {
+      background: #1f1f1f;
+      border-radius: 8px;
+      padding: 8px;
+      font: 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre;
+    }
+    .trace-card table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+    .trace-card th, .trace-card td {
+      text-align: left;
+      padding: 10px 9px;
+      border-bottom: 1px solid #3a3a3a;
+    }
+    .trace-card th {
+      color: var(--green);
+      background: #242424;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .trace-card tr.active-row { background: #2a2a2a; }
+    .kept-output {
+      margin-top: 18px;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .kept-output .title {
+      color: var(--green);
+      font: 800 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      margin-bottom: 8px;
+    }
+    .kept-output .value {
+      font: 24px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #e8e8e8;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 1020px) {
+      .bottom { grid-template-columns: 1fr; }
+      pre { font-size: 21px; }
+      .i1 { padding-left: 46px; }
+      .i2 { padding-left: 78px; }
+      .i3 { padding-left: 110px; }
+    }
+    @media (max-width: 680px) {
+      main { padding: 16px 10px 28px; }
+      .cell { width: 58px; }
+      .cell .val { height: 48px; font-size: 23px; }
+      .metrics, .states { grid-template-columns: 1fr 1fr; }
+      input { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <h1>Remove Element</h1>
+
+      <p>You are given an integer array <span class="inline-code">nums</span> and an integer <span class="inline-code">val</span>. Your task is to remove <strong>all occurrences</strong> of <span class="inline-code">val</span> from <span class="inline-code">nums</span> <strong>in-place</strong>.</p>
+
+      <p>After removing all occurrences of <span class="inline-code">val</span>, return the number of remaining elements, say <span class="inline-code">k</span>, such that the <strong>first <span class="inline-code">k</span> elements</strong> of <span class="inline-code">nums</span> do <strong>not contain</strong> <span class="inline-code">val</span>.</p>
+
+      <p>Note:</p>
+      <ul class="note-list">
+        <li>The order of the elements which are not equal to <span class="inline-code">val</span> does <strong>not matter</strong>.</li>
+        <li>It is not necessary to consider elements beyond the first <span class="inline-code">k</span> positions of the array.</li>
+        <li>To be accepted, the first <span class="inline-code">k</span> elements of <span class="inline-code">nums</span> must contain only elements <strong>not equal</strong> to <span class="inline-code">val</span>.</li>
+      </ul>
+
+      <p>Return <span class="inline-code">k</span> as the final result.</p>
+
+      <div class="example-title">Example 1:</div>
+      <div class="example">
+        <div><span class="label">Input:</span> nums = [1,1,2,3,4], val = 1</div>
+        <div style="height:14px"></div>
+        <div><span class="label">Output:</span> [2,3,4]</div>
+      </div>
+      <p class="explain-text">Explanation: You should return <span class="inline-code">k = 3</span> as we have <span class="inline-code">3</span> elements which are not equal to <span class="inline-code">val = 1</span>.</p>
+
+      <div class="example-title">Example 2:</div>
+      <div class="example">
+        <div><span class="label">Input:</span> nums = [0,1,2,2,3,0,4,2], val = 2</div>
+        <div style="height:14px"></div>
+        <div><span class="label">Output:</span> [0,1,3,0,4]</div>
+      </div>
+      <p class="explain-text">Explanation: You should return <span class="inline-code">k = 5</span> as we have <span class="inline-code">5</span> elements which are not equal to <span class="inline-code">val = 2</span>.</p>
+
+      <div class="constraints-title">Constraints:</div>
+      <ul class="constraints">
+        <li><span class="inline-code">0 &lt;= nums.length &lt;= 100</span></li>
+        <li><span class="inline-code">0 &lt;= nums[i] &lt;= 50</span></li>
+        <li><span class="inline-code">0 &lt;= val &lt;= 100</span></li>
+      </ul>
+    </section>
+
+    <section id="playground">
+      <div class="bottom">
+        <div class="code-card">
+          <div class="code-toolbar">
+            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+            <div>Python</div>
+          </div>
+          <pre><span class="code-line" data-line="0"><span class="def">class</span> <span class="name">Solution</span>:</span><span class="code-line i1" data-line="1"><span class="def">def</span> <span class="fn">removeElement</span>(self, nums: <span class="type">List</span>[<span class="type">int</span>], val: <span class="type">int</span>) -&gt; <span class="type">int</span>:</span><span class="code-line i2" data-line="2">k = <span class="num">0</span></span><span class="code-line i2" data-line="3"><span class="kw">for</span> i <span class="kw">in</span> range(len(nums)):</span><span class="code-line i3" data-line="4"><span class="kw">if</span> nums[i] != val:</span><span class="code-line i3" data-line="5">nums[k] = nums[i]</span><span class="code-line i3" data-line="6">k += <span class="num">1</span></span><span class="code-line i2" data-line="7"><span class="kw">return</span> k</span></pre>
+        </div>
+
+        <div>
+          <div class="visual-card">
+            <div class="section-label">INTERACTIVE VISUALIZER</div>
+            <h2>Step through the code</h2>
+
+            <div class="controls">
+              <select id="exampleSelect">
+                <option value="ex1">Example 1: nums=[1,1,2,3,4], val=1</option>
+                <option value="ex2">Example 2: nums=[0,1,2,2,3,0,4,2], val=2</option>
+                <option value="allRemove">All removed: nums=[3,3,3], val=3</option>
+                <option value="noneRemove">None removed: nums=[1,2,4], val=3</option>
+                <option value="custom">Custom</option>
+              </select>
+              <input id="customNums" value="0,1,2,2,3,0,4,2" />
+              <input id="customVal" value="2" style="min-width:80px; width:80px;" />
+              <button id="loadBtn">Load</button>
+            </div>
+
+            <div class="controls">
+              <button id="resetBtn">Reset</button>
+              <button id="backBtn">Back</button>
+              <button id="nextBtn">Next</button>
+              <button id="playBtn">Play</button>
+              <button id="finishBtn">Finish</button>
+            </div>
+
+            <div id="arrayRow" class="array-row"></div>
+            <div id="pointerLabel" class="pointer"></div>
+
+            <div class="metrics">
+              <div class="metric"><div class="k">i</div><div id="mIndex" class="v">-</div></div>
+              <div class="metric"><div class="k">nums[i]</div><div id="mNum" class="v">-</div></div>
+              <div class="metric"><div class="k">val</div><div id="mVal" class="v">1</div></div>
+              <div class="metric"><div class="k">k</div><div id="mK" class="v">0</div></div>
+            </div>
+
+            <div id="explain" class="explain">Press <span class="green">Next</span> to process the first element.</div>
+
+            <div class="states">
+              <div id="keepState" class="state">
+                <div class="big">When nums[i] != val</div>
+                <div style="font-size:15px;color:#cfcfcf;margin-bottom:8px;">Keep this value by copying it to index k.</div>
+                <div class="mini-code">nums[k] = nums[i]
+k += 1</div>
+              </div>
+              <div id="removeState" class="state">
+                <div class="big">When nums[i] == val</div>
+                <div style="font-size:15px;color:#cfcfcf;margin-bottom:8px;">Skip this value. Do not advance k.</div>
+                <div class="mini-code"># do nothing</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="trace-card" style="margin-top:18px;">
+            <div class="section-label">TRACE</div>
+            <table>
+              <thead>
+                <tr><th>i</th><th>nums[i]</th><th>k before</th><th>k after</th><th>action</th></tr>
+              </thead>
+              <tbody id="traceBody"></tbody>
+            </table>
+
+            <div class="kept-output">
+              <div class="title">FIRST k ELEMENTS</div>
+              <div id="keptOutput" class="value">[]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const examples = {
+      ex1: { nums: [1,1,2,3,4], val: 1 },
+      ex2: { nums: [0,1,2,2,3,0,4,2], val: 2 },
+      allRemove: { nums: [3,3,3], val: 3 },
+      noneRemove: { nums: [1,2,4], val: 3 }
+    };
+
+    let original = [...examples.ex1.nums];
+    let val = examples.ex1.val;
+    let step = 0;
+    let playing = false;
+    let timer = null;
+
+    const $ = (id) => document.getElementById(id);
+    const codeLines = [...document.querySelectorAll('.code-line')];
+
+    function parseCustom() {
+      const parts = $('customNums').value.split(',').map(x => x.trim()).filter(x => x.length);
+      const parsedVal = Number($('customVal').value.trim());
+      if (!Number.isInteger(parsedVal)) return null;
+      const nums = [];
+      for (const p of parts) {
+        const n = Number(p);
+        if (!Number.isInteger(n)) return null;
+        nums.push(n);
+      }
+      return { nums, val: parsedVal };
+    }
+
+    function stopPlay() {
+      playing = false;
+      $('playBtn').textContent = 'Play';
+      if (timer) clearInterval(timer);
+      timer = null;
+    }
+
+    function loadSelected() {
+      stopPlay();
+      if ($('exampleSelect').value === 'custom') {
+        const parsed = parseCustom();
+        if (!parsed) {
+          alert('Use comma-separated integers for nums and one integer for val.');
+          return;
+        }
+        original = parsed.nums;
+        val = parsed.val;
+      } else {
+        original = [...examples[$('exampleSelect').value].nums];
+        val = examples[$('exampleSelect').value].val;
+        $('customNums').value = original.join(',');
+        $('customVal').value = String(val);
+      }
+      step = 0;
+      render();
+    }
+
+    function snapshot(processed) {
+      const arr = [...original];
+      let k = 0;
+      const trace = [];
+      const keptIndices = [];
+      const removedIndices = [];
+
+      for (let i = 0; i < processed; i++) {
+        const cur = original[i];
+        const before = k;
+        let action;
+
+        if (cur !== val) {
+          arr[k] = cur;
+          keptIndices.push(i);
+          k += 1;
+          action = `keep ${cur}: copy to nums[${before}]`;
+        } else {
+          removedIndices.push(i);
+          action = `skip ${cur}`;
+        }
+
+        trace.push({ i, cur, before, after: k, action });
+      }
+
+      return { arr, k, trace, keptIndices, removedIndices };
+    }
+
+    function highlightCode(lastWasKept) {
+      codeLines.forEach(line => line.classList.remove('hl'));
+      if (step === 0) {
+        [2,3].forEach(n => codeLines.find(l => Number(l.dataset.line) === n)?.classList.add('hl'));
+        return;
+      }
+      const active = [3,4];
+      if (lastWasKept) active.push(5,6);
+      if (step === original.length) active.push(7);
+      active.forEach(n => codeLines.find(l => Number(l.dataset.line) === n)?.classList.add('hl'));
+    }
+
+    function renderArray(state) {
+      $('arrayRow').innerHTML = '';
+      const activeIndex = step < original.length ? step : -1;
+
+      for (let i = 0; i < state.arr.length; i++) {
+        const cell = document.createElement('div');
+        let cls = 'cell';
+
+        if (i === activeIndex) cls += ' read';
+        if (i === state.k && step < original.length) cls += ' write';
+        if (i < state.k) cls += ' kept';
+        if (step === original.length && i >= state.k) cls += ' beyond';
+
+        // If the current original element is equal to val, show that read cell as removed.
+        if (i < step && original[i] === val && i >= state.k) cls += ' removed';
+
+        cell.className = cls;
+        cell.innerHTML = `<div class="val">${state.arr[i] ?? ''}</div><div class="idx">idx=${i}</div>`;
+        $('arrayRow').appendChild(cell);
+      }
+
+      if (step < original.length) {
+        $('pointerLabel').innerHTML = `<span class="orange">read i = ${step}</span> &nbsp; | &nbsp; <span class="green">write k = ${state.k}</span>`;
+      } else {
+        $('pointerLabel').innerHTML = `done → return k = ${state.k}`;
+      }
+    }
+
+    function renderTrace(state) {
+      $('traceBody').innerHTML = '';
+      if (!state.trace.length) {
+        $('traceBody').innerHTML = '<tr><td colspan="5" style="color:#aaa">No steps yet.</td></tr>';
+        return;
+      }
+      state.trace.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        if (idx === state.trace.length - 1) tr.className = 'active-row';
+        tr.innerHTML = `<td>${row.i}</td><td>${row.cur}</td><td>${row.before}</td><td>${row.after}</td><td>${row.action}</td>`;
+        $('traceBody').appendChild(tr);
+      });
+    }
+
+    function renderExplain(state) {
+      $('keepState').classList.remove('active');
+      $('removeState').classList.remove('remove-active');
+
+      if (step === 0) {
+        $('explain').innerHTML = 'Start with <span class="green">k = 0</span>. Think of <span class="green">k</span> as the next safe position to write a value we keep.';
+        highlightCode(null);
+        return;
+      }
+
+      const i = step - 1;
+      const cur = original[i];
+      const kept = cur !== val;
+
+      if (kept) {
+        const dest = state.trace[state.trace.length - 1].before;
+        $('keepState').classList.add('active');
+        $('explain').innerHTML = `At index <span class="orange">${i}</span>, nums[i] is <span class="green">${cur}</span>. Since ${cur} != val (${val}), keep it: copy it into nums[<span class="green">${dest}</span>] and increment k.`;
+      } else {
+        $('removeState').classList.add('remove-active');
+        $('explain').innerHTML = `At index <span class="orange">${i}</span>, nums[i] is <span class="red">${cur}</span>. Since ${cur} == val (${val}), skip it. k stays the same.`;
+      }
+
+      if (step === original.length) {
+        $('explain').innerHTML += `<br><br>Finished scanning. Return <span class="green">k = ${state.k}</span>. Only the first k elements matter.`;
+      }
+
+      highlightCode(kept);
+    }
+
+    function render() {
+      const state = snapshot(step);
+      renderArray(state);
+      renderTrace(state);
+      renderExplain(state);
+
+      $('mIndex').textContent = step ? step - 1 : '-';
+      $('mNum').textContent = step ? original[step - 1] : '-';
+      $('mVal').textContent = val;
+      $('mK').textContent = state.k;
+      $('keptOutput').textContent = `[${state.arr.slice(0, state.k).join(',')}]`;
+
+      $('backBtn').disabled = step === 0;
+      $('nextBtn').disabled = step === original.length;
+      $('finishBtn').disabled = step === original.length;
+    }
+
+    function nextStep() {
+      if (step < original.length) {
+        step++;
+        render();
+      }
+      if (step === original.length) stopPlay();
+    }
+
+    function backStep() {
+      stopPlay();
+      if (step > 0) {
+        step--;
+        render();
+      }
+    }
+
+    function reset() {
+      stopPlay();
+      step = 0;
+      render();
+    }
+
+    function finish() {
+      stopPlay();
+      step = original.length;
+      render();
+    }
+
+    function play() {
+      if (playing) {
+        stopPlay();
+        return;
+      }
+      if (step === original.length) step = 0;
+      playing = true;
+      $('playBtn').textContent = 'Pause';
+      timer = setInterval(nextStep, 900);
+    }
+
+    $('exampleSelect').addEventListener('change', () => {
+      if ($('exampleSelect').value !== 'custom') loadSelected();
+    });
+    $('loadBtn').addEventListener('click', () => {
+      if ($('exampleSelect').value !== 'custom') $('exampleSelect').value = 'custom';
+      loadSelected();
+    });
+    $('resetBtn').addEventListener('click', reset);
+    $('backBtn').addEventListener('click', backStep);
+    $('nextBtn').addEventListener('click', () => { stopPlay(); nextStep(); });
+    $('playBtn').addEventListener('click', play);
+    $('finishBtn').addEventListener('click', finish);
+
+    render();
+  </script>
+</body>
+</html>

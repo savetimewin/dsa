@@ -1,28 +1,981 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Static Arrays</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Static Arrays — Complete Interactive Guide</title>
   <style>
+    :root {
+      --bg: #0f172a;
+      --bg2: #111827;
+      --panel: rgba(17, 24, 39, 0.94);
+      --panel-2: rgba(15, 23, 42, 0.95);
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #22d3ee;
+      --good: #22c55e;
+      --warn: #f59e0b;
+      --bad: #ef4444;
+      --line: #334155;
+      --soft: rgba(56,189,248,.08);
+      --soft2: rgba(34,197,94,.08);
+      --shadow: 0 18px 40px rgba(0,0,0,.28);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: system-ui, sans-serif;
-      margin: 2rem;
-      background: #f5f7fb;
-      color: #111827;
-      line-height: 1.6;
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top left, #1e293b, var(--bg));
+      line-height: 1.5;
     }
-    a {
-      color: #2563eb;
-      text-decoration: none;
+    a { color: #7dd3fc; text-decoration: none; }
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 18px 48px;
     }
-    a:hover {
-      text-decoration: underline;
+    .hero {
+      display: grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    h1 { margin: 0 0 8px; font-size: clamp(30px, 4vw, 46px); letter-spacing: -.04em; }
+    h2 { margin: 0 0 12px; font-size: 21px; letter-spacing: -.02em; }
+    h3 { margin: 10px 0 6px; font-size: 15px; color: #f8fafc; }
+    p { margin: 6px 0; color: var(--muted); }
+    ul { margin: 8px 0 0; padding-left: 20px; color: var(--muted); }
+    li { margin: 6px 0; }
+    strong { color: #f8fafc; }
+    .eyebrow {
+      display: inline-block;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .tagline {
+      font-size: 18px;
+      color: #cbd5e1;
+      max-width: 860px;
+    }
+    .formula, .callout, code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .formula, pre {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 12px;
+      overflow: auto;
+      color: #dbeafe;
+    }
+    code {
+      background: rgba(15,23,42,.85);
+      border: 1px solid #273449;
+      padding: 1px 5px;
+      border-radius: 6px;
+      color: #bfdbfe;
+    }
+    .pill-row, .legend, .nav-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .pill {
+      border: 1px solid var(--line);
+      background: #0b1220;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: #d1d5db;
+    }
+    .nav-pills a {
+      border: 1px solid var(--line);
+      background: #0b1220;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #d1d5db;
+    }
+    .nav-pills a:hover { border-color: var(--accent); }
+    .grid-3, .grid-2 {
+      display: grid;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .note {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      background: var(--soft);
+      color: #dbeafe;
+    }
+    .success-note {
+      border-left-color: var(--good);
+      background: var(--soft2);
+      color: #dcfce7;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .metric {
+      background: #0b1220;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .metric .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .metric .value {
+      font-size: 26px;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+    .array {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .cell {
+      width: 82px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #020617;
+      border: 1px solid #475569;
+      transition: transform .2s ease, border-color .2s ease, opacity .2s ease, background .2s ease;
+    }
+    .cell .val {
+      height: 56px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 800;
+    }
+    .cell .meta {
+      border-top: 1px solid #1e293b;
+      padding: 4px 6px;
+      font-size: 11px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .cell.active { border-color: var(--accent); transform: translateY(-3px); }
+    .cell.good { border-color: var(--good); }
+    .cell.warn { border-color: var(--warn); }
+    .cell.bad { border-color: var(--bad); }
+    .cell.empty { background: #07101f; }
+    .cell.faded { opacity: .45; }
+    .cell.dim { opacity: .35; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+    }
+    button, input[type="text"], select, input[type="range"] {
+      font: inherit;
+    }
+    button, input[type="text"], select {
+      border: 1px solid var(--line);
+      background: #0b1220;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 9px 12px;
+    }
+    button { cursor: pointer; font-weight: 700; }
+    button:hover { border-color: var(--accent); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    input[type="text"] { min-width: 240px; }
+    .slider-wrap {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .badge {
+      min-width: 34px;
+      text-align: center;
+      border: 1px solid var(--line);
+      background: #0b1220;
+      border-radius: 10px;
+      padding: 6px 8px;
+      font-weight: 700;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+    th, td {
+      padding: 10px 11px;
+      border-bottom: 1px solid #273449;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #0b1220; color: #e0f2fe; }
+    tr:last-child td { border-bottom: none; }
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .mini-card {
+      background: #0b1220;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .quiz {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .quiz-item {
+      border: 1px solid var(--line);
+      background: #0b1220;
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .quiz-options button {
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+    .result {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 18px;
+    }
+    @media (max-width: 980px) {
+      .hero, .grid-2, .grid-3, .comparison { grid-template-columns: 1fr; }
+      .metric-grid { grid-template-columns: 1fr 1fr; }
+      .cell { width: 72px; }
     }
   </style>
 </head>
 <body>
-  <h1>Static Arrays</h1>
-  <p>This page is blank for now.</p>
-  <p><a href="../index.html">← Back to Data Structures and Algorithms</a></p>
+  <main>
+    <section class="hero">
+      <div class="card">
+        <div class="eyebrow">Single-Page Study Sheet</div>
+        <h1>Static Arrays</h1>
+        <p class="tagline">Everything important in one page: what a static array is, how memory works, why indexing is O(1), why insert/delete can be O(n), how resizing works, common interview patterns, diagrams, and interactive visuals.</p>
+        <div class="formula">address(arr[i]) = base_address + i × element_size</div>
+        <div class="nav-pills">
+          <a href="#core">Core Idea</a>
+          <a href="#memory">Memory</a>
+          <a href="#ops">Operations</a>
+          <a href="#patterns">Patterns</a>
+          <a href="#compare">Static vs Dynamic</a>
+          <a href="#quiz">Quiz</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">30-Second Recall</div>
+        <ul>
+          <li><strong>Static array</strong> = fixed-capacity, contiguous block of memory.</li>
+          <li><strong>Fast at:</strong> <code>arr[i]</code> and overwrite by index.</li>
+          <li><strong>Weak at:</strong> growing, middle insert/delete, shifting.</li>
+          <li><strong>Key distinction:</strong> <strong>size</strong> = used slots, <strong>capacity</strong> = total slots.</li>
+        </ul>
+        <div class="note success-note"><strong>Interview one-liner:</strong> Static arrays give O(1) direct access because elements are stored contiguously, but their fixed capacity makes growth expensive or impossible without allocating a bigger array and copying.</div>
+      </div>
+    </section>
+
+    <section id="core" class="grid-3">
+      <div class="card">
+        <h2>1. Core Idea</h2>
+        <ul>
+          <li><strong>Fixed capacity:</strong> number of slots is chosen up front.</li>
+          <li><strong>Contiguous:</strong> elements sit next to each other in memory.</li>
+          <li><strong>Uniform size:</strong> address math works because each element has known size.</li>
+          <li><strong>Ordered + indexed:</strong> position matters.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>2. Strengths</h2>
+        <ul>
+          <li><strong>O(1)</strong> random access</li>
+          <li><strong>O(1)</strong> overwrite/update by index</li>
+          <li>Cache-friendly because memory is contiguous</li>
+          <li>Simple storage model</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>3. Weaknesses</h2>
+        <ul>
+          <li>Cannot truly grow in place when full</li>
+          <li>Middle insert/delete usually causes shifting</li>
+          <li>Unsorted search is <strong>O(n)</strong></li>
+          <li>Off-by-one errors are common</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="memory" class="grid-2">
+      <div class="card">
+        <div class="eyebrow">Interactive</div>
+        <h2>Memory Layout + Address Explorer</h2>
+        <p>Slide the index. The machine jumps directly to the address using arithmetic.</p>
+        <div class="slider-wrap">
+          <span>index</span>
+          <input id="addrSlider" type="range" min="0" max="5" value="0" />
+          <span id="addrIndex" class="badge">0</span>
+        </div>
+        <div id="addrArray" class="array"></div>
+        <div id="addrExplain" class="note"></div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Diagram</div>
+        <h2>Contiguous Memory</h2>
+        <p>Think of a static array as one reserved row of boxes in RAM.</p>
+        <div class="array">
+          <div class="cell"><div class="val">10</div><div class="meta">index 0<br>addr 1000</div></div>
+          <div class="cell"><div class="val">20</div><div class="meta">index 1<br>addr 1004</div></div>
+          <div class="cell"><div class="val">30</div><div class="meta">index 2<br>addr 1008</div></div>
+          <div class="cell"><div class="val">40</div><div class="meta">index 3<br>addr 1012</div></div>
+        </div>
+        <div class="note"><strong>Why O(1)?</strong> The machine does not walk from index 0 to index 3. It computes the address directly.</div>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="card">
+        <div class="eyebrow">Interactive</div>
+        <h2>Size vs Capacity</h2>
+        <p>Capacity is fixed. Size changes until you fill all slots.</p>
+        <div id="capArray" class="array"></div>
+        <div class="controls">
+          <button id="appendBtn">Append Next</button>
+          <button id="fillBtn">Fill to Capacity</button>
+          <button id="capResetBtn">Reset</button>
+        </div>
+        <div id="capExplain" class="note"></div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Quick Distinction</div>
+        <h2>Size ≠ Capacity</h2>
+        <div class="comparison">
+          <div class="mini-card">
+            <h3>Capacity</h3>
+            <p>Total number of slots reserved in memory.</p>
+            <div class="formula">capacity = 5</div>
+          </div>
+          <div class="mini-card">
+            <h3>Size</h3>
+            <p>How many slots currently contain valid elements.</p>
+            <div class="formula">size = 3</div>
+          </div>
+        </div>
+        <div class="note">A static array can have unused slots. Appending is easy only while there is still spare capacity.</div>
+      </div>
+    </section>
+
+    <section id="ops" class="grid-2">
+      <div class="card">
+        <div class="eyebrow">Interactive</div>
+        <h2>Middle Insert / Delete Animation</h2>
+        <p>These are expensive because many items may need to shift.</p>
+        <div id="shiftArray" class="array"></div>
+        <div class="controls">
+          <button id="insertStepBtn">Step Insert 8 @ index 1</button>
+          <button id="deleteStepBtn">Step Delete @ index 1</button>
+          <button id="shiftResetBtn">Reset</button>
+        </div>
+        <div id="shiftExplain" class="note"></div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Interactive</div>
+        <h2>Access vs Search</h2>
+        <p>Direct access is different from searching for a value.</p>
+        <div id="searchArray" class="array"></div>
+        <div class="controls">
+          <button id="jumpBtn">Access arr[4]</button>
+          <button id="searchBtn">Search for 50</button>
+          <button id="searchResetBtn">Reset</button>
+        </div>
+        <div id="searchExplain" class="note"></div>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="card">
+        <div class="eyebrow">Interactive Pattern</div>
+        <h2>Overwrite / Write Pointer</h2>
+        <p>Common interview array pattern: compact kept values in-place.</p>
+        <p>Example task: remove zeros from <code>[3,0,4,0,5,6]</code> in-place.</p>
+        <div id="writeArray" class="array"></div>
+        <div class="metric-grid">
+          <div class="metric"><div class="label">Read</div><div id="readMetric" class="value">0</div></div>
+          <div class="metric"><div class="label">Write</div><div id="writeMetric" class="value">0</div></div>
+          <div class="metric"><div class="label">Current</div><div id="curMetric" class="value">3</div></div>
+          <div class="metric"><div class="label">Kept So Far</div><div id="keptMetric" class="value">0</div></div>
+        </div>
+        <div class="controls">
+          <button id="writeNextBtn">Next Step</button>
+          <button id="writeResetBtn">Reset</button>
+        </div>
+        <div id="writeExplain" class="note"></div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Cheat Table</div>
+        <h2>Operation Costs</h2>
+        <table>
+          <thead>
+            <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Access <code>arr[i]</code></td><td>O(1)</td><td>Direct address formula</td></tr>
+            <tr><td>Update <code>arr[i] = x</code></td><td>O(1)</td><td>Jump to address, then write</td></tr>
+            <tr><td>Search unsorted</td><td>O(n)</td><td>May inspect every element</td></tr>
+            <tr><td>Append with space</td><td>O(1)</td><td>Write into next empty slot</td></tr>
+            <tr><td>Insert/delete middle</td><td>O(n)</td><td>Shift elements</td></tr>
+            <tr><td>Resize full array</td><td>O(n)</td><td>Allocate bigger block + copy</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="patterns" class="grid-3">
+      <div class="card">
+        <h2>Array Patterns in Interviews</h2>
+        <ul>
+          <li><strong>Linear scan:</strong> max, min, sum, count</li>
+          <li><strong>Overwrite / write pointer:</strong> remove or compact in-place</li>
+          <li><strong>Two pointers:</strong> sorted arrays, opposite ends, merge, reverse</li>
+          <li><strong>Prefix sums:</strong> fast range sum or left/right totals</li>
+          <li><strong>Sliding window:</strong> longest / shortest contiguous segment</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Common Pitfalls</h2>
+        <ul>
+          <li>Confusing <strong>size</strong> and <strong>capacity</strong></li>
+          <li>Assuming append always works</li>
+          <li>Forgetting last valid index is <code>size - 1</code></li>
+          <li>Mixing up direct access with search</li>
+          <li>Not accounting for shifting during insert/delete</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Language Note</h2>
+        <p><strong>Python <code>list</code></strong> behaves like a <strong>dynamic array</strong>, not a pure static array.</p>
+        <ul>
+          <li><code>nums[i]</code> is still O(1)</li>
+          <li><code>append()</code> is amortized O(1)</li>
+          <li><code>insert(0, x)</code> is O(n)</li>
+        </ul>
+        <div class="note">Interview questions often say “array” even if the language uses a dynamic array under the hood.</div>
+      </div>
+    </section>
+
+    <section id="compare" class="grid-2">
+      <div class="card">
+        <h2>Static vs Dynamic Arrays</h2>
+        <table>
+          <thead><tr><th>Feature</th><th>Static Array</th><th>Dynamic Array</th></tr></thead>
+          <tbody>
+            <tr><td>Capacity</td><td>Fixed</td><td>Can grow</td></tr>
+            <tr><td>Memory layout</td><td>Contiguous</td><td>Contiguous</td></tr>
+            <tr><td>Index access</td><td>O(1)</td><td>O(1)</td></tr>
+            <tr><td>Append</td><td>O(1) only if space exists</td><td>Amortized O(1)</td></tr>
+            <tr><td>Resize when full</td><td>Manual</td><td>Automatic under the hood</td></tr>
+            <tr><td>Typical examples</td><td>C arrays, fixed-size buffers</td><td>Python list, Java ArrayList, C++ vector</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Interactive</div>
+        <h2>Resize Visualization</h2>
+        <p>When a full array needs to grow, a new bigger block is created and all elements are copied.</p>
+        <div id="resizeOld" class="array"></div>
+        <div id="resizeNew" class="array" style="margin-top:10px;"></div>
+        <div class="controls">
+          <button id="resizeStepBtn">Next Resize Step</button>
+          <button id="resizeResetBtn">Reset</button>
+        </div>
+        <div id="resizeExplain" class="note"></div>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="card">
+        <h2>Minimal Pseudocode Examples</h2>
+        <h3>Linear scan</h3>
+        <pre>best = nums[0]
+for x in nums:
+    best = max(best, x)</pre>
+        <h3>Overwrite pattern</h3>
+        <pre>write = 0
+for read in range(n):
+    if keep(nums[read]):
+        nums[write] = nums[read]
+        write += 1</pre>
+        <h3>Prefix sum</h3>
+        <pre>prefix[0] = 0
+for i in range(n):
+    prefix[i + 1] = prefix[i] + nums[i]</pre>
+      </div>
+      <div class="card">
+        <h2>How to Recognize an Array Problem</h2>
+        <ul>
+          <li>The input is an ordered list of values.</li>
+          <li>You care about positions or indices.</li>
+          <li>You are scanning left to right or right to left.</li>
+          <li>You may overwrite values in-place.</li>
+          <li>You need to compare neighboring or indexed elements.</li>
+        </ul>
+        <div class="note">An “array problem” does not automatically mean “use two pointers.” The actual solving pattern depends on the requirement.</div>
+      </div>
+    </section>
+
+    <section id="quiz" class="card" style="margin-top:16px;">
+      <div class="eyebrow">Quick Check</div>
+      <h2>Mini Quiz</h2>
+      <div class="quiz">
+        <div class="quiz-item" data-answer="b">
+          <strong>1.</strong> What does fixed capacity mean?<br>
+          <div class="quiz-options">
+            <button data-choice="a">You cannot change values</button>
+            <button data-choice="b">The number of slots is fixed</button>
+            <button data-choice="c">Indexing is impossible</button>
+          </div>
+          <div class="result"></div>
+        </div>
+        <div class="quiz-item" data-answer="a">
+          <strong>2.</strong> Why is <code>arr[i]</code> O(1)?<br>
+          <div class="quiz-options">
+            <button data-choice="a">Direct address arithmetic</button>
+            <button data-choice="b">The array scans from index 0</button>
+            <button data-choice="c">It uses a hash map</button>
+          </div>
+          <div class="result"></div>
+        </div>
+        <div class="quiz-item" data-answer="c">
+          <strong>3.</strong> Why is middle insertion usually O(n)?<br>
+          <div class="quiz-options">
+            <button data-choice="a">Address formula is slow</button>
+            <button data-choice="b">Indexing is impossible</button>
+            <button data-choice="c">Elements may need to shift</button>
+          </div>
+          <div class="result"></div>
+        </div>
+        <div class="quiz-item" data-answer="b">
+          <strong>4.</strong> In a static array, what happens when it is full and you still want more space?<br>
+          <div class="quiz-options">
+            <button data-choice="a">It magically expands in place</button>
+            <button data-choice="b">You allocate a bigger array and copy</button>
+            <button data-choice="c">You must sort first</button>
+          </div>
+          <div class="result"></div>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">Goal: if you can explain the memory model, O(1) indexing, O(n) shifting/resizing, and size vs capacity, you know the important static-array fundamentals.</p>
+
+    <section class="card" style="margin-top: 32px;">
+      <div class="eyebrow">Practice Problems</div>
+      <h2>Array Problem Drills</h2>
+      <p>Solve these problems to solidify your understanding of static arrays and common patterns.</p>
+      <div class="grid-3" style="margin-top: 16px;">
+        <a href="max-consecutive-ones.html" style="text-decoration: none;">
+          <button style="width: 100%; padding: 16px; font-size: 16px; border-radius: 14px; background: #0b1220; border: 2px solid #334155; color: #dbeafe; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#38bdf8'; this.style.backgroundColor='#111827';" onmouseout="this.style.borderColor='#334155'; this.style.backgroundColor='#0b1220';">
+            Max Consecutive Ones
+          </button>
+        </a>
+        <a href="remove-element.html" style="text-decoration: none;">
+          <button style="width: 100%; padding: 16px; font-size: 16px; border-radius: 14px; background: #0b1220; border: 2px solid #334155; color: #dbeafe; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#38bdf8'; this.style.backgroundColor='#111827';" onmouseout="this.style.borderColor='#334155'; this.style.backgroundColor='#0b1220';">
+            Remove Element
+          </button>
+        </a>
+        <a href="replace-elements-with-greatest.html" style="text-decoration: none;">
+          <button style="width: 100%; padding: 16px; font-size: 16px; border-radius: 14px; background: #0b1220; border: 2px solid #334155; color: #dbeafe; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#38bdf8'; this.style.backgroundColor='#111827';" onmouseout="this.style.borderColor='#334155'; this.style.backgroundColor='#0b1220';">
+            Replace Elements With Greatest Element On Right Side
+          </button>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+    // ---------- Address Explorer ----------
+    const addrValues = [10, 20, 30, 40, 50, 60];
+    const baseAddr = 1000;
+    const elemSize = 4;
+    const addrSlider = document.getElementById('addrSlider');
+    const addrIndex = document.getElementById('addrIndex');
+    const addrArray = document.getElementById('addrArray');
+    const addrExplain = document.getElementById('addrExplain');
+
+    function renderAddressExplorer() {
+      const i = Number(addrSlider.value);
+      addrIndex.textContent = i;
+      addrArray.innerHTML = '';
+      addrValues.forEach((v, idx) => {
+        const cell = document.createElement('div');
+        cell.className = 'cell' + (idx === i ? ' active' : '');
+        cell.innerHTML = `<div class="val">${v}</div><div class="meta">index ${idx}<br>addr ${baseAddr + idx * elemSize}</div>`;
+        addrArray.appendChild(cell);
+      });
+      addrExplain.innerHTML = `<strong>Address math:</strong> arr[${i}] = ${baseAddr} + ${i} × ${elemSize} = <strong>${baseAddr + i * elemSize}</strong>. That direct calculation is why index access is <strong>O(1)</strong>.`;
+    }
+    addrSlider.addEventListener('input', renderAddressExplorer);
+
+    // ---------- Size vs Capacity ----------
+    const capArray = document.getElementById('capArray');
+    const capExplain = document.getElementById('capExplain');
+    const appendBtn = document.getElementById('appendBtn');
+    const fillBtn = document.getElementById('fillBtn');
+    const capResetBtn = document.getElementById('capResetBtn');
+    const capFeed = [6, 2, 8, 1];
+    let capData, capSize, capFeedIndex;
+
+    function renderCap(highlight = -1) {
+      capArray.innerHTML = '';
+      for (let i = 0; i < capData.length; i++) {
+        const used = i < capSize;
+        const cell = document.createElement('div');
+        cell.className = 'cell' + (i === highlight ? ' active' : '') + (!used ? ' empty' : '');
+        cell.innerHTML = `<div class="val">${used ? capData[i] : '_'}</div><div class="meta">index ${i}<br>${used ? 'used' : 'empty'}</div>`;
+        capArray.appendChild(cell);
+      }
+      appendBtn.disabled = capSize >= capData.length;
+      fillBtn.disabled = capSize >= capData.length;
+    }
+    function resetCap() {
+      capData = [7, 9, 4, null, null];
+      capSize = 3;
+      capFeedIndex = 0;
+      renderCap();
+      capExplain.innerHTML = `size = <strong>${capSize}</strong>, capacity = <strong>${capData.length}</strong>. There is still spare room, so append is just writing into the next empty slot.`;
+    }
+    appendBtn.addEventListener('click', () => {
+      if (capSize >= capData.length) return;
+      capData[capSize] = capFeed[capFeedIndex % capFeed.length];
+      capFeedIndex++;
+      const inserted = capSize;
+      capSize++;
+      renderCap(inserted);
+      if (capSize === capData.length) {
+        capExplain.innerHTML = `Inserted at index <strong>${inserted}</strong>. Now size = capacity = <strong>${capData.length}</strong>. The array is full.`;
+      } else {
+        capExplain.innerHTML = `Inserted at index <strong>${inserted}</strong>. size changed to <strong>${capSize}</strong>, but capacity stayed <strong>${capData.length}</strong>.`;
+      }
+    });
+    fillBtn.addEventListener('click', () => {
+      while (capSize < capData.length) {
+        capData[capSize] = capFeed[capFeedIndex % capFeed.length];
+        capFeedIndex++;
+        capSize++;
+      }
+      renderCap(capData.length - 1);
+      capExplain.innerHTML = `Full now. Another append would require a <strong>new bigger array + copy</strong>.`;
+    });
+    capResetBtn.addEventListener('click', resetCap);
+
+    // ---------- Insert/Delete ----------
+    const shiftArray = document.getElementById('shiftArray');
+    const shiftExplain = document.getElementById('shiftExplain');
+    const insertStepBtn = document.getElementById('insertStepBtn');
+    const deleteStepBtn = document.getElementById('deleteStepBtn');
+    const shiftResetBtn = document.getElementById('shiftResetBtn');
+    let shiftMode, shiftStep;
+
+    function renderShift(arr, size, active = [], marks = {}) {
+      shiftArray.innerHTML = '';
+      for (let i = 0; i < arr.length; i++) {
+        const used = i < size;
+        const cls = ['cell'];
+        if (active.includes(i)) cls.push('active');
+        if (!used) cls.push('empty');
+        if (marks[i]) cls.push(marks[i]);
+        const cell = document.createElement('div');
+        cell.className = cls.join(' ');
+        cell.innerHTML = `<div class="val">${used ? arr[i] : '_'}</div><div class="meta">index ${i}<br>${used ? 'used' : 'empty'}</div>`;
+        shiftArray.appendChild(cell);
+      }
+    }
+    function resetShift() {
+      shiftMode = null;
+      shiftStep = 0;
+      insertStepBtn.disabled = false;
+      deleteStepBtn.disabled = false;
+      renderShift([7,9,4,null,null], 3);
+      shiftExplain.innerHTML = 'Start here. Use the buttons to watch how middle insertion or deletion causes shifts.';
+    }
+    insertStepBtn.addEventListener('click', () => {
+      deleteStepBtn.disabled = true;
+      shiftMode = 'insert';
+      shiftStep++;
+      if (shiftStep === 1) {
+        renderShift([7,9,4,null,null], 3, [1], {1:'warn'});
+        shiftExplain.innerHTML = 'Want to insert <strong>8</strong> at index 1. First, create room.';
+      } else if (shiftStep === 2) {
+        renderShift([7,9,4,4,null], 4, [2,3], {2:'warn',3:'warn'});
+        shiftExplain.innerHTML = 'Move value at index 2 to index 3.';
+      } else if (shiftStep === 3) {
+        renderShift([7,9,9,4,null], 4, [1,2], {1:'warn',2:'warn'});
+        shiftExplain.innerHTML = 'Move value at index 1 to index 2.';
+      } else {
+        renderShift([7,8,9,4,null], 4, [1], {1:'good'});
+        shiftExplain.innerHTML = 'Now write 8 into index 1. Multiple moves happened, so middle insert is <strong>O(n)</strong>.';
+        insertStepBtn.disabled = true;
+      }
+    });
+    deleteStepBtn.addEventListener('click', () => {
+      insertStepBtn.disabled = true;
+      shiftMode = 'delete';
+      shiftStep++;
+      if (shiftStep === 1) {
+        renderShift([7,9,4,6,null], 4, [1], {1:'bad'});
+        shiftExplain.innerHTML = 'Delete the element at index 1.';
+      } else if (shiftStep === 2) {
+        renderShift([7,4,4,6,null], 4, [1,2], {1:'warn',2:'warn'});
+        shiftExplain.innerHTML = 'Move index 2 into index 1.';
+      } else if (shiftStep === 3) {
+        renderShift([7,4,6,6,null], 4, [2,3], {2:'warn',3:'warn'});
+        shiftExplain.innerHTML = 'Move index 3 into index 2.';
+      } else {
+        renderShift([7,4,6,null,null], 3, [2], {2:'good'});
+        shiftExplain.innerHTML = 'Reduce size by 1. Again, many values may move, so middle delete is <strong>O(n)</strong>.';
+        deleteStepBtn.disabled = true;
+      }
+    });
+    shiftResetBtn.addEventListener('click', resetShift);
+
+    // ---------- Search vs Access ----------
+    const searchValues = [10,20,30,40,50];
+    const searchArray = document.getElementById('searchArray');
+    const searchExplain = document.getElementById('searchExplain');
+    const jumpBtn = document.getElementById('jumpBtn');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchResetBtn = document.getElementById('searchResetBtn');
+    let searchBusy = false;
+
+    function renderSearch(state = {}) {
+      const {active=-1, found=-1, dimBefore=false} = state;
+      searchArray.innerHTML = '';
+      searchValues.forEach((v, i) => {
+        const cell = document.createElement('div');
+        const cls = ['cell'];
+        if (i === found) cls.push('good');
+        if (i === active) cls.push('active','warn');
+        if (dimBefore && i < active) cls.push('dim');
+        cell.className = cls.join(' ');
+        cell.innerHTML = `<div class="val">${v}</div><div class="meta">index ${i}<br>addr ${baseAddr + i * elemSize}</div>`;
+        searchArray.appendChild(cell);
+      });
+    }
+    async function doJump() {
+      if (searchBusy) return;
+      searchBusy = true;
+      renderSearch({active:4});
+      searchExplain.innerHTML = 'Direct access: jump straight to index <strong>4</strong>. That is <strong>O(1)</strong>.';
+      await wait(500);
+      searchBusy = false;
+    }
+    async function doSearch() {
+      if (searchBusy) return;
+      searchBusy = true;
+      for (let i = 0; i < searchValues.length; i++) {
+        renderSearch({active:i, dimBefore:true});
+        searchExplain.innerHTML = `Searching for value <strong>50</strong>: inspect index ${i}...`;
+        await wait(450);
+      }
+      renderSearch({found:4});
+      searchExplain.innerHTML = 'Found 50 at index 4. Because we may inspect many elements, unsorted search is <strong>O(n)</strong>.';
+      searchBusy = false;
+    }
+    function resetSearch() {
+      renderSearch();
+      searchExplain.innerHTML = 'Index access and searching for a value are different operations.';
+    }
+    jumpBtn.addEventListener('click', doJump);
+    searchBtn.addEventListener('click', doSearch);
+    searchResetBtn.addEventListener('click', resetSearch);
+
+    // ---------- Write Pointer ----------
+    const writeOriginal = [3,0,4,0,5,6];
+    const writeArray = document.getElementById('writeArray');
+    const readMetric = document.getElementById('readMetric');
+    const writeMetric = document.getElementById('writeMetric');
+    const curMetric = document.getElementById('curMetric');
+    const keptMetric = document.getElementById('keptMetric');
+    const writeExplain = document.getElementById('writeExplain');
+    const writeNextBtn = document.getElementById('writeNextBtn');
+    const writeResetBtn = document.getElementById('writeResetBtn');
+    let writeData, readPtr, writePtr, keptCount;
+
+    function renderWrite() {
+      writeArray.innerHTML = '';
+      writeData.forEach((v, i) => {
+        const cls = ['cell'];
+        if (i === readPtr) cls.push('warn','active');
+        if (i === writePtr) cls.push('good');
+        if (i > readPtr) cls.push('faded');
+        const cell = document.createElement('div');
+        cell.className = cls.join(' ');
+        cell.innerHTML = `<div class="val">${v}</div><div class="meta">index ${i}<br>${i < writePtr ? 'kept zone' : ''}</div>`;
+        writeArray.appendChild(cell);
+      });
+      readMetric.textContent = readPtr >= writeData.length ? 'done' : readPtr;
+      writeMetric.textContent = writePtr;
+      curMetric.textContent = readPtr >= writeData.length ? '-' : writeData[readPtr];
+      keptMetric.textContent = keptCount;
+      writeNextBtn.disabled = readPtr >= writeData.length;
+    }
+    function resetWrite() {
+      writeData = [...writeOriginal];
+      readPtr = 0;
+      writePtr = 0;
+      keptCount = 0;
+      renderWrite();
+      writeExplain.innerHTML = 'Rule: scan with <strong>read</strong>. If current value should be kept, write it at <strong>write</strong>, then advance <strong>write</strong>.';
+    }
+    writeNextBtn.addEventListener('click', () => {
+      if (readPtr >= writeData.length) return;
+      const val = writeData[readPtr];
+      if (val !== 0) {
+        writeData[writePtr] = val;
+        keptCount++;
+        writeExplain.innerHTML = `Value <strong>${val}</strong> is kept. Write it to index <strong>${writePtr}</strong>, then advance write.`;
+        writePtr++;
+      } else {
+        writeExplain.innerHTML = `Value <strong>0</strong> is removed. Do not advance write.`;
+      }
+      readPtr++;
+      if (readPtr >= writeData.length) {
+        writeExplain.innerHTML += ` <br><br>Done. The kept portion is the prefix of length <strong>${writePtr}</strong>: <code>[${writeData.slice(0, writePtr).join(', ')}]</code>.`;
+      }
+      renderWrite();
+    });
+    writeResetBtn.addEventListener('click', resetWrite);
+
+    // ---------- Resize ----------
+    const resizeOld = document.getElementById('resizeOld');
+    const resizeNew = document.getElementById('resizeNew');
+    const resizeStepBtn = document.getElementById('resizeStepBtn');
+    const resizeResetBtn = document.getElementById('resizeResetBtn');
+    const resizeExplain = document.getElementById('resizeExplain');
+    let resizeStep;
+
+    function renderResize(oldArr, newArr, activeOld = -1, activeNew = -1, copiedCount = 0) {
+      resizeOld.innerHTML = '';
+      resizeNew.innerHTML = '';
+      oldArr.forEach((v, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'cell' + (i === activeOld ? ' active warn' : '') + (i < copiedCount ? ' dim' : '');
+        cell.innerHTML = `<div class="val">${v}</div><div class="meta">old index ${i}</div>`;
+        resizeOld.appendChild(cell);
+      });
+      newArr.forEach((v, i) => {
+        const used = v !== null;
+        const cell = document.createElement('div');
+        cell.className = 'cell' + (i === activeNew ? ' active good' : '') + (!used ? ' empty' : '');
+        cell.innerHTML = `<div class="val">${used ? v : '_'}</div><div class="meta">new index ${i}</div>`;
+        resizeNew.appendChild(cell);
+      });
+    }
+    function resetResize() {
+      resizeStep = 0;
+      renderResize([7,9,4,6], [null,null,null,null,null,null,null,null]);
+      resizeExplain.innerHTML = 'Old array is full. Need more space, so create a larger new array.';
+    }
+    resizeStepBtn.addEventListener('click', () => {
+      resizeStep++;
+      if (resizeStep === 1) {
+        renderResize([7,9,4,6], [null,null,null,null,null,null,null,null]);
+        resizeExplain.innerHTML = 'Step 1: allocate a new bigger block.';
+      } else if (resizeStep === 2) {
+        renderResize([7,9,4,6], [7,null,null,null,null,null,null,null], 0, 0, 1);
+        resizeExplain.innerHTML = 'Copy old index 0 into new index 0.';
+      } else if (resizeStep === 3) {
+        renderResize([7,9,4,6], [7,9,null,null,null,null,null,null], 1, 1, 2);
+        resizeExplain.innerHTML = 'Copy old index 1 into new index 1.';
+      } else if (resizeStep === 4) {
+        renderResize([7,9,4,6], [7,9,4,null,null,null,null,null], 2, 2, 3);
+        resizeExplain.innerHTML = 'Copy old index 2 into new index 2.';
+      } else if (resizeStep === 5) {
+        renderResize([7,9,4,6], [7,9,4,6,null,null,null,null], 3, 3, 4);
+        resizeExplain.innerHTML = 'Copy old index 3 into new index 3.';
+      } else {
+        renderResize([7,9,4,6], [7,9,4,6,2,null,null,null], -1, 4, 4);
+        resizeExplain.innerHTML = 'Now there is free space, so append the new value 2. Resizing required copying <strong>all old elements</strong>, which is why it costs <strong>O(n)</strong>.';
+        resizeStepBtn.disabled = true;
+      }
+    });
+    resizeResetBtn.addEventListener('click', () => {
+      resizeStepBtn.disabled = false;
+      resetResize();
+    });
+
+    // ---------- Quiz ----------
+    document.querySelectorAll('.quiz-item').forEach(item => {
+      const answer = item.dataset.answer;
+      const result = item.querySelector('.result');
+      item.querySelectorAll('button[data-choice]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const choice = btn.dataset.choice;
+          if (choice === answer) {
+            result.innerHTML = '<span style="color:#22c55e;">Correct.</span>';
+          } else {
+            result.innerHTML = '<span style="color:#ef4444;">Not quite.</span> Think about the memory model and shifting.';
+          }
+        });
+      });
+    });
+
+    // Init
+    renderAddressExplorer();
+    resetCap();
+    resetShift();
+    resetSearch();
+    resetWrite();
+    resetResize();
+  </script>
 </body>
 </html>
