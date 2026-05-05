@@ -1,0 +1,1 @@
+Create a single-file HTML/CSS/JS visualizer. Use a dark VS Code-style layout with a left code panel and right visualization panel. Code should use monospace font, Python syntax colors, indentation guides, and a highlighted current line. The visualization should be clean, high-contrast, and minimal, with arrays/hash maps/pointers clearly labeled.

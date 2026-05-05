@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contains Duplicate Visualizer</title>
+  <style>
+    :root{
+      --bg:#0f1117;
+      --panel:#151922;
+      --panel-2:#1a1f2b;
+      --editor:#1e1e1e;
+      --line:#2a3142;
+      --text:#d4d4d4;
+      --muted:#8b95a7;
+      --accent:#4fc1ff;
+      --accent-2:#7ee787;
+      --danger:#ff6b81;
+      --warning:#ffd166;
+      --keyword:#c586c0;
+      --func:#dcdcaa;
+      --type:#4ec9b0;
+      --id:#9cdcfe;
+      --plain:#d4d4d4;
+      --bool:#569cd6;
+      --num:#f78c6c;
+      --comment:#6a9955;
+      --border:#283041;
+      --tile:#202736;
+      --tile-active:#264766;
+      --tile-found:#2d5a39;
+      --tile-dup:#61313c;
+      --shadow:0 14px 40px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, #151b29 0%, #0f1117 55%);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .app{
+      width:min(1440px, 96vw);
+      margin:20px auto;
+      display:grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap:18px;
+    }
+
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      min-height:780px;
+    }
+
+    .panel-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 16px;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+    }
+
+    .panel-title{
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+
+    .pill{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      font-size:13px;
+      color:var(--muted);
+      background:rgba(255,255,255,.02);
+    }
+
+    /* LEFT: CODE PANEL */
+    .editor{
+      background:var(--editor);
+      height:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .editor-topbar{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-bottom:1px solid #2c2c2c;
+      background:#191919;
+    }
+
+    .dot{width:12px;height:12px;border-radius:50%}
+    .dot.red{background:#ff5f56}
+    .dot.yellow{background:#ffbd2e}
+    .dot.green{background:#27c93f}
+
+    .editor-file{
+      margin-left:10px;
+      color:#a9b1c6;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+
+    .code-wrap{
+      padding:14px 0 18px 0;
+      overflow:auto;
+      flex:1;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:17px;
+      line-height:30px;
+      tab-size:4;
+    }
+
+    .code-line{
+      position:relative;
+      display:grid;
+      grid-template-columns:52px max-content;
+      min-height:30px;
+      padding-right:18px;
+      border-left:3px solid transparent;
+    }
+
+    .code-line.active{
+      background:linear-gradient(90deg, rgba(79,193,255,.18), rgba(79,193,255,.055));
+      border-left-color:var(--accent);
+    }
+
+    .line-no{
+      text-align:right;
+      padding-right:14px;
+      color:#5d6578;
+      user-select:none;
+      font-size:14px;
+      line-height:30px;
+    }
+
+    .code-content{
+      position:relative;
+      display:block;
+      white-space:pre;
+      line-height:30px;
+      padding-left:12px;
+    }
+
+    .code-content.indent-1{padding-left:44px;}
+    .code-content.indent-2{padding-left:76px;}
+    .code-content.indent-3{padding-left:108px;}
+    .code-content.indent-4{padding-left:140px;}
+
+    .code-content.indent-1,
+    .code-content.indent-2,
+    .code-content.indent-3,
+    .code-content.indent-4{
+      background-image:linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));
+      background-size:1px 100%;
+      background-repeat:repeat-y;
+      background-position:28px 0;
+    }
+    .code-content.indent-2{background-position:28px 0, 60px 0; background-image:linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));}
+    .code-content.indent-3{background-position:28px 0, 60px 0, 92px 0; background-image:linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));}
+    .code-content.indent-4{background-position:28px 0, 60px 0, 92px 0, 124px 0; background-image:linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));}
+
+    .kw{color:var(--keyword)}
+    .fn{color:var(--func)}
+    .ty{color:var(--type)}
+    .id{color:var(--id)}
+    .pl{color:var(--plain)}
+    .bl{color:var(--bool)}
+    .nu{color:var(--num)}
+    .cm{color:var(--comment)}
+
+    /* RIGHT: VISUAL PANEL */
+    .viz{
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      height:100%;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+
+    button{
+      background:#20283a;
+      color:#e6edf7;
+      border:1px solid #32405d;
+      padding:10px 14px;
+      border-radius:10px;
+      font-weight:600;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    button:hover{transform:translateY(-1px); background:#263149}
+    button:disabled{opacity:.45; cursor:not-allowed; transform:none}
+
+    .input-row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    input[type="text"]{
+      background:#0f1522;
+      color:var(--text);
+      border:1px solid #334055;
+      border-radius:10px;
+      padding:10px 12px;
+      min-width:260px;
+      font-size:14px;
+      outline:none;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+
+    .card{
+      background:var(--panel-2);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .card-title{
+      font-weight:700;
+      margin-bottom:12px;
+      color:#f1f5ff;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .subtle{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .array{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:flex-end;
+    }
+
+    .cell-wrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+      position:relative;
+      min-width:56px;
+    }
+
+    .pointer{
+      min-height:22px;
+      color:var(--warning);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+
+    .pointer.hidden{visibility:hidden}
+
+    .cell{
+      width:56px;
+      height:56px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:12px;
+      background:var(--tile);
+      border:1px solid #354056;
+      font-size:22px;
+      font-weight:800;
+      transition:.2s ease;
+    }
+
+    .cell.current{
+      background:var(--tile-active);
+      border-color:#5aa2dd;
+      box-shadow:0 0 0 3px rgba(79,193,255,.14) inset;
+    }
+
+    .cell.done{
+      opacity:.7;
+    }
+
+    .cell.dup{
+      background:var(--tile-dup);
+      border-color:#c95c73;
+    }
+
+    .index{
+      color:var(--muted);
+      font-size:12px;
+      font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace;
+    }
+
+    .set-box{
+      min-height:90px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:flex-start;
+      align-content:flex-start;
+      padding:6px 0 0 0;
+    }
+
+    .set-item{
+      min-width:54px;
+      padding:12px 14px;
+      border-radius:12px;
+      background:#253049;
+      border:1px solid #3b4d70;
+      text-align:center;
+      font-size:18px;
+      font-weight:700;
+    }
+
+    .set-item.new{
+      background:#254938;
+      border-color:#4aa36d;
+    }
+
+    .state-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+
+    .mini{
+      background:#121826;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px;
+      min-height:82px;
+    }
+
+    .mini-label{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:10px;
+    }
+
+    .mini-value{
+      font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace;
+      font-size:24px;
+      font-weight:800;
+      color:#f5f7ff;
+    }
+
+    .explain{
+      line-height:1.6;
+      font-size:15px;
+      color:#dde5f6;
+    }
+
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:2px;
+    }
+
+    .legend-item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .legend-box{
+      width:16px;
+      height:16px;
+      border-radius:4px;
+      border:1px solid #4d5a72;
+    }
+
+    .progress{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .bar{
+      flex:1;
+      height:8px;
+      background:#182030;
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid #29374f;
+    }
+
+    .bar-fill{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, #4fc1ff, #78dfb9);
+      transition:.2s ease;
+    }
+
+    @media (max-width: 1100px){
+      .app{
+        grid-template-columns: 1fr;
+      }
+      .panel{min-height:auto}
+    }
+
+    @media (max-width: 700px){
+      .state-grid{grid-template-columns:1fr}
+      .cell{width:50px;height:50px}
+      .code-line{font-size:16px}
+    }
+  </style>
+</head>
+<body>
+  <div style="padding: 20px; text-align: center; border-bottom: 1px solid var(--border);">
+    <a href="https://leetcode.com/problems/contains-duplicate/" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: 600; font-size: 15px; transition: opacity 0.2s ease; display: block; margin-bottom: 8px;">LeetCode Problem Link ↗</a>
+    <a href="https://neetcode.io/problems/duplicate-integer/question" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: 600; font-size: 15px; transition: opacity 0.2s ease; display: block;">NeetCode Problem Link ↗</a>
+  </div>
+
+  <div class="app">
+    <!-- LEFT PANEL -->
+    <section class="panel editor">
+      <div class="editor-topbar">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <div class="editor-file">contains_duplicate.py</div>
+      </div>
+
+      <div class="code-wrap" id="codeWrap">
+        <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">containsDuplicate</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">nums</span><span class="pl">: </span><span class="ty">list</span><span class="pl">[</span><span class="ty">int</span><span class="pl">]) -&gt; </span><span class="ty">bool</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-2"><span class="id">seen</span> <span class="pl">=</span> <span class="ty">set</span><span class="pl">()</span></code></div>
+        <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">num</span> <span class="kw">in</span> <span class="id">nums</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-3"><span class="kw">if</span> <span class="id">num</span> <span class="kw">in</span> <span class="id">seen</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-4"><span class="kw">return</span> <span class="bl">True</span></code></div>
+        <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-3"><span class="id">seen</span><span class="pl">.</span><span class="fn">add</span><span class="pl">(</span><span class="id">num</span><span class="pl">)</span></code></div>
+        <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-2"><span class="kw">return</span> <span class="bl">False</span></code></div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Contains Duplicate Visualizer</div>
+          <div class="subtle">Array scan + hash set memory</div>
+        </div>
+        <div class="pill">Current example: <span id="exampleLabel">[1, 2, 3, 1]</span></div>
+      </div>
+
+      <div class="viz">
+        <div class="input-row">
+          <label class="subtle" for="numsInput">Array input:</label>
+          <input id="numsInput" type="text" value="1, 2, 3, 1" />
+          <button id="applyBtn">Apply</button>
+          <button id="sample1Btn">Sample 1</button>
+          <button id="sample2Btn">Sample 2</button>
+        </div>
+
+        <div class="controls">
+          <button id="prevBtn">◀ Back</button>
+          <button id="nextBtn">Next ▶</button>
+          <button id="resetBtn">Reset</button>
+          <button id="playBtn">Auto Play</button>
+        </div>
+
+        <div class="progress">
+          <span id="stepLabel">Step 1 / 1</span>
+          <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <div class="card-title">nums array</div>
+            <div class="array" id="arrayView"></div>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-box" style="background:var(--tile-active); border-color:#5aa2dd;"></span>
+                Current element
+              </div>
+              <div class="legend-item">
+                <span class="legend-box" style="background:var(--tile-dup); border-color:#c95c73;"></span>
+                Duplicate found
+              </div>
+              <div class="legend-item">
+                <span class="legend-box" style="background:var(--tile);"></span>
+                Not processed yet
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">seen set</div>
+            <div class="set-box" id="setView"></div>
+          </div>
+
+          <div class="state-grid">
+            <div class="mini">
+              <div class="mini-label">Loop index</div>
+              <div class="mini-value" id="iValue">—</div>
+            </div>
+            <div class="mini">
+              <div class="mini-label">Current num</div>
+              <div class="mini-value" id="numValue">—</div>
+            </div>
+            <div class="mini">
+              <div class="mini-label">Return value</div>
+              <div class="mini-value" id="returnValue">—</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Explanation</div>
+            <div class="explain" id="explanation">
+              We begin by creating an empty set called <code>seen</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const codeLines = [...document.querySelectorAll(".code-line")];
+    const arrayView = document.getElementById("arrayView");
+    const setView = document.getElementById("setView");
+    const explanation = document.getElementById("explanation");
+    const iValue = document.getElementById("iValue");
+    const numValue = document.getElementById("numValue");
+    const returnValue = document.getElementById("returnValue");
+    const stepLabel = document.getElementById("stepLabel");
+    const barFill = document.getElementById("barFill");
+    const exampleLabel = document.getElementById("exampleLabel");
+
+    const numsInput = document.getElementById("numsInput");
+    const applyBtn = document.getElementById("applyBtn");
+    const sample1Btn = document.getElementById("sample1Btn");
+    const sample2Btn = document.getElementById("sample2Btn");
+
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const playBtn = document.getElementById("playBtn");
+
+    let nums = [1, 2, 3, 1];
+    let steps = [];
+    let stepIndex = 0;
+    let timer = null;
+
+    function parseInput(text){
+      return text
+        .split(",")
+        .map(x => x.trim())
+        .filter(x => x.length > 0)
+        .map(Number)
+        .filter(x => !Number.isNaN(x));
+    }
+
+    function cloneSet(setObj){
+      return [...setObj];
+    }
+
+    function buildSteps(arr){
+      const out = [];
+      const seen = new Set();
+
+      out.push({
+        line: 3,
+        i: null,
+        currentIndex: null,
+        currentNum: null,
+        seen: cloneSet(seen),
+        returnVal: null,
+        phase: "init",
+        explanation: `Create an empty set called <code>seen</code>. This set will store numbers we have already passed.`
+      });
+
+      for(let i = 0; i < arr.length; i++){
+        const num = arr[i];
+
+        out.push({
+          line: 4,
+          i,
+          currentIndex: i,
+          currentNum: num,
+          seen: cloneSet(seen),
+          returnVal: null,
+          phase: "loop",
+          explanation: `Move to the next element in <code>nums</code>. We are now looking at <code>num = ${num}</code> at index <code>${i}</code>.`
+        });
+
+        const found = seen.has(num);
+
+        out.push({
+          line: 5,
+          i,
+          currentIndex: i,
+          currentNum: num,
+          seen: cloneSet(seen),
+          returnVal: null,
+          phase: "check",
+          duplicate: found,
+          explanation: found
+            ? `Check whether <code>${num}</code> is already in <code>seen</code>. It is there, so we found a duplicate.`
+            : `Check whether <code>${num}</code> is already in <code>seen</code>. It is not there yet, so we keep going.`
+        });
+
+        if(found){
+          out.push({
+            line: 6,
+            i,
+            currentIndex: i,
+            currentNum: num,
+            seen: cloneSet(seen),
+            returnVal: true,
+            phase: "return-true",
+            duplicate: true,
+            explanation: `Because <code>${num}</code> was already in <code>seen</code>, the function returns <code>True</code>.`
+          });
+          return out;
+        }
+
+        seen.add(num);
+        out.push({
+          line: 7,
+          i,
+          currentIndex: i,
+          currentNum: num,
+          seen: cloneSet(seen),
+          newlyAdded: num,
+          returnVal: null,
+          phase: "add",
+          explanation: `Add <code>${num}</code> to <code>seen</code>. Now future elements can be checked against it.`
+        });
+      }
+
+      out.push({
+        line: 8,
+        i: null,
+        currentIndex: null,
+        currentNum: null,
+        seen: cloneSet(seen),
+        returnVal: false,
+        phase: "return-false",
+        explanation: `We finished the loop without finding any repeated number, so the function returns <code>False</code>.`
+      });
+
+      return out;
+    }
+
+    function renderArray(step){
+      arrayView.innerHTML = "";
+
+      nums.forEach((value, index) => {
+        const wrap = document.createElement("div");
+        wrap.className = "cell-wrap";
+
+        const pointer = document.createElement("div");
+        pointer.className = "pointer" + (step.currentIndex === index ? "" : " hidden");
+        pointer.textContent = step.currentIndex === index ? "current" : "";
+        wrap.appendChild(pointer);
+
+        const cell = document.createElement("div");
+        cell.className = "cell";
+
+        if(step.currentIndex === index) cell.classList.add("current");
+        if(step.phase === "return-true" && step.currentIndex === index) cell.classList.add("dup");
+        if(step.currentIndex !== null && index < step.currentIndex) cell.classList.add("done");
+
+        cell.textContent = value;
+        wrap.appendChild(cell);
+
+        const idx = document.createElement("div");
+        idx.className = "index";
+        idx.textContent = `idx ${index}`;
+        wrap.appendChild(idx);
+
+        arrayView.appendChild(wrap);
+      });
+    }
+
+    function renderSet(step){
+      setView.innerHTML = "";
+
+      if(step.seen.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "subtle";
+        empty.textContent = "seen is empty";
+        setView.appendChild(empty);
+        return;
+      }
+
+      step.seen.forEach(v => {
+        const item = document.createElement("div");
+        item.className = "set-item";
+        if(step.newlyAdded === v) item.classList.add("new");
+        item.textContent = v;
+        setView.appendChild(item);
+      });
+    }
+
+    function renderCode(step){
+      codeLines.forEach(line => {
+        line.classList.toggle("active", Number(line.dataset.line) === step.line);
+      });
+    }
+
+    function renderMeta(step){
+      iValue.textContent = step.i === null ? "—" : step.i;
+      numValue.textContent = step.currentNum === null ? "—" : step.currentNum;
+      returnValue.textContent = step.returnVal === null ? "—" : String(step.returnVal);
+      explanation.innerHTML = step.explanation;
+
+      stepLabel.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+      barFill.style.width = `${((stepIndex + 1) / steps.length) * 100}%`;
+    }
+
+    function render(){
+      const step = steps[stepIndex];
+      renderArray(step);
+      renderSet(step);
+      renderCode(step);
+      renderMeta(step);
+
+      prevBtn.disabled = stepIndex === 0;
+      nextBtn.disabled = stepIndex === steps.length - 1;
+    }
+
+    function stopAuto(){
+      if(timer){
+        clearInterval(timer);
+        timer = null;
+      }
+      playBtn.textContent = "Auto Play";
+    }
+
+    function nextStep(){
+      if(stepIndex < steps.length - 1){
+        stepIndex++;
+        render();
+      } else {
+        stopAuto();
+      }
+    }
+
+    function prevStep(){
+      if(stepIndex > 0){
+        stepIndex--;
+        render();
+      }
+    }
+
+    function reset(){
+      stopAuto();
+      stepIndex = 0;
+      render();
+    }
+
+    function rebuild(newNums){
+      nums = newNums.length ? newNums : [1, 2, 3, 1];
+      steps = buildSteps(nums);
+      stepIndex = 0;
+      exampleLabel.textContent = `[${nums.join(", ")}]`;
+      render();
+    }
+
+    prevBtn.addEventListener("click", prevStep);
+    nextBtn.addEventListener("click", nextStep);
+    resetBtn.addEventListener("click", reset);
+
+    playBtn.addEventListener("click", () => {
+      if(timer){
+        stopAuto();
+        return;
+      }
+      playBtn.textContent = "Pause";
+      timer = setInterval(() => {
+        if(stepIndex >= steps.length - 1){
+          stopAuto();
+        } else {
+          nextStep();
+        }
+      }, 1200);
+    });
+
+    applyBtn.addEventListener("click", () => {
+      const parsed = parseInput(numsInput.value);
+      rebuild(parsed);
+    });
+
+    sample1Btn.addEventListener("click", () => {
+      numsInput.value = "1, 2, 3, 1";
+      rebuild([1,2,3,1]);
+    });
+
+    sample2Btn.addEventListener("click", () => {
+      numsInput.value = "1, 2, 3, 4";
+      rebuild([1,2,3,4]);
+    });
+
+    numsInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        const parsed = parseInput(numsInput.value);
+        rebuild(parsed);
+      }
+    });
+
+    rebuild(nums);
+  </script>
+</body>
+</html>

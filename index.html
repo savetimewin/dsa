@@ -12,10 +12,6 @@
       color: #1a1a1a;
     }
 
-    h1 {
-      margin-bottom: 1.25rem;
-    }
-
     details {
       margin-bottom: 0.85rem;
       border: 1px solid #d9d9d9;
@@ -29,10 +25,42 @@
       font-weight: 700;
       cursor: pointer;
       list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
 
     summary::-webkit-details-marker {
       display: none;
+    }
+
+    .toggle-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      font-size: 0.8rem;
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    details[open] .toggle-arrow {
+      transform: rotate(90deg);
+    }
+
+    .nav-link {
+      color: #111827;
+      text-decoration: none;
+      font-weight: 700;
+      transition: color 0.15s ease;
+      flex: 1;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible {
+      color: #0f172a;
+      text-decoration: underline;
     }
 
     .sub-items {
@@ -64,112 +92,23 @@
   </style>
 </head>
 <body>
-  <h1>Data Structures and Algorithms</h1>
-
   <details>
-    <summary>Arrays</summary>
+    <summary>
+      <span class="toggle-arrow">▶</span>
+      <a class="nav-link" href="arrays-hashing/info/notes-arrays-hashing.html">Arrays & Hashing</a>
+    </summary>
     <div class="sub-items">
-      <a class="nav-button" href="pages/ram.html">RAM</a>
-      <a class="nav-button" href="pages/static-arrays.html">Static Arrays</a>
-      <a class="nav-button" href="pages/dynamic-arrays.html">Dynamic Arrays</a>
-      <a class="nav-button" href="pages/stacks.html">Stacks</a>
+      <a class="nav-button" href="arrays-hashing/problems/contains-duplicates/contains-duplicates.html">Contains Duplicates</a>
     </div>
   </details>
 
-  <details>
-    <summary>Linked Lists</summary>
-    <div class="sub-items">
-      <a class="nav-button" href="pages/singly-linked-lists.html">Singly Linked Lists</a>
-      <a class="nav-button" href="pages/doubly-linked-lists.html">Doubly Linked Lists</a>
-      <a class="nav-button" href="pages/queues.html">Queues</a>
-    </div>
-  </details>
-
-  <details>
-    <summary>Recursion</summary>
-    <div class="sub-items">
-      <a class="nav-button" href="pages/factorial.html">Factorial</a>
-      <a class="nav-button" href="pages/fibonacci-sequence.html">Fibonacci Sequence</a>
-    </div>
-  </details>
-
-  <details>
-    <summary>Sorting</summary>
-    <div class="sub-items">
-      <a class="nav-button" href="pages/insertion-sort.html">Insertion Sort</a>
-      <a class="nav-button" href="pages/merge-sort.html">Merge Sort</a>
-      <a class="nav-button" href="pages/quick-sort.html">Quick Sort</a>
-      <a class="nav-button" href="pages/bucket-sort.html">Bucket Sort</a>
-    </div>
-  </details>
-
-  <details>
-    <summary>Binary Search</summary>
-    <div class="sub-items">
-      <a class="nav-button" href="pages/search-array.html">Search Array</a>
-      <a class="nav-button" href="pages/search-range.html">Search Range</a>
-    </div>
-  </details>
-
-  <details>
-    <summary>Trees</summary>
-    <div class="sub-items">
-      <a class="nav-button" href="pages/binary-tree.html">Binary Tree</a>
-      <a class="nav-button" href="pages/binary-search-tree.html">Binary Search Tree</a>
-      <a class="nav-button" href="pages/bst-insert-remove.html">BST Insert and Remove</a>
-      <a class="nav-button" href="pages/depth-first-search.html">Depth-First Search</a>
-      <a class="nav-button" href="pages/breadth-first-search.html">Breadth-First Search</a>
-      <a class="nav-button" href="pages/bst-sets-maps.html">BST Sets and Maps</a>
-    </div>
-  </details>
-
-  <details>
-    <summary>Backtracking</summary>
-    <div class="sub-items">
-      <a class="nav-button" href="pages/tree-maze.html">Tree Maze</a>
-    </div>
-  </details>
-
-  <details>
-    <summary>Heap / Priority Queue</summary>
-    <div class="sub-items">
-      <a class="nav-button" href="pages/heap-properties.html">Heap Properties</a>
-      <a class="nav-button" href="pages/push-pop.html">Push and Pop</a>
-      <a class="nav-button" href="pages/heapify.html">Heapify</a>
-    </div>
-  </details>
-
-  <details>
-    <summary>Hashing</summary>
-    <div class="sub-items">
-      <a class="nav-button" href="pages/hash-usage.html">Hash Usage</a>
-      <a class="nav-button" href="pages/hash-implementation.html">Hash Implementation</a>
-    </div>
-  </details>
-
-  <details>
-    <summary>Graphs</summary>
-    <div class="sub-items">
-      <a class="nav-button" href="pages/intro-to-graphs.html">Intro to Graphs</a>
-      <a class="nav-button" href="pages/matrix-dfs.html">Matrix DFS</a>
-      <a class="nav-button" href="pages/matrix-bfs.html">Matrix BFS</a>
-      <a class="nav-button" href="pages/adjacency-list.html">Adjacency List</a>
-    </div>
-  </details>
-
-  <details>
-    <summary>Dynamic Programming</summary>
-    <div class="sub-items">
-      <a class="nav-button" href="pages/dp-1d.html">1-Dimension DP</a>
-      <a class="nav-button" href="pages/dp-2d.html">2-Dimension DP</a>
-    </div>
-  </details>
-
-  <details>
-    <summary>Bit Manipulation</summary>
-    <div class="sub-items">
-      <a class="nav-button" href="pages/bit-operations.html">Bit Operations</a>
-    </div>
-  </details>
+  <script>
+    // Prevent details toggle when clicking the link, but allow link navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    });
+  </script>
 </body>
 </html>

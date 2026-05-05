@@ -1,1 +1,0 @@
-In one html page, pack everything about static arrays as diagrams, words/text, and interactive visuals.
