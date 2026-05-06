@@ -428,18 +428,6 @@
         line:3, phase:'init', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted:[], result:null, countText:'—', activeKey:null,
         explanation:`Create an empty hash map <code>h</code>. The map will store <code>number → frequency count</code>.`
       });
-      out.push({
-        line:4, phase:'comment-count', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted:[], result:null, countText:'—', activeKey:null,
-        explanation:`The first goal is to count how often each unique number appears. Example: if we see <code>1</code> three times, then <code>h[1]</code> should become <code>3</code>.`
-      });
-      out.push({
-        line:5, phase:'comment-map', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted:[], result:null, countText:'—', activeKey:null,
-        explanation:`Use a hash map because lookup and update by key are fast: <code>{number: count}</code>.`
-      });
-      out.push({
-        line:6, phase:'comment-example', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted:[], result:null, countText:'—', activeKey:null,
-        explanation:`When a number appears, it becomes a key if it is not already present. Its value is the running count. This is the same counting idea from Valid Anagram, but the keys are numbers instead of characters.`
-      });
 
       for(let i=0;i<arr.length;i++){
         const num = arr[i];
@@ -455,27 +443,11 @@
         });
       }
 
-      out.push({
-        line:9, phase:'comment-counted', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted:[], result:null, countText:'done', activeKey:null,
-        explanation:`Now every number has been mapped to its final count. Next, sort the keys by their counts.`
-      });
 
       const sorted = sortedKeysByFreq(h);
       out.push({
         line:10, phase:'sort', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted, result:null, countText:'sorted by h.get', activeKey:null,
         explanation:`Run <code>sorted(h, key=h.get, reverse=True)</code>. Since <code>h</code> is a dictionary, iterating over <code>h</code> gives its keys. <code>key=h.get</code> means each key is scored by its frequency count. <code>reverse=True</code> puts the highest counts first.`
-      });
-      out.push({
-        line:11, phase:'comment-iterable', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted, result:null, countText:'h gives keys', activeKey:null,
-        explanation:`In <code>sorted(h, ...)</code>, the iterable is <code>h</code>. For a dictionary, this means Python sorts the dictionary keys, not the key-value pairs.`
-      });
-      out.push({
-        line:12, phase:'comment-key', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted, result:null, countText:'score = h.get(key)', activeKey:null,
-        explanation:`The sorting score for each number is <code>h.get(number)</code>. For example, if <code>h[1] = 3</code>, then number <code>1</code> has sorting score <code>3</code>.`
-      });
-      out.push({
-        line:13, phase:'comment-reverse', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted, result:null, countText:'biggest first', activeKey:null,
-        explanation:`Because <code>reverse=True</code>, the number with the biggest count appears first in <code>sort</code>.`
       });
 
       const safeK = Math.max(0, Math.min(kVal, sorted.length));

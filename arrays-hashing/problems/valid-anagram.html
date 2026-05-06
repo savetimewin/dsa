@@ -471,11 +471,6 @@
           a:cloneObj(a), b:cloneObj(b), returnVal:null, newKey:ch, newMap:'a', countText:`${oldCount} + 1 = ${a[ch]}`,
           explanation:`Update <code>a['${ch}']</code>. <code>a.get('${ch}', 0)</code> gives the old count <code>${oldCount}</code>, then we add <code>1</code>, so the new count is <code>${a[ch]}</code>.`
         });
-        out.push({
-          line:9, phase:'comment-a', activeString:'s', currentIndex:i, currentChar:ch,
-          a:cloneObj(a), b:cloneObj(b), returnVal:null, newKey:ch, newMap:'a', countText:`a['${ch}'] = ${a[ch]}`,
-          explanation:`This line is a reminder: the dictionary maps each character to how many times it appears.`
-        });
       }
 
       for(let i=0;i<tVal.length;i++){
