@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Group Anagrams Visualizer</title>
+  <style>
+    :root{
+      --bg:#0f1117;
+      --panel:#151922;
+      --panel-2:#1a1f2b;
+      --editor:#1e1e1e;
+      --line:#2a3142;
+      --text:#d4d4d4;
+      --muted:#8b95a7;
+      --accent:#4fc1ff;
+      --accent-2:#7ee787;
+      --danger:#ff6b81;
+      --warning:#ffd166;
+      --keyword:#c586c0;
+      --func:#dcdcaa;
+      --type:#4ec9b0;
+      --id:#9cdcfe;
+      --plain:#d4d4d4;
+      --bool:#569cd6;
+      --num:#f78c6c;
+      --comment:#6a9955;
+      --border:#283041;
+      --tile:#202736;
+      --tile-active:#264766;
+      --tile-found:#2d5a39;
+      --tile-dup:#61313c;
+      --shadow:0 14px 40px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:radial-gradient(circle at top, #151b29 0%, #0f1117 55%);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .top-links{
+      padding:20px;
+      text-align:center;
+      border-bottom:1px solid var(--border);
+    }
+    .top-links a{
+      color:var(--accent);
+      text-decoration:none;
+      font-weight:600;
+      font-size:15px;
+      transition:opacity .2s ease;
+      display:block;
+      margin-bottom:8px;
+    }
+    .top-links a:hover{opacity:.78}
+
+    .app{
+      width:min(1440px, 96vw);
+      margin:20px auto;
+      display:grid;
+      grid-template-columns:1.05fr 1fr;
+      gap:18px;
+    }
+
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      min-height:780px;
+    }
+
+    .panel-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 16px;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+    }
+
+    .panel-title{font-weight:700;letter-spacing:.2px}
+    .pill{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      font-size:13px;
+      color:var(--muted);
+      background:rgba(255,255,255,.02);
+      white-space:nowrap;
+    }
+
+    .editor{
+      background:var(--editor);
+      height:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .editor-topbar{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-bottom:1px solid #2c2c2c;
+      background:#191919;
+    }
+
+    .dot{width:12px;height:12px;border-radius:50%}
+    .dot.red{background:#ff5f56}
+    .dot.yellow{background:#ffbd2e}
+    .dot.green{background:#27c93f}
+    .editor-file{margin-left:10px;color:#a9b1c6;font-size:14px;letter-spacing:.2px}
+
+    .code-wrap{
+      padding:14px 0 18px 0;
+      overflow:auto;
+      flex:1;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:17px;
+      line-height:30px;
+      tab-size:4;
+    }
+
+    .code-line{
+      position:relative;
+      display:grid;
+      grid-template-columns:52px max-content;
+      min-height:30px;
+      padding-right:18px;
+      border-left:3px solid transparent;
+    }
+    .code-line.active{
+      background:linear-gradient(90deg, rgba(79,193,255,.18), rgba(79,193,255,.055));
+      border-left-color:var(--accent);
+    }
+    .line-no{
+      text-align:right;
+      padding-right:14px;
+      color:#5d6578;
+      user-select:none;
+      font-size:14px;
+      line-height:30px;
+    }
+    .code-content{
+      position:relative;
+      display:block;
+      white-space:pre;
+      line-height:30px;
+      padding-left:12px;
+    }
+    .code-content.indent-1{padding-left:44px;}
+    .code-content.indent-2{padding-left:76px;}
+    .code-content.indent-3{padding-left:108px;}
+    .code-content.indent-4{padding-left:140px;}
+    .code-content.indent-1,
+    .code-content.indent-2,
+    .code-content.indent-3,
+    .code-content.indent-4{
+      background-image:linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));
+      background-size:1px 100%;
+      background-repeat:repeat-y;
+      background-position:28px 0;
+    }
+    .code-content.indent-2{background-position:28px 0,60px 0;background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12));}
+    .code-content.indent-3{background-position:28px 0,60px 0,92px 0;background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12));}
+    .code-content.indent-4{background-position:28px 0,60px 0,92px 0,124px 0;background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12));}
+
+    .kw{color:var(--keyword)}
+    .fn{color:var(--func)}
+    .ty{color:var(--type)}
+    .id{color:var(--id)}
+    .pl{color:var(--plain)}
+    .bl{color:var(--bool)}
+    .nu{color:var(--num)}
+    .cm{color:var(--comment)}
+    .str{color:#ce9178}
+
+    .viz{
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      height:100%;
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+    }
+    .controls,.input-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    button{
+      background:#20283a;
+      color:#e6edf7;
+      border:1px solid #32405d;
+      padding:10px 14px;
+      border-radius:10px;
+      font-weight:600;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    button:hover{transform:translateY(-1px);background:#263149}
+    button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+    input[type="text"]{
+      background:#0f1522;
+      color:var(--text);
+      border:1px solid #334055;
+      border-radius:10px;
+      padding:10px 12px;
+      min-width:310px;
+      font-size:14px;
+      outline:none;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+    }
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    .card{background:var(--panel-2);border:1px solid var(--border);border-radius:14px;padding:14px}
+    .card-title{font-weight:700;margin-bottom:12px;color:#f1f5ff;display:flex;align-items:center;gap:8px}
+    .subtle{color:var(--muted);font-size:14px}
+
+    .word-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:4px}
+    .word-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;min-width:78px}
+    .pointer{min-height:22px;color:var(--warning);font-size:12px;font-weight:700;letter-spacing:.2px}
+    .pointer.hidden{visibility:hidden}
+    .word-cell{
+      min-width:78px;height:50px;padding:0 12px;display:flex;align-items:center;justify-content:center;
+      border-radius:12px;background:var(--tile);border:1px solid #354056;
+      font-size:18px;font-weight:800;transition:.2s ease;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+    }
+    .word-cell.current{background:var(--tile-active);border-color:#5aa2dd;box-shadow:0 0 0 3px rgba(79,193,255,.14) inset}
+    .word-cell.done{opacity:.7}
+    .word-cell.grouped{background:var(--tile-found);border-color:#4aa36d}
+    .index{color:var(--muted);font-size:12px;font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace}
+
+    .transform-box{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:12px;
+      align-items:stretch;
+    }
+    .transform-item{background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:88px}
+    .transform-label{color:var(--muted);font-size:13px;margin-bottom:10px}
+    .transform-value{font-family:"JetBrains Mono",monospace;font-size:22px;font-weight:800;color:#f5f7ff;overflow-wrap:anywhere}
+
+    .hash-box{background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:220px}
+    .hash-title{font-weight:700;color:#f5f7ff;margin-bottom:10px}
+    .group-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+    .group-card{border:1px solid #3b4d70;background:#253049;border-radius:12px;padding:10px;font-family:"JetBrains Mono",monospace}
+    .group-card.active{background:#254938;border-color:#4aa36d}
+    .group-card.new{background:#263f54;border-color:#5aa2dd}
+    .group-key{font-size:13px;color:var(--warning);margin-bottom:8px;overflow-wrap:anywhere}
+    .group-values{display:flex;flex-wrap:wrap;gap:6px}
+    .group-word{border:1px solid #4d5a72;background:#121826;border-radius:8px;padding:6px 8px;color:#f5f7ff;font-size:14px}
+    .group-word.new{background:#254938;border-color:#4aa36d}
+    .empty{color:var(--muted);font-size:14px;padding-top:8px}
+
+    .state-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .mini{background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:82px}
+    .mini-label{color:var(--muted);font-size:13px;margin-bottom:10px}
+    .mini-value{font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace;font-size:20px;font-weight:800;color:#f5f7ff;overflow-wrap:anywhere}
+    .explain{line-height:1.6;font-size:15px;color:#dde5f6}
+    .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .legend-item{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+    .legend-box{width:16px;height:16px;border-radius:4px;border:1px solid #4d5a72}
+    .progress{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
+    .bar{flex:1;height:8px;background:#182030;border-radius:999px;overflow:hidden;border:1px solid #29374f}
+    .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#4fc1ff,#78dfb9);transition:.2s ease}
+    .result-box{font-family:"JetBrains Mono",monospace;font-size:16px;line-height:1.7;color:#dde5f6;background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;overflow-wrap:anywhere}
+
+    @media (max-width:1100px){.app{grid-template-columns:1fr}.panel{min-height:auto}}
+    @media (max-width:700px){.state-grid,.transform-box{grid-template-columns:1fr}.word-cell{min-width:68px}.code-line{font-size:16px}input[type="text"]{min-width:220px}}
+  </style>
+</head>
+<body>
+  <div class="top-links">
+    <a href="https://leetcode.com/problems/group-anagrams/" target="_blank">LeetCode Problem Link ↗</a>
+    <a href="https://neetcode.io/problems/anagram-groups/question" target="_blank">NeetCode Problem Link ↗</a>
+  </div>
+
+  <div class="app">
+    <section class="panel editor">
+      <div class="editor-topbar">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <div class="editor-file">group_anagrams.py</div>
+      </div>
+      <div class="code-wrap" id="codeWrap">
+        <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">groupAnagrams</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">strs</span><span class="pl">: </span><span class="ty">List</span><span class="pl">[</span><span class="ty">str</span><span class="pl">]) -&gt; </span><span class="ty">List</span><span class="pl">[</span><span class="ty">List</span><span class="pl">[</span><span class="ty">str</span><span class="pl">]]:</span></code></div>
+        <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-2"><span class="id">h</span> <span class="pl">= {}</span></code></div>
+        <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">string</span> <span class="kw">in</span> <span class="id">strs</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-3"><span class="id">key</span> <span class="pl">= </span><span class="str">''</span><span class="pl">.</span><span class="fn">join</span><span class="pl">(</span><span class="fn">sorted</span><span class="pl">(</span><span class="id">string</span><span class="pl">))</span></code></div>
+        <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-3"><span class="kw">if</span> <span class="id">key</span> <span class="kw">not in</span> <span class="id">h</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-4"><span class="id">h</span><span class="pl">[</span><span class="id">key</span><span class="pl">] = []</span></code></div>
+        <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-3"><span class="id">h</span><span class="pl">[</span><span class="id">key</span><span class="pl">].</span><span class="fn">append</span><span class="pl">(</span><span class="id">string</span><span class="pl">)</span></code></div>
+        <div class="code-line" data-line="9"><div class="line-no">9</div><code class="code-content indent-2"><span class="kw">return</span> <span class="fn">list</span><span class="pl">(</span><span class="id">h</span><span class="pl">.</span><span class="fn">values</span><span class="pl">())</span></code></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Group Anagrams Visualizer</div>
+          <div class="subtle">Array scan + sorted-string key + hash map of groups</div>
+        </div>
+        <div class="pill">Current example: <span id="exampleLabel">["eat", "tea", "tan", "ate", "nat", "bat"]</span></div>
+      </div>
+
+      <div class="viz">
+        <div class="input-row">
+          <label class="subtle" for="strsInput">strs:</label>
+          <input id="strsInput" type="text" value="eat, tea, tan, ate, nat, bat" />
+          <button id="applyBtn">Apply</button>
+          <button id="sample1Btn">Classic</button>
+          <button id="sample2Btn">Small</button>
+          <button id="sample3Btn">Mixed</button>
+        </div>
+
+        <div class="controls">
+          <button id="prevBtn">◀ Back</button>
+          <button id="nextBtn">Next ▶</button>
+          <button id="resetBtn">Reset</button>
+          <button id="playBtn">Auto Play</button>
+        </div>
+
+        <div class="progress">
+          <span id="stepLabel">Step 1 / 1</span>
+          <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <div class="card-title">Input strings</div>
+            <div class="word-row" id="wordView"></div>
+            <div class="legend">
+              <div class="legend-item"><span class="legend-box" style="background:var(--tile-active);border-color:#5aa2dd;"></span> Current string</div>
+              <div class="legend-item"><span class="legend-box" style="background:var(--tile-found);border-color:#4aa36d;"></span> Already grouped</div>
+              <div class="legend-item"><span class="legend-box" style="background:var(--tile);"></span> Not processed yet</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">How the key is made</div>
+            <div class="transform-box">
+              <div class="transform-item"><div class="transform-label">string</div><div class="transform-value" id="stringValue">—</div></div>
+              <div class="transform-item"><div class="transform-label">sorted(string)</div><div class="transform-value" id="sortedValue">—</div></div>
+              <div class="transform-item"><div class="transform-label">key</div><div class="transform-value" id="keyValue">—</div></div>
+            </div>
+          </div>
+
+          <div class="hash-box">
+            <div class="hash-title">h = groups by sorted key</div>
+            <div class="group-grid" id="hashView"></div>
+          </div>
+
+          <div class="state-grid">
+            <div class="mini"><div class="mini-label">Loop index</div><div class="mini-value" id="iValue">—</div></div>
+            <div class="mini"><div class="mini-label">Current string</div><div class="mini-value" id="curValue">—</div></div>
+            <div class="mini"><div class="mini-label">Key exists?</div><div class="mini-value" id="existsValue">—</div></div>
+            <div class="mini"><div class="mini-label">Return value</div><div class="mini-value" id="returnValue">—</div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Final result</div>
+            <div class="result-box" id="resultView">—</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Explanation</div>
+            <div class="explain" id="explanation">Create an empty hash map. Each key will be a sorted version of a word, and each value will be a list of words with that same key.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const codeLines = [...document.querySelectorAll('.code-line')];
+    const wordView = document.getElementById('wordView');
+    const hashView = document.getElementById('hashView');
+    const explanation = document.getElementById('explanation');
+    const stringValue = document.getElementById('stringValue');
+    const sortedValue = document.getElementById('sortedValue');
+    const keyValue = document.getElementById('keyValue');
+    const iValue = document.getElementById('iValue');
+    const curValue = document.getElementById('curValue');
+    const existsValue = document.getElementById('existsValue');
+    const returnValue = document.getElementById('returnValue');
+    const resultView = document.getElementById('resultView');
+    const stepLabel = document.getElementById('stepLabel');
+    const barFill = document.getElementById('barFill');
+    const exampleLabel = document.getElementById('exampleLabel');
+
+    const strsInput = document.getElementById('strsInput');
+    const applyBtn = document.getElementById('applyBtn');
+    const sample1Btn = document.getElementById('sample1Btn');
+    const sample2Btn = document.getElementById('sample2Btn');
+    const sample3Btn = document.getElementById('sample3Btn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const playBtn = document.getElementById('playBtn');
+
+    let strs = ['eat','tea','tan','ate','nat','bat'];
+    let steps = [];
+    let stepIndex = 0;
+    let timer = null;
+
+    function parseInput(text){
+      return text.split(',').map(x => x.trim()).filter(x => x.length > 0);
+    }
+    function cloneMap(map){
+      return JSON.parse(JSON.stringify(map));
+    }
+    function sortedKey(word){
+      return word.split('').sort().join('');
+    }
+    function sortedCharsText(word){
+      return '[' + word.split('').sort().map(ch => `'${ch}'`).join(', ') + ']';
+    }
+    function groupsText(h){
+      const groups = Object.values(h);
+      return '[' + groups.map(g => '[' + g.map(w => `"${w}"`).join(', ') + ']').join(', ') + ']';
+    }
+
+    function buildSteps(arr){
+      const out = [];
+      const h = {};
+
+      out.push({
+        line:3, phase:'init', i:null, currentIndex:null, currentString:null, key:null, sortedText:'—', exists:null,
+        h:cloneMap(h), returnVal:null,
+        explanation:`Create an empty hash map <code>h</code>. The goal is: sorted word → list of words with those same letters.`
+      });
+
+      for(let i=0;i<arr.length;i++){
+        const string = arr[i];
+        const key = sortedKey(string);
+        const sortedText = sortedCharsText(string);
+
+        out.push({
+          line:4, phase:'loop', i, currentIndex:i, currentString:string, key:null, sortedText:'—', exists:null,
+          h:cloneMap(h), returnVal:null,
+          explanation:`Move to the next word in <code>strs</code>. Current word is <code>"${string}"</code> at index <code>${i}</code>.`
+        });
+
+        out.push({
+          line:5, phase:'make-key', i, currentIndex:i, currentString:string, key, sortedText, exists:null,
+          h:cloneMap(h), returnVal:null,
+          explanation:`Sort the letters of <code>"${string}"</code>. The sorted letters become the key <code>"${key}"</code>. Anagrams always produce the same sorted key.`
+        });
+
+        const exists = Object.prototype.hasOwnProperty.call(h, key);
+        out.push({
+          line:6, phase:'check-key', i, currentIndex:i, currentString:string, key, sortedText, exists,
+          h:cloneMap(h), returnVal:null,
+          explanation: exists
+            ? `Check whether <code>"${key}"</code> is already in <code>h</code>. It is already there, so this word belongs in an existing group.`
+            : `Check whether <code>"${key}"</code> is already in <code>h</code>. It is not there yet, so we need to create a new group.`
+        });
+
+        if(!exists){
+          h[key] = [];
+          out.push({
+            line:7, phase:'new-group', i, currentIndex:i, currentString:string, key, sortedText, exists:false, newKey:key,
+            h:cloneMap(h), returnVal:null,
+            explanation:`Create a new empty list at <code>h["${key}"]</code>. This list will hold all words whose sorted form is <code>"${key}"</code>.`
+          });
+        }
+
+        h[key].push(string);
+        out.push({
+          line:8, phase:'append', i, currentIndex:i, currentString:string, key, sortedText, exists:true, activeKey:key, newWord:string,
+          h:cloneMap(h), returnVal:null,
+          explanation:`Append <code>"${string}"</code> into <code>h["${key}"]</code>. Words with the same key are grouped together.`
+        });
+      }
+
+      out.push({
+        line:9, phase:'return', i:null, currentIndex:null, currentString:null, key:null, sortedText:'—', exists:null,
+        h:cloneMap(h), returnVal:groupsText(h),
+        explanation:`Return <code>list(h.values())</code>. We no longer need the keys; we only need the grouped lists of anagrams.`
+      });
+      return out;
+    }
+
+    function renderWords(step){
+      wordView.innerHTML = '';
+      if(strs.length === 0){
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = '(empty input)';
+        wordView.appendChild(empty);
+        return;
+      }
+      strs.forEach((word, index) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'word-wrap';
+        const pointer = document.createElement('div');
+        pointer.className = 'pointer' + (step.currentIndex === index ? '' : ' hidden');
+        pointer.textContent = step.currentIndex === index ? 'current' : '';
+        wrap.appendChild(pointer);
+        const cell = document.createElement('div');
+        cell.className = 'word-cell';
+        if(step.currentIndex === index) cell.classList.add('current');
+        if(step.currentIndex !== null && index < step.currentIndex) cell.classList.add('done','grouped');
+        if(step.phase === 'return') cell.classList.add('grouped');
+        cell.textContent = `"${word}"`;
+        wrap.appendChild(cell);
+        const idx = document.createElement('div');
+        idx.className = 'index';
+        idx.textContent = `idx ${index}`;
+        wrap.appendChild(idx);
+        wordView.appendChild(wrap);
+      });
+    }
+
+    function renderHash(step){
+      hashView.innerHTML = '';
+      const entries = Object.entries(step.h).sort((a,b) => a[0].localeCompare(b[0]));
+      if(entries.length === 0){
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = 'h is empty';
+        hashView.appendChild(empty);
+        return;
+      }
+      entries.forEach(([key, words]) => {
+        const card = document.createElement('div');
+        card.className = 'group-card';
+        if(step.activeKey === key) card.classList.add('active');
+        if(step.newKey === key) card.classList.add('new');
+        const values = words.map(w => `<span class="group-word ${step.newWord === w && step.activeKey === key ? 'new' : ''}">"${w}"</span>`).join('');
+        card.innerHTML = `<div class="group-key">key: "${key}"</div><div class="group-values">${values || '<span class="empty">[]</span>'}</div>`;
+        hashView.appendChild(card);
+      });
+    }
+
+    function renderCode(step){
+      codeLines.forEach(line => line.classList.toggle('active', Number(line.dataset.line) === step.line));
+    }
+
+    function renderMeta(step){
+      stringValue.textContent = step.currentString === null ? '—' : `"${step.currentString}"`;
+      sortedValue.textContent = step.sortedText || '—';
+      keyValue.textContent = step.key === null ? '—' : `"${step.key}"`;
+      iValue.textContent = step.i === null ? '—' : step.i;
+      curValue.textContent = step.currentString === null ? '—' : `"${step.currentString}"`;
+      existsValue.textContent = step.exists === null ? '—' : String(step.exists);
+      returnValue.textContent = step.returnVal === null ? '—' : step.returnVal;
+      resultView.textContent = step.phase === 'return' ? step.returnVal : groupsText(step.h);
+      explanation.innerHTML = step.explanation;
+      stepLabel.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+      barFill.style.width = `${((stepIndex + 1) / steps.length) * 100}%`;
+    }
+
+    function render(){
+      const step = steps[stepIndex];
+      renderWords(step);
+      renderHash(step);
+      renderCode(step);
+      renderMeta(step);
+      prevBtn.disabled = stepIndex === 0;
+      nextBtn.disabled = stepIndex === steps.length - 1;
+    }
+
+    function stopAuto(){
+      if(timer){ clearInterval(timer); timer = null; }
+      playBtn.textContent = 'Auto Play';
+    }
+    function nextStep(){
+      if(stepIndex < steps.length - 1){ stepIndex++; render(); }
+      else stopAuto();
+    }
+    function prevStep(){ if(stepIndex > 0){ stepIndex--; render(); } }
+    function reset(){ stopAuto(); stepIndex = 0; render(); }
+    function rebuild(newStrs){
+      stopAuto();
+      strs = newStrs;
+      steps = buildSteps(strs);
+      stepIndex = 0;
+      exampleLabel.textContent = '[' + strs.map(w => `"${w}"`).join(', ') + ']';
+      render();
+    }
+
+    prevBtn.addEventListener('click', prevStep);
+    nextBtn.addEventListener('click', nextStep);
+    resetBtn.addEventListener('click', reset);
+    playBtn.addEventListener('click', () => {
+      if(timer){ stopAuto(); return; }
+      playBtn.textContent = 'Pause';
+      timer = setInterval(() => {
+        if(stepIndex >= steps.length - 1) stopAuto();
+        else nextStep();
+      }, 1200);
+    });
+    applyBtn.addEventListener('click', () => rebuild(parseInput(strsInput.value)));
+    sample1Btn.addEventListener('click', () => {
+      strsInput.value = 'eat, tea, tan, ate, nat, bat';
+      rebuild(['eat','tea','tan','ate','nat','bat']);
+    });
+    sample2Btn.addEventListener('click', () => {
+      strsInput.value = 'a, b, ab, ba';
+      rebuild(['a','b','ab','ba']);
+    });
+    sample3Btn.addEventListener('click', () => {
+      strsInput.value = 'stop, pots, tops, dog, god, cat';
+      rebuild(['stop','pots','tops','dog','god','cat']);
+    });
+    strsInput.addEventListener('keydown', e => { if(e.key === 'Enter') rebuild(parseInput(strsInput.value)); });
+
+    rebuild(strs);
+  </script>
+</body>
+</html>
