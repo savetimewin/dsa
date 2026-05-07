@@ -423,6 +423,99 @@
       transition:.2s ease;
     }
 
+
+
+    /* BOTTOM: COMPLEXITY NOTES */
+    .complexity-section{
+      width:min(1440px, 96vw);
+      margin:0 auto 28px auto;
+    }
+
+    .complexity-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.012));
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+
+    .complexity-title{
+      font-size:22px;
+      font-weight:800;
+      color:#f5f7ff;
+      margin:0 0 14px 0;
+    }
+
+    .complexity-subtitle{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:18px;
+    }
+
+    .complexity-block{
+      margin:18px 0;
+      line-height:1.65;
+      color:#dde5f6;
+      font-size:15px;
+    }
+
+    .complexity-block strong{
+      color:#f5f7ff;
+    }
+
+    .complexity-code{
+      background:#101318;
+      border:1px solid #2c3444;
+      border-radius:14px;
+      padding:14px 16px;
+      margin:10px 0;
+      overflow:auto;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:14px;
+      line-height:1.7;
+      color:#f5f7ff;
+    }
+
+    .complexity-code code{
+      color:inherit;
+    }
+
+    .complexity-inline-code{
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:5px;
+      padding:1px 5px;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:.92em;
+      color:#f5f7ff;
+    }
+
+    .complexity-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .complexity-mini-card{
+      background:#121826;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .complexity-answer{
+      display:inline-block;
+      margin-top:8px;
+      background:#101318;
+      border:1px solid #2c3444;
+      border-radius:14px;
+      padding:14px 16px;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      line-height:1.7;
+      color:#f5f7ff;
+    }
+
     @media (max-width: 1100px){
       .app{
         grid-template-columns: 1fr;
@@ -432,6 +525,7 @@
 
     @media (max-width: 700px){
       .state-grid{grid-template-columns:1fr}
+      .complexity-grid{grid-template-columns:1fr}
       .cell{width:50px;height:50px}
       .code-line{font-size:16px}
     }
@@ -546,6 +640,68 @@
       </div>
     </section>
   </div>
+
+
+  <section class="complexity-section">
+    <div class="complexity-card">
+      <h2 class="complexity-title">Time and Space Complexity</h2>
+      <div class="complexity-subtitle">Interview-ready explanation for the hash set solution.</div>
+
+      <div class="complexity-block">
+        <strong>Time complexity: O(n)</strong>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Reason:</strong>
+        <pre class="complexity-code"><code><span class="kw">for</span> <span class="id">num</span> <span class="kw">in</span> <span class="id">nums</span><span class="pl">:</span></code></pre>
+        This loop can visit each element in <span class="complexity-inline-code">nums</span> once.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Inside the loop:</strong>
+        <pre class="complexity-code"><code><span class="kw">if</span> <span class="id">num</span> <span class="kw">in</span> <span class="id">seen</span><span class="pl">:</span></code></pre>
+        Checking membership in a <span class="complexity-inline-code">set</span> is <strong>O(1)</strong> on average.
+        <pre class="complexity-code"><code><span class="id">seen</span><span class="pl">.</span><span class="fn">add</span><span class="pl">(</span><span class="id">num</span><span class="pl">)</span></code></pre>
+        Adding to a <span class="complexity-inline-code">set</span> is also <strong>O(1)</strong> on average.
+      </div>
+
+      <div class="complexity-block">
+        <strong>So the total is:</strong>
+        <pre class="complexity-code"><code>n elements × O(1) work per element = O(n)</code></pre>
+      </div>
+
+      <div class="complexity-grid">
+        <div class="complexity-mini-card">
+          <div class="complexity-block" style="margin:0;">
+            <strong>Best case: O(1)</strong><br>
+            Example:
+            <pre class="complexity-code"><code><span class="id">nums</span> <span class="pl">= [</span><span class="nu">1</span><span class="pl">, </span><span class="nu">1</span><span class="pl">, </span><span class="nu">2</span><span class="pl">, </span><span class="nu">3</span><span class="pl">]</span></code></pre>
+            It finds the duplicate immediately and returns <span class="complexity-inline-code">True</span>.
+          </div>
+        </div>
+
+        <div class="complexity-mini-card">
+          <div class="complexity-block" style="margin:0;">
+            <strong>Worst case: O(n)</strong><br>
+            Example:
+            <pre class="complexity-code"><code><span class="id">nums</span> <span class="pl">= [</span><span class="nu">1</span><span class="pl">, </span><span class="nu">2</span><span class="pl">, </span><span class="nu">3</span><span class="pl">, </span><span class="nu">4</span><span class="pl">]</span></code></pre>
+            It must check every number before returning <span class="complexity-inline-code">False</span>.
+          </div>
+        </div>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Space complexity: O(n)</strong>
+        <br>
+        Reason: in the worst case, every number is unique, so <span class="complexity-inline-code">seen</span> stores all <span class="complexity-inline-code">n</span> numbers.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Final answer:</strong><br>
+        <div class="complexity-answer">Time: &nbsp;O(n)<br>Space: O(n)</div>
+      </div>
+    </div>
+  </section>
 
   <script>
     const codeLines = [...document.querySelectorAll(".code-line")];

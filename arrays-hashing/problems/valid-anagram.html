@@ -259,8 +259,100 @@
     .comparison{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-family:"JetBrains Mono",monospace;font-size:16px;color:#dde5f6}
     .compare-box{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:#121826}
 
+
+
+    /* BOTTOM: COMPLEXITY NOTES */
+    .complexity-section{
+      width:min(1440px, 96vw);
+      margin:0 auto 28px auto;
+    }
+
+    .complexity-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.012));
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+
+    .complexity-title{
+      font-size:22px;
+      font-weight:800;
+      color:#f5f7ff;
+      margin:0 0 14px 0;
+    }
+
+    .complexity-subtitle{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:18px;
+    }
+
+    .complexity-block{
+      margin:18px 0;
+      line-height:1.65;
+      color:#dde5f6;
+      font-size:15px;
+    }
+
+    .complexity-block strong{
+      color:#f5f7ff;
+    }
+
+    .complexity-code{
+      background:#101318;
+      border:1px solid #2c3444;
+      border-radius:14px;
+      padding:14px 16px;
+      margin:10px 0;
+      overflow:auto;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:14px;
+      line-height:1.7;
+      color:#f5f7ff;
+    }
+
+    .complexity-code code{
+      color:inherit;
+    }
+
+    .complexity-inline-code{
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:5px;
+      padding:1px 5px;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:.92em;
+      color:#f5f7ff;
+    }
+
+    .complexity-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .complexity-mini-card{
+      background:#121826;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .complexity-answer{
+      display:inline-block;
+      margin-top:8px;
+      background:#101318;
+      border:1px solid #2c3444;
+      border-radius:14px;
+      padding:14px 16px;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      line-height:1.7;
+      color:#f5f7ff;
+    }
     @media (max-width:1100px){.app{grid-template-columns:1fr}.panel{min-height:auto}}
-    @media (max-width:700px){.state-grid,.maps{grid-template-columns:1fr}.char-cell{width:46px;height:46px}.code-line{font-size:16px}}
+    @media (max-width:700px){.state-grid,.maps,.complexity-grid{grid-template-columns:1fr}.char-cell{width:46px;height:46px}.code-line{font-size:16px}}
   </style>
 </head>
 <body>
@@ -268,6 +360,438 @@
     <a href="https://leetcode.com/problems/valid-anagram/" target="_blank">LeetCode Problem Link ↗</a>
     <a href="https://neetcode.io/problems/is-anagram/question" target="_blank">NeetCode Problem Link ↗</a>
   </div>
+
+
+
+  <section class="complexity-section" style="margin-top:20px; margin-bottom:12px;">
+    <div class="complexity-card">
+      <h2 class="complexity-title">Solution 1: Sorting Approach</h2>
+      <div class="complexity-subtitle">Sort both strings. If the sorted character lists match, the strings contain the same letters with the same counts.</div>
+
+      <div class="complexity-block">
+        <strong>Intuition</strong><br>
+        If two strings are anagrams, they must contain exactly the same characters with the same frequencies.
+        Sorting both strings arranges the characters in a consistent order.
+        If the sorted versions are identical, then every character and its count match.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Algorithm</strong>
+        <ol style="line-height:1.8; margin:10px 0 0 22px;">
+          <li>If the lengths of the two strings differ, return <span class="complexity-inline-code">False</span> immediately because they cannot be anagrams.</li>
+          <li>Sort both strings.</li>
+          <li>Compare the sorted versions. If they are equal, return <span class="complexity-inline-code">True</span>; otherwise, return <span class="complexity-inline-code">False</span>.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <div class="app" id="sortingSolutionApp">
+    <section class="panel editor">
+      <div class="editor-topbar">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <div class="editor-file">valid_anagram_sorting.py</div>
+      </div>
+      <div class="code-wrap" id="sortCodeWrap">
+        <div class="code-line" data-sort-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-sort-line="comment-2"><div class="line-no">2</div><code class="code-content indent-1"><span class="cm"># Need a function that decides whether s can be rearranged into t.</span></code></div>
+        <div class="code-line" data-sort-line="2"><div class="line-no">3</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">isAnagram</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">s</span><span class="pl">: </span><span class="ty">str</span><span class="pl">, </span><span class="id">t</span><span class="pl">: </span><span class="ty">str</span><span class="pl">) -&gt; </span><span class="ty">bool</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-sort-line="comment-3"><div class="line-no">4</div><code class="code-content indent-2"><span class="cm"># Different lengths cannot contain the same character frequencies.</span></code></div>
+        <div class="code-line" data-sort-line="3"><div class="line-no">5</div><code class="code-content indent-2"><span class="kw">if</span> <span class="fn">len</span><span class="pl">(</span><span class="id">s</span><span class="pl">) != </span><span class="fn">len</span><span class="pl">(</span><span class="id">t</span><span class="pl">):</span></code></div>
+        <div class="code-line" data-sort-line="comment-4"><div class="line-no">6</div><code class="code-content indent-3"><span class="cm"># No need to sort when the sizes already prove failure.</span></code></div>
+        <div class="code-line" data-sort-line="4"><div class="line-no">7</div><code class="code-content indent-3"><span class="kw">return</span> <span class="bl">False</span></code></div>
+        <div class="code-line" data-sort-line="comment-5"><div class="line-no">8</div><code class="code-content indent-2"><span class="cm"># Sorting puts equal character counts into the same order.</span></code></div>
+        <div class="code-line" data-sort-line="5"><div class="line-no">9</div><code class="code-content indent-2"><span class="kw">return</span> <span class="fn">sorted</span><span class="pl">(</span><span class="id">s</span><span class="pl">) == </span><span class="fn">sorted</span><span class="pl">(</span><span class="id">t</span><span class="pl">)</span></code></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Valid Anagram Visualizer: Sorting Solution</div>
+          <div class="subtle">Sort both strings, then compare the sorted character lists</div>
+        </div>
+        <div class="pill">Current example: <span id="sortExampleLabel">s="anagram", t="nagaram"</span></div>
+      </div>
+
+      <div class="viz">
+        <div class="input-row">
+          <label class="subtle" for="sortSInput">s:</label>
+          <input id="sortSInput" type="text" value="anagram" />
+          <label class="subtle" for="sortTInput">t:</label>
+          <input id="sortTInput" type="text" value="nagaram" />
+          <button id="sortApplyBtn">Apply</button>
+          <button id="sortSample1Btn">Anagram</button>
+          <button id="sortSample2Btn">Not Anagram</button>
+          <button id="sortSample3Btn">Different Length</button>
+        </div>
+
+        <div class="controls">
+          <button id="sortPrevBtn">◀ Back</button>
+          <button id="sortNextBtn">Next ▶</button>
+          <button id="sortResetBtn">Reset</button>
+          <button id="sortPlayBtn">Auto Play</button>
+        </div>
+
+        <div class="progress">
+          <span id="sortStepLabel">Step 1 / 1</span>
+          <div class="bar"><div class="bar-fill" id="sortBarFill"></div></div>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <div class="card-title">Original strings</div>
+            <div class="subtle" style="margin-bottom:8px;">s</div>
+            <div class="string-row" id="sortOriginalSView"></div>
+            <div class="subtle" style="margin-bottom:8px;">t</div>
+            <div class="string-row" id="sortOriginalTView"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">After sorting</div>
+            <div class="subtle" style="margin-bottom:8px;">sorted(s)</div>
+            <div class="string-row" id="sortedSView"></div>
+            <div class="subtle" style="margin-bottom:8px;">sorted(t)</div>
+            <div class="string-row" id="sortedTView"></div>
+            <div class="legend">
+              <div class="legend-item"><span class="legend-box" style="background:var(--tile-active);border-color:#5aa2dd;"></span> Being compared</div>
+              <div class="legend-item"><span class="legend-box" style="background:var(--tile-found);border-color:#4aa36d;"></span> Match</div>
+              <div class="legend-item"><span class="legend-box" style="background:var(--tile-dup);border-color:#c95c73;"></span> Mismatch</div>
+            </div>
+          </div>
+
+          <div class="state-grid">
+            <div class="mini"><div class="mini-label">sorted(s)</div><div class="mini-value" id="sortSValue">—</div></div>
+            <div class="mini"><div class="mini-label">sorted(t)</div><div class="mini-value" id="sortTValue">—</div></div>
+            <div class="mini"><div class="mini-label">Comparison</div><div class="mini-value" id="sortCompareValue">—</div></div>
+            <div class="mini"><div class="mini-label">Return value</div><div class="mini-value" id="sortReturnValue">—</div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Final comparison</div>
+            <div class="comparison" id="sortComparisonView">
+              <span class="compare-box">sorted(s)</span>
+              <span>==</span>
+              <span class="compare-box">sorted(t)</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Explanation</div>
+            <div class="explain" id="sortExplanation">Sort both strings. Anagrams become identical sorted character lists.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="complexity-section">
+    <div class="complexity-card">
+      <h2 class="complexity-title">Time and Space Complexity: Sorting Solution</h2>
+      <div class="complexity-subtitle">Interview-ready explanation for <span class="complexity-inline-code">sorted(s) == sorted(t)</span>.</div>
+
+      <div class="complexity-block">
+        <strong>Time complexity: O(n log n + m log m)</strong>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Reason:</strong>
+        <pre class="complexity-code"><code><span class="kw">if</span> <span class="fn">len</span><span class="pl">(</span><span class="id">s</span><span class="pl">) != </span><span class="fn">len</span><span class="pl">(</span><span class="id">t</span><span class="pl">):</span>
+    <span class="kw">return</span> <span class="bl">False</span>
+<span class="kw">return</span> <span class="fn">sorted</span><span class="pl">(</span><span class="id">s</span><span class="pl">) == </span><span class="fn">sorted</span><span class="pl">(</span><span class="id">t</span><span class="pl">)</span></code></pre>
+        The length check is <strong>O(1)</strong>. If the lengths match, <span class="complexity-inline-code">sorted(s)</span> sorts the characters of <span class="complexity-inline-code">s</span>, and <span class="complexity-inline-code">sorted(t)</span> sorts the characters of <span class="complexity-inline-code">t</span>.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Sorting cost:</strong>
+        <pre class="complexity-code"><code>sorted(s) = O(n log n)
+sorted(t) = O(m log m)</code></pre>
+        After sorting, Python compares the two sorted lists. That comparison is <strong>O(min(n, m))</strong> in many mismatch cases and <strong>O(n)</strong> when both strings have the same length and all characters must be checked.
+      </div>
+
+      <div class="complexity-block">
+        <strong>So the total is:</strong>
+        <pre class="complexity-code"><code>O(n log n) + O(m log m) + O(min(n, m)) = O(n log n + m log m)</code></pre>
+        Here, <span class="complexity-inline-code">n</span> is the length of <span class="complexity-inline-code">s</span>, and <span class="complexity-inline-code">m</span> is the length of <span class="complexity-inline-code">t</span>. If both strings have the same length, this simplifies to <span class="complexity-inline-code">O(n log n)</span>.
+      </div>
+
+      <div class="complexity-grid">
+        <div class="complexity-mini-card">
+          <div class="complexity-block" style="margin:0;">
+            <strong>Important detail</strong><br>
+            This version checks length first.
+            <pre class="complexity-code"><code><span class="kw">if</span> <span class="fn">len</span><span class="pl">(</span><span class="id">s</span><span class="pl">) != </span><span class="fn">len</span><span class="pl">(</span><span class="id">t</span><span class="pl">):</span>
+    <span class="kw">return</span> <span class="bl">False</span></code></pre>
+            This avoids sorting when the strings cannot possibly be anagrams.
+          </div>
+        </div>
+
+        <div class="complexity-mini-card">
+          <div class="complexity-block" style="margin:0;">
+            <strong>If lengths differ</strong><br>
+            Example:
+            <pre class="complexity-code"><code><span class="id">s</span> <span class="pl">= </span><span class="str">"ab"</span>
+<span class="id">t</span> <span class="pl">= </span><span class="str">"a"</span></code></pre>
+            It returns <span class="complexity-inline-code">False</span> immediately before sorting.
+          </div>
+        </div>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Space complexity: O(n + m)</strong>
+        <br>
+        Reason: <span class="complexity-inline-code">sorted(s)</span> and <span class="complexity-inline-code">sorted(t)</span> create new sorted lists of characters.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Final answer:</strong><br>
+        <div class="complexity-answer">Time: &nbsp;O(n log n + m log m)<br>Space: O(n + m)</div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (function(){
+      const codeLines = [...document.querySelectorAll('[data-sort-line]')];
+      const originalSView = document.getElementById('sortOriginalSView');
+      const originalTView = document.getElementById('sortOriginalTView');
+      const sortedSView = document.getElementById('sortedSView');
+      const sortedTView = document.getElementById('sortedTView');
+      const explanation = document.getElementById('sortExplanation');
+      const sortSValue = document.getElementById('sortSValue');
+      const sortTValue = document.getElementById('sortTValue');
+      const sortCompareValue = document.getElementById('sortCompareValue');
+      const sortReturnValue = document.getElementById('sortReturnValue');
+      const stepLabel = document.getElementById('sortStepLabel');
+      const barFill = document.getElementById('sortBarFill');
+      const exampleLabel = document.getElementById('sortExampleLabel');
+      const comparisonView = document.getElementById('sortComparisonView');
+
+      const sInput = document.getElementById('sortSInput');
+      const tInput = document.getElementById('sortTInput');
+      const applyBtn = document.getElementById('sortApplyBtn');
+      const sample1Btn = document.getElementById('sortSample1Btn');
+      const sample2Btn = document.getElementById('sortSample2Btn');
+      const sample3Btn = document.getElementById('sortSample3Btn');
+      const prevBtn = document.getElementById('sortPrevBtn');
+      const nextBtn = document.getElementById('sortNextBtn');
+      const resetBtn = document.getElementById('sortResetBtn');
+      const playBtn = document.getElementById('sortPlayBtn');
+
+      let s = 'anagram';
+      let t = 'nagaram';
+      let steps = [];
+      let stepIndex = 0;
+      let timer = null;
+
+      function listText(arr){ return '[' + arr.map(ch => `'${ch}'`).join(', ') + ']'; }
+      function sortedChars(str){ return [...str].sort(); }
+
+      function buildSteps(sVal, tVal){
+        const out = [];
+
+        out.push({
+          line:'3', phase:'length-check', sortedS:[], sortedT:[], returnVal:null, compareText:`len(s) = ${sVal.length}, len(t) = ${tVal.length}`,
+          explanation:`First check lengths: <code>len(s) = ${sVal.length}</code> and <code>len(t) = ${tVal.length}</code>. If lengths differ, the strings cannot have the same character frequencies.`
+        });
+
+        if(sVal.length !== tVal.length){
+          out.push({
+            line:'4', phase:'return-false-length', sortedS:[], sortedT:[], returnVal:false, compareText:'different lengths',
+            explanation:`The lengths are different, so return <code>False</code> immediately before sorting.`
+          });
+          return out;
+        }
+
+        const ss = sortedChars(sVal);
+        const tt = sortedChars(tVal);
+        const same = ss.every((ch, i) => ch === tt[i]);
+
+        out.push({
+          line:'5', phase:'compare', sortedS:ss, sortedT:tt, returnVal:same, compareText:same ? 'sorted(s) == sorted(t)' : 'sorted(s) != sorted(t)',
+          explanation:same
+            ? `Sort both strings. <code>sorted(s)</code> becomes <code>${listText(ss)}</code>, and <code>sorted(t)</code> becomes <code>${listText(tt)}</code>. The lists match, so return <code>True</code>.`
+            : `Sort both strings. <code>sorted(s)</code> becomes <code>${listText(ss)}</code>, and <code>sorted(t)</code> becomes <code>${listText(tt)}</code>. The lists differ, so return <code>False</code>.`
+        });
+        return out;
+      }
+
+      function renderChars(container, arr, step, kind){
+        container.innerHTML = '';
+        if(arr.length === 0){
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          empty.textContent = '(empty)';
+          container.appendChild(empty);
+          return;
+        }
+        const finalPhase = step.phase === 'return-true' || step.phase === 'return-false';
+        for(let i = 0; i < arr.length; i++){
+          const wrap = document.createElement('div');
+          wrap.className = 'cell-wrap';
+          const pointer = document.createElement('div');
+          pointer.className = 'pointer hidden';
+          pointer.textContent = '';
+          wrap.appendChild(pointer);
+          const cell = document.createElement('div');
+          cell.className = 'char-cell';
+          if(step.phase === 'compare' || step.phase === 'else') cell.classList.add('current');
+          if(finalPhase && step.returnVal === true) cell.classList.add('current');
+          if(finalPhase && step.returnVal === false) cell.classList.add('bad');
+          cell.textContent = arr[i];
+          wrap.appendChild(cell);
+          const idx = document.createElement('div');
+          idx.className = 'index';
+          idx.textContent = `idx ${i}`;
+          wrap.appendChild(idx);
+          container.appendChild(wrap);
+        }
+      }
+
+      function renderOriginal(container, text){
+        container.innerHTML = '';
+        if(text.length === 0){
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          empty.textContent = '(empty string)';
+          container.appendChild(empty);
+          return;
+        }
+        [...text].forEach((ch, i) => {
+          const wrap = document.createElement('div');
+          wrap.className = 'cell-wrap';
+          const pointer = document.createElement('div');
+          pointer.className = 'pointer hidden';
+          wrap.appendChild(pointer);
+          const cell = document.createElement('div');
+          cell.className = 'char-cell done';
+          cell.textContent = ch;
+          wrap.appendChild(cell);
+          const idx = document.createElement('div');
+          idx.className = 'index';
+          idx.textContent = `idx ${i}`;
+          wrap.appendChild(idx);
+          container.appendChild(wrap);
+        });
+      }
+
+      function renderCode(step){
+        codeLines.forEach(line => line.classList.toggle('active', line.dataset.sortLine === step.line));
+      }
+
+      function renderComparison(step){
+        if(step.phase === 'length-check' || step.phase === 'return-false-length'){
+          const bad = step.returnVal === false;
+          const style = bad ? ' style="border-color:#c95c73;background:#61313c;"' : '';
+          comparisonView.innerHTML = `
+            <span class="compare-box"${style}>len(s) = ${s.length}</span>
+            <span>${s.length === t.length ? '==' : '!='}</span>
+            <span class="compare-box"${style}>len(t) = ${t.length}</span>
+          `;
+          return;
+        }
+        const same = step.returnVal === true;
+        const bad = step.returnVal === false;
+        const style = same ? ' style="border-color:#4aa36d;background:#254938;"' : bad ? ' style="border-color:#c95c73;background:#61313c;"' : '';
+        const op = bad ? '!=' : '==';
+        comparisonView.innerHTML = `
+          <span class="compare-box"${style}>sorted(s) = ${listText(step.sortedS)}</span>
+          <span>${op}</span>
+          <span class="compare-box"${style}>sorted(t) = ${listText(step.sortedT)}</span>
+        `;
+      }
+
+      function renderMeta(step){
+        sortSValue.textContent = step.sortedS.length ? listText(step.sortedS) : 'not sorted yet';
+        sortTValue.textContent = step.sortedT.length ? listText(step.sortedT) : 'not sorted yet';
+        sortCompareValue.textContent = step.compareText;
+        sortReturnValue.textContent = step.returnVal === null ? '—' : String(step.returnVal);
+        explanation.innerHTML = step.explanation;
+        stepLabel.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+        barFill.style.width = `${((stepIndex + 1) / steps.length) * 100}%`;
+      }
+
+      function render(){
+        const step = steps[stepIndex];
+        renderOriginal(originalSView, s);
+        renderOriginal(originalTView, t);
+        renderChars(sortedSView, step.sortedS, step, 's');
+        renderChars(sortedTView, step.sortedT, step, 't');
+        renderCode(step);
+        renderComparison(step);
+        renderMeta(step);
+        prevBtn.disabled = stepIndex === 0;
+        nextBtn.disabled = stepIndex === steps.length - 1;
+      }
+
+      function stopAuto(){
+        if(timer){ clearInterval(timer); timer = null; }
+        playBtn.textContent = 'Auto Play';
+      }
+      function nextStep(){
+        if(stepIndex < steps.length - 1){ stepIndex++; render(); }
+        else stopAuto();
+      }
+      function prevStep(){ if(stepIndex > 0){ stepIndex--; render(); } }
+      function reset(){ stopAuto(); stepIndex = 0; render(); }
+      function rebuild(newS, newT){
+        stopAuto();
+        s = newS;
+        t = newT;
+        steps = buildSteps(s, t);
+        stepIndex = 0;
+        exampleLabel.textContent = `s="${s}", t="${t}"`;
+        render();
+      }
+
+      prevBtn.addEventListener('click', prevStep);
+      nextBtn.addEventListener('click', nextStep);
+      resetBtn.addEventListener('click', reset);
+      playBtn.addEventListener('click', () => {
+        if(timer){ stopAuto(); return; }
+        playBtn.textContent = 'Pause';
+        timer = setInterval(() => {
+          if(stepIndex >= steps.length - 1) stopAuto();
+          else nextStep();
+        }, 1200);
+      });
+      applyBtn.addEventListener('click', () => rebuild(sInput.value, tInput.value));
+      sample1Btn.addEventListener('click', () => { sInput.value='anagram'; tInput.value='nagaram'; rebuild('anagram','nagaram'); });
+      sample2Btn.addEventListener('click', () => { sInput.value='rat'; tInput.value='car'; rebuild('rat','car'); });
+      sample3Btn.addEventListener('click', () => { sInput.value='ab'; tInput.value='a'; rebuild('ab','a'); });
+      [sInput,tInput].forEach(input => input.addEventListener('keydown', e => { if(e.key === 'Enter') rebuild(sInput.value, tInput.value); }));
+
+      rebuild(s, t);
+    })();
+  </script>
+
+  <section class="complexity-section" style="margin-top:20px; margin-bottom:12px;">
+    <div class="complexity-card">
+      <h2 class="complexity-title">Solution 2: Hash Map Approach</h2>
+      <div class="complexity-subtitle">Count character frequencies with two dictionaries, then compare the dictionaries.</div>
+
+      <div class="complexity-block">
+        <strong>Intuition</strong><br>
+        If two strings are anagrams, they must use the same characters with the same frequencies.
+        Instead of sorting, count how many times each character appears in both strings.
+        By using two hash maps, one for <span class="complexity-inline-code">s</span> and one for <span class="complexity-inline-code">t</span>, we track the frequency of every character.
+        If both frequency maps match exactly, the strings are anagrams.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Algorithm</strong>
+        <ol style="line-height:1.8; margin:10px 0 0 22px;">
+          <li>If the two strings have different lengths, return <span class="complexity-inline-code">False</span> immediately.</li>
+          <li>Create two hash maps: <span class="complexity-inline-code">a</span> for <span class="complexity-inline-code">s</span>, and <span class="complexity-inline-code">b</span> for <span class="complexity-inline-code">t</span>.</li>
+          <li>Loop through <span class="complexity-inline-code">s</span> and increase the count for each character in <span class="complexity-inline-code">a</span>.</li>
+          <li>Loop through <span class="complexity-inline-code">t</span> and increase the count for each character in <span class="complexity-inline-code">b</span>.</li>
+          <li>Compare the two maps. If they are equal, return <span class="complexity-inline-code">True</span>; otherwise, return <span class="complexity-inline-code">False</span>.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
 
   <div class="app">
     <section class="panel editor">
@@ -278,26 +802,35 @@
         <div class="editor-file">valid_anagram.py</div>
       </div>
       <div class="code-wrap" id="codeWrap">
-        <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">isAnagram</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">s</span><span class="pl">: </span><span class="ty">str</span><span class="pl">, </span><span class="id">t</span><span class="pl">: </span><span class="ty">str</span><span class="pl">) -&gt; </span><span class="ty">bool</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-2"><span class="kw">if</span> <span class="fn">len</span><span class="pl">(</span><span class="id">s</span><span class="pl">) != </span><span class="fn">len</span><span class="pl">(</span><span class="id">t</span><span class="pl">):</span></code></div>
-        <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-3"><span class="kw">return</span> <span class="bl">False</span></code></div>
-        <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-2"><span class="id">a</span> <span class="pl">= {}</span> <span class="cm"># counts for s</span></code></div>
-        <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-2"><span class="id">b</span> <span class="pl">= {}</span> <span class="cm"># counts for t</span></code></div>
-        <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">s</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-3"><span class="id">a</span><span class="pl">[</span><span class="id">char</span><span class="pl">] = </span><span class="id">a</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">char</span><span class="pl">, </span><span class="nu">0</span><span class="pl">) + </span><span class="nu">1</span></code></div>
-        <div class="code-line" data-line="9"><div class="line-no">9</div><code class="code-content indent-3"><span class="cm"># if char is new, old count is 0, then add 1</span></code></div>
-        <div class="code-line" data-line="10"><div class="line-no">10</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">t</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="11"><div class="line-no">11</div><code class="code-content indent-3"><span class="id">b</span><span class="pl">[</span><span class="id">char</span><span class="pl">] = </span><span class="id">b</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">char</span><span class="pl">, </span><span class="nu">0</span><span class="pl">) + </span><span class="nu">1</span></code></div>
-        <div class="code-line" data-line="12"><div class="line-no">12</div><code class="code-content indent-2"><span class="kw">return</span> <span class="id">a</span> <span class="pl">==</span> <span class="id">b</span></code></div>
+        <div class="code-line" data-line="2"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="3"><div class="line-no">2</div><code class="code-content indent-1"><span class="cm"># The method gets two strings and must return True or False.</span></code></div>
+        <div class="code-line" data-line="4"><div class="line-no">3</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">isAnagram</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">s</span><span class="pl">: </span><span class="ty">str</span><span class="pl">, </span><span class="id">t</span><span class="pl">: </span><span class="ty">str</span><span class="pl">) -&gt; </span><span class="ty">bool</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="5"><div class="line-no">4</div><code class="code-content indent-2"><span class="cm"># Anagrams must use the same number of characters.</span></code></div>
+        <div class="code-line" data-line="6"><div class="line-no">5</div><code class="code-content indent-2"><span class="kw">if</span> <span class="fn">len</span><span class="pl">(</span><span class="id">s</span><span class="pl">) != </span><span class="fn">len</span><span class="pl">(</span><span class="id">t</span><span class="pl">):</span></code></div>
+        <div class="code-line" data-line="7"><div class="line-no">6</div><code class="code-content indent-3"><span class="cm"># Different lengths cannot be rearranged into each other.</span></code></div>
+        <div class="code-line" data-line="8"><div class="line-no">7</div><code class="code-content indent-3"><span class="kw">return</span> <span class="bl">False</span></code></div>
+        <div class="code-line" data-line="9"><div class="line-no">8</div><code class="code-content indent-2"><span class="cm"># Need a frequency map for characters in s.</span></code></div>
+        <div class="code-line" data-line="10"><div class="line-no">9</div><code class="code-content indent-2"><span class="id">a</span> <span class="pl">= {}</span></code></div>
+        <div class="code-line" data-line="11"><div class="line-no">10</div><code class="code-content indent-2"><span class="cm"># Need a separate frequency map for characters in t.</span></code></div>
+        <div class="code-line" data-line="12"><div class="line-no">11</div><code class="code-content indent-2"><span class="id">b</span> <span class="pl">= {}</span></code></div>
+        <div class="code-line" data-line="13"><div class="line-no">12</div><code class="code-content indent-2"><span class="cm"># Count every character from s.</span></code></div>
+        <div class="code-line" data-line="14"><div class="line-no">13</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">s</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="15"><div class="line-no">14</div><code class="code-content indent-3"><span class="cm"># Add 1 to this character's old count, or start from 0.</span></code></div>
+        <div class="code-line" data-line="16"><div class="line-no">15</div><code class="code-content indent-3"><span class="id">a</span><span class="pl">[</span><span class="id">char</span><span class="pl">] = </span><span class="id">a</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">char</span><span class="pl">, </span><span class="nu">0</span><span class="pl">) + </span><span class="nu">1</span></code></div>
+        <div class="code-line" data-line="17"><div class="line-no">16</div><code class="code-content indent-2"><span class="cm"># Count every character from t the same way.</span></code></div>
+        <div class="code-line" data-line="18"><div class="line-no">17</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">t</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="19"><div class="line-no">18</div><code class="code-content indent-3"><span class="cm"># Add 1 to this character's old count, or start from 0.</span></code></div>
+        <div class="code-line" data-line="20"><div class="line-no">19</div><code class="code-content indent-3"><span class="id">b</span><span class="pl">[</span><span class="id">char</span><span class="pl">] = </span><span class="id">b</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">char</span><span class="pl">, </span><span class="nu">0</span><span class="pl">) + </span><span class="nu">1</span></code></div>
+        <div class="code-line" data-line="21"><div class="line-no">20</div><code class="code-content indent-2"><span class="cm"># Same character counts means the strings are anagrams.</span></code></div>
+        <div class="code-line" data-line="22"><div class="line-no">21</div><code class="code-content indent-2"><span class="kw">return</span> <span class="id">a</span> <span class="pl">==</span> <span class="id">b</span></code></div>
       </div>
     </section>
 
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">Valid Anagram Visualizer</div>
-          <div class="subtle">Two string scans + two hash maps</div>
+          <div class="panel-title">Valid Anagram Visualizer: Hash Map Solution</div>
+          <div class="subtle">Two separate string scans + two frequency hash maps</div>
         </div>
         <div class="pill">Current example: <span id="exampleLabel">s="anagram", t="nagaram"</span></div>
       </div>
@@ -376,8 +909,66 @@
     </section>
   </div>
 
+
+
+  <section class="complexity-section">
+    <div class="complexity-card">
+      <h2 class="complexity-title">Time and Space Complexity: Hash Map Solution</h2>
+      <div class="complexity-subtitle">Interview-ready explanation for the original two-loop dictionary-counting solution.</div>
+
+      <div class="complexity-block">
+        <strong>Time complexity: O(n + m)</strong>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Reason:</strong>
+        <pre class="complexity-code"><code><span class="kw">if</span> <span class="fn">len</span><span class="pl">(</span><span class="id">s</span><span class="pl">) != </span><span class="fn">len</span><span class="pl">(</span><span class="id">t</span><span class="pl">):</span>
+    <span class="kw">return</span> <span class="bl">False</span></code></pre>
+        The length check is <strong>O(1)</strong>. If the lengths differ, the function returns <span class="complexity-inline-code">False</span> immediately.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Building the first frequency map:</strong>
+        <pre class="complexity-code"><code><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">s</span><span class="pl">:</span>
+    <span class="id">a</span><span class="pl">[</span><span class="id">char</span><span class="pl">] = </span><span class="id">a</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">char</span><span class="pl">, </span><span class="nu">0</span><span class="pl">) + </span><span class="nu">1</span></code></pre>
+        This loop scans <span class="complexity-inline-code">s</span> once, so it costs <strong>O(n)</strong>. Each dictionary lookup/update is <strong>O(1)</strong> on average.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Building the second frequency map:</strong>
+        <pre class="complexity-code"><code><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">t</span><span class="pl">:</span>
+    <span class="id">b</span><span class="pl">[</span><span class="id">char</span><span class="pl">] = </span><span class="id">b</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">char</span><span class="pl">, </span><span class="nu">0</span><span class="pl">) + </span><span class="nu">1</span></code></pre>
+        This loop scans <span class="complexity-inline-code">t</span> once, so it costs <strong>O(m)</strong>.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Comparing the maps:</strong>
+        <pre class="complexity-code"><code><span class="kw">return</span> <span class="id">a</span> <span class="pl">==</span> <span class="id">b</span></code></pre>
+        Dictionary comparison checks whether the stored character frequencies match. Under the lowercase-English-letter constraint, there are at most <span class="complexity-inline-code">26</span> keys, so this comparison is <strong>O(1)</strong>.
+      </div>
+
+      <div class="complexity-block">
+        <strong>So the total is:</strong>
+        <pre class="complexity-code"><code>O(n) to scan s + O(m) to scan t + O(1) to compare maps = O(n + m)</code></pre>
+        Where <span class="complexity-inline-code">n</span> is the length of string <span class="complexity-inline-code">s</span> and <span class="complexity-inline-code">m</span> is the length of string <span class="complexity-inline-code">t</span>. Because the function checks that the lengths match before counting, this is often simplified to <span class="complexity-inline-code">O(n)</span>, but <span class="complexity-inline-code">O(n + m)</span> is the more explicit expression.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Space complexity: O(1)</strong>
+        <br>
+        Reason: for the standard Valid Anagram constraints, the strings contain lowercase English letters, so the dictionaries hold at most <span class="complexity-inline-code">26</span> different characters. Since 26 is constant, auxiliary space is <span class="complexity-inline-code">O(1)</span>.
+        <br><br>
+        If the input allowed arbitrary characters with an unbounded alphabet, this would be <span class="complexity-inline-code">O(n + m)</span> space.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Final answer:</strong><br>
+        <div class="complexity-answer">Time: &nbsp;O(n + m)<br>Space: O(1)</div>
+      </div>
+    </div>
+  </section>
   <script>
-    const codeLines = [...document.querySelectorAll('.code-line')];
+    const codeLines = [...document.querySelectorAll('#codeWrap .code-line')];
     const sView = document.getElementById('sView');
     const tView = document.getElementById('tView');
     const aMap = document.getElementById('aMap');
@@ -432,14 +1023,14 @@
       const b = {};
 
       out.push({
-        line:3, phase:'length-check', activeString:null, currentIndex:null, currentChar:null,
+        line:6, phase:'length-check', activeString:null, currentIndex:null, currentChar:null,
         a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'—', mismatch:false,
         explanation:`Check the lengths first: <code>len(s) = ${sVal.length}</code> and <code>len(t) = ${tVal.length}</code>. If lengths differ, they cannot be anagrams.`
       });
 
       if(sVal.length !== tVal.length){
         out.push({
-          line:4, phase:'return-false-length', activeString:null, currentIndex:null, currentChar:null,
+          line:8, phase:'return-false-length', activeString:null, currentIndex:null, currentChar:null,
           a:cloneObj(a), b:cloneObj(b), returnVal:false, countText:'—', mismatch:true,
           explanation:`The lengths are different, so the function immediately returns <code>False</code>. No hash maps are needed.`
         });
@@ -447,12 +1038,12 @@
       }
 
       out.push({
-        line:5, phase:'init-a', activeString:null, currentIndex:null, currentChar:null,
+        line:10, phase:'init-a', activeString:null, currentIndex:null, currentChar:null,
         a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'a = {}',
         explanation:`Create the first hash map, <code>a</code>. It will count every character in <code>s</code>.`
       });
       out.push({
-        line:6, phase:'init-b', activeString:null, currentIndex:null, currentChar:null,
+        line:12, phase:'init-b', activeString:null, currentIndex:null, currentChar:null,
         a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'b = {}',
         explanation:`Create the second hash map, <code>b</code>. It will count every character in <code>t</code>.`
       });
@@ -460,14 +1051,14 @@
       for(let i=0;i<sVal.length;i++){
         const ch = sVal[i];
         out.push({
-          line:7, phase:'loop-s', activeString:'s', currentIndex:i, currentChar:ch,
+          line:14, phase:'loop-s', activeString:'s', currentIndex:i, currentChar:ch,
           a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'—',
           explanation:`Start/continue the loop over <code>s</code>. The current character is <code>'${ch}'</code> at index <code>${i}</code>.`
         });
         const oldCount = a[ch] || 0;
         a[ch] = oldCount + 1;
         out.push({
-          line:8, phase:'update-a', activeString:'s', currentIndex:i, currentChar:ch,
+          line:16, phase:'update-a', activeString:'s', currentIndex:i, currentChar:ch,
           a:cloneObj(a), b:cloneObj(b), returnVal:null, newKey:ch, newMap:'a', countText:`${oldCount} + 1 = ${a[ch]}`,
           explanation:`Update <code>a['${ch}']</code>. <code>a.get('${ch}', 0)</code> gives the old count <code>${oldCount}</code>, then we add <code>1</code>, so the new count is <code>${a[ch]}</code>.`
         });
@@ -476,14 +1067,14 @@
       for(let i=0;i<tVal.length;i++){
         const ch = tVal[i];
         out.push({
-          line:10, phase:'loop-t', activeString:'t', currentIndex:i, currentChar:ch,
+          line:18, phase:'loop-t', activeString:'t', currentIndex:i, currentChar:ch,
           a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'—',
           explanation:`Now loop over <code>t</code>. The current character is <code>'${ch}'</code> at index <code>${i}</code>.`
         });
         const oldCount = b[ch] || 0;
         b[ch] = oldCount + 1;
         out.push({
-          line:11, phase:'update-b', activeString:'t', currentIndex:i, currentChar:ch,
+          line:20, phase:'update-b', activeString:'t', currentIndex:i, currentChar:ch,
           a:cloneObj(a), b:cloneObj(b), returnVal:null, newKey:ch, newMap:'b', countText:`${oldCount} + 1 = ${b[ch]}`,
           explanation:`Update <code>b['${ch}']</code>. <code>b.get('${ch}', 0)</code> gives the old count <code>${oldCount}</code>, then we add <code>1</code>, so the new count is <code>${b[ch]}</code>.`
         });
@@ -491,7 +1082,7 @@
 
       const same = dictEqual(a,b);
       out.push({
-        line:12, phase:'compare', activeString:null, currentIndex:null, currentChar:null,
+        line:22, phase:'compare', activeString:null, currentIndex:null, currentChar:null,
         a:cloneObj(a), b:cloneObj(b), returnVal:same, countText:same ? 'a == b' : 'a != b', mismatchKeys:[...mismatchKeys(a,b)],
         explanation:same
           ? `Compare the two hash maps. They are equal, so <code>s</code> and <code>t</code> contain the same characters with the same counts. Return <code>True</code>.`

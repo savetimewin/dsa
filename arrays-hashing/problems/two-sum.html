@@ -482,6 +482,99 @@
       font-size:.95em;
     }
 
+
+
+    /* BOTTOM: COMPLEXITY NOTES */
+    .complexity-section{
+      width:min(1440px, 96vw);
+      margin:0 auto 28px auto;
+    }
+
+    .complexity-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.012));
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+
+    .complexity-title{
+      font-size:22px;
+      font-weight:800;
+      color:#f5f7ff;
+      margin:0 0 14px 0;
+    }
+
+    .complexity-subtitle{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:18px;
+    }
+
+    .complexity-block{
+      margin:18px 0;
+      line-height:1.65;
+      color:#dde5f6;
+      font-size:15px;
+    }
+
+    .complexity-block strong{
+      color:#f5f7ff;
+    }
+
+    .complexity-code{
+      background:#101318;
+      border:1px solid #2c3444;
+      border-radius:14px;
+      padding:14px 16px;
+      margin:10px 0;
+      overflow:auto;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:14px;
+      line-height:1.7;
+      color:#f5f7ff;
+    }
+
+    .complexity-code code{
+      color:inherit;
+    }
+
+    .complexity-inline-code{
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:5px;
+      padding:1px 5px;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:.92em;
+      color:#f5f7ff;
+    }
+
+    .complexity-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .complexity-mini-card{
+      background:#121826;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .complexity-answer{
+      display:inline-block;
+      margin-top:8px;
+      background:#101318;
+      border:1px solid #2c3444;
+      border-radius:14px;
+      padding:14px 16px;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      line-height:1.7;
+      color:#f5f7ff;
+    }
+
     @media (max-width:1100px){
       .app{grid-template-columns:1fr;}
       .panel{min-height:auto}
@@ -496,6 +589,11 @@
     @media (max-width:560px){
       .state-grid{grid-template-columns:1fr}
       .panel-header{align-items:flex-start; flex-direction:column;}
+    }
+
+
+    @media (max-width: 700px){
+      .complexity-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -516,14 +614,22 @@
       </div>
 
       <div class="code-wrap" id="codeWrap">
-        <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">twoSum</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">nums</span><span class="pl">: </span><span class="ty">List</span><span class="pl">[</span><span class="ty">int</span><span class="pl">], </span><span class="id">target</span><span class="pl">: </span><span class="ty">int</span><span class="pl">) -&gt; </span><span class="ty">List</span><span class="pl">[</span><span class="ty">int</span><span class="pl">]:</span></code></div>
-        <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-2"><span class="id">s</span> <span class="pl">=</span> <span class="pl">{}</span></code></div>
-        <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">i</span><span class="pl">, </span><span class="id">num</span> <span class="kw">in</span> <span class="fn">enumerate</span><span class="pl">(</span><span class="id">nums</span><span class="pl">):</span></code></div>
-        <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-3"><span class="id">complement</span> <span class="pl">=</span> <span class="id">target</span> <span class="pl">-</span> <span class="id">num</span></code></div>
-        <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-3"><span class="kw">if</span> <span class="id">complement</span> <span class="kw">in</span> <span class="id">s</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-4"><span class="kw">return</span> <span class="pl">[</span><span class="id">s</span><span class="pl">[</span><span class="id">complement</span><span class="pl">], </span><span class="id">i</span><span class="pl">]</span></code></div>
-        <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-3"><span class="id">s</span><span class="pl">[</span><span class="id">num</span><span class="pl">] = </span><span class="id">i</span></code></div>
+        <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="cm"># LeetCode gives a Solution class; put the method inside it.</span></code></div>
+        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-1"><span class="cm"># The method gets nums and target, and must return two indices.</span></code></div>
+        <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">twoSum</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">nums</span><span class="pl">: </span><span class="ty">List</span><span class="pl">[</span><span class="ty">int</span><span class="pl">], </span><span class="id">target</span><span class="pl">: </span><span class="ty">int</span><span class="pl">) -&gt; </span><span class="ty">List</span><span class="pl">[</span><span class="ty">int</span><span class="pl">]:</span></code></div>
+        <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-2"><span class="cm"># Need fast memory of previous numbers: number -&gt; index.</span></code></div>
+        <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-2"><span class="id">hashmap</span> <span class="pl">=</span> <span class="pl">{}</span></code></div>
+        <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-2"><span class="cm"># Need both the current position and value, so use enumerate.</span></code></div>
+        <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">index</span><span class="pl">, </span><span class="id">num</span> <span class="kw">in</span> <span class="fn">enumerate</span><span class="pl">(</span><span class="id">nums</span><span class="pl">):</span></code></div>
+        <div class="code-line" data-line="9"><div class="line-no">9</div><code class="code-content indent-3"><span class="cm"># Ask: what missing number would make target with num?</span></code></div>
+        <div class="code-line" data-line="10"><div class="line-no">10</div><code class="code-content indent-3"><span class="id">complement</span> <span class="pl">=</span> <span class="id">target</span> <span class="pl">-</span> <span class="id">num</span></code></div>
+        <div class="code-line" data-line="11"><div class="line-no">11</div><code class="code-content indent-3"><span class="cm"># If complement was seen before, its index is already saved.</span></code></div>
+        <div class="code-line" data-line="12"><div class="line-no">12</div><code class="code-content indent-3"><span class="kw">if</span> <span class="id">complement</span> <span class="kw">in</span> <span class="id">hashmap</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="13"><div class="line-no">13</div><code class="code-content indent-4"><span class="cm"># Return the old saved index and the current index.</span></code></div>
+        <div class="code-line" data-line="14"><div class="line-no">14</div><code class="code-content indent-4"><span class="kw">return</span> <span class="pl">[</span><span class="id">hashmap</span><span class="pl">[</span><span class="id">complement</span><span class="pl">], </span><span class="id">index</span><span class="pl">]</span></code></div>
+        <div class="code-line" data-line="15"><div class="line-no">15</div><code class="code-content indent-3"><span class="cm"># Save num after checking, so one element is not reused.</span></code></div>
+        <div class="code-line" data-line="16"><div class="line-no">16</div><code class="code-content indent-3"><span class="id">hashmap</span><span class="pl">[</span><span class="id">num</span><span class="pl">] = </span><span class="id">index</span></code></div>
       </div>
     </section>
 
@@ -592,7 +698,7 @@
           </div>
 
           <div class="card">
-            <div class="card-title">hash map <span class="subtle">s: number → index</span></div>
+            <div class="card-title">hash map <span class="subtle">hashmap: number → index</span></div>
             <div class="map-box" id="mapView"></div>
           </div>
 
@@ -618,13 +724,77 @@
           <div class="card">
             <div class="card-title">Explanation</div>
             <div class="explain" id="explanation">
-              We begin by creating an empty dictionary called <code class="inline">s</code>.
+              We begin by creating an empty dictionary called <code class="inline">hashmap</code>.
             </div>
           </div>
         </div>
       </div>
     </section>
   </div>
+
+
+  <section class="complexity-section">
+    <div class="complexity-card">
+      <h2 class="complexity-title">Time and Space Complexity</h2>
+      <div class="complexity-subtitle">Interview-ready explanation for the hash map solution.</div>
+
+      <div class="complexity-block">
+        <strong>Time complexity: O(n)</strong>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Reason:</strong>
+        <pre class="complexity-code"><code><span class="kw">for</span> <span class="id">index</span><span class="pl">, </span><span class="id">num</span> <span class="kw">in</span> <span class="fn">enumerate</span><span class="pl">(</span><span class="id">nums</span><span class="pl">):</span></code></pre>
+        This loop can visit each element in <span class="complexity-inline-code">nums</span> once.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Inside the loop:</strong>
+        <pre class="complexity-code"><code><span class="id">complement</span> <span class="pl">=</span> <span class="id">target</span> <span class="pl">-</span> <span class="id">num</span></code></pre>
+        Calculating the complement is <strong>O(1)</strong>.
+        <pre class="complexity-code"><code><span class="kw">if</span> <span class="id">complement</span> <span class="kw">in</span> <span class="id">hashmap</span><span class="pl">:</span></code></pre>
+        Checking whether a key exists in a <span class="complexity-inline-code">dict</span> is <strong>O(1)</strong> on average.
+        <pre class="complexity-code"><code><span class="id">hashmap</span><span class="pl">[</span><span class="id">num</span><span class="pl">] = </span><span class="id">index</span></code></pre>
+        Saving a key-value pair in a <span class="complexity-inline-code">dict</span> is also <strong>O(1)</strong> on average.
+      </div>
+
+      <div class="complexity-block">
+        <strong>So the total is:</strong>
+        <pre class="complexity-code"><code>n elements × O(1) work per element = O(n)</code></pre>
+      </div>
+
+      <div class="complexity-grid">
+        <div class="complexity-mini-card">
+          <div class="complexity-block" style="margin:0;">
+            <strong>Best case: O(1)</strong><br>
+            Example:
+            <pre class="complexity-code"><code><span class="id">nums</span> <span class="pl">= [</span><span class="nu">2</span><span class="pl">, </span><span class="nu">7</span><span class="pl">, </span><span class="nu">11</span><span class="pl">, </span><span class="nu">15</span><span class="pl">], </span><span class="id">target</span> <span class="pl">= </span><span class="nu">9</span></code></pre>
+            It finds the answer at index <span class="complexity-inline-code">1</span> and returns immediately.
+          </div>
+        </div>
+
+        <div class="complexity-mini-card">
+          <div class="complexity-block" style="margin:0;">
+            <strong>Worst case: O(n)</strong><br>
+            Example:
+            <pre class="complexity-code"><code><span class="id">nums</span> <span class="pl">= [</span><span class="nu">3</span><span class="pl">, </span><span class="nu">2</span><span class="pl">, </span><span class="nu">4</span><span class="pl">], </span><span class="id">target</span> <span class="pl">= </span><span class="nu">6</span></code></pre>
+            It may need to scan until a later element completes the pair.
+          </div>
+        </div>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Space complexity: O(n)</strong>
+        <br>
+        Reason: in the worst case, the hash map stores many previous numbers before the answer is found. The map can grow up to <span class="complexity-inline-code">n</span> entries.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Final answer:</strong><br>
+        <div class="complexity-answer">Time: &nbsp;O(n)<br>Space: O(n)</div>
+      </div>
+    </div>
+  </section>
 
   <script>
     const codeLines = [...document.querySelectorAll(".code-line")];
@@ -672,19 +842,19 @@
 
     function buildSteps(arr, tgt){
       const out = [];
-      const s = {};
+      const hashmap = {};
 
       out.push({
-        line:3,
+        line:6,
         i:null,
         currentIndex:null,
         currentNum:null,
         complement:null,
-        map:cloneMap(s),
+        map:cloneMap(hashmap),
         returnVal:null,
         answerIndices:[],
         phase:"init",
-        explanation:`Create an empty dictionary called <code class="inline">s</code>. It will store each previous number as the key and that number's index as the value.`
+        explanation:`Create an empty dictionary called <code class="inline">hashmap</code>. It will store each previous number as the key and that number's index as the value.`
       });
 
       for(let i = 0; i < arr.length; i++){
@@ -692,12 +862,12 @@
         const complement = tgt - num;
 
         out.push({
-          line:4,
+          line:8,
           i,
           currentIndex:i,
           currentNum:num,
           complement:null,
-          map:cloneMap(s),
+          map:cloneMap(hashmap),
           returnVal:null,
           answerIndices:[],
           phase:"loop",
@@ -705,76 +875,76 @@
         });
 
         out.push({
-          line:5,
+          line:10,
           i,
           currentIndex:i,
           currentNum:num,
           complement,
-          map:cloneMap(s),
+          map:cloneMap(hashmap),
           returnVal:null,
           answerIndices:[],
           phase:"calculate",
           explanation:`Calculate the missing number: <code class="inline">complement = target - num = ${tgt} - ${num} = ${complement}</code>.`
         });
 
-        const found = Object.prototype.hasOwnProperty.call(s, complement);
+        const found = Object.prototype.hasOwnProperty.call(hashmap, complement);
 
         out.push({
-          line:6,
+          line:12,
           i,
           currentIndex:i,
           currentNum:num,
           complement,
-          map:cloneMap(s),
+          map:cloneMap(hashmap),
           returnVal:null,
-          answerIndices:found ? [s[complement], i] : [],
+          answerIndices:found ? [hashmap[complement], i] : [],
           phase:"check",
           found,
           explanation:found
-            ? `Check whether <code class="inline">${complement}</code> is already in <code class="inline">s</code>. It is there at index <code class="inline">${s[complement]}</code>, so we have the pair.`
-            : `Check whether <code class="inline">${complement}</code> is already in <code class="inline">s</code>. It is not there yet, so store the current number next.`
+            ? `Check whether <code class="inline">${complement}</code> is already in <code class="inline">hashmap</code>. It is there at index <code class="inline">${hashmap[complement]}</code>, so we have the pair.`
+            : `Check whether <code class="inline">${complement}</code> is already in <code class="inline">hashmap</code>. It is not there yet, so store the current number next.`
         });
 
         if(found){
           out.push({
-            line:7,
+            line:14,
             i,
             currentIndex:i,
             currentNum:num,
             complement,
-            map:cloneMap(s),
-            returnVal:`[${s[complement]}, ${i}]`,
-            answerIndices:[s[complement], i],
+            map:cloneMap(hashmap),
+            returnVal:`[${hashmap[complement]}, ${i}]`,
+            answerIndices:[hashmap[complement], i],
             phase:"return",
             found:true,
-            explanation:`Return the previous index from the map and the current index: <code class="inline">[s[complement], i] = [${s[complement]}, ${i}]</code>.`
+            explanation:`Return the previous index from the map and the current index: <code class="inline">[hashmap[complement], i] = [${hashmap[complement]}, ${i}]</code>.`
           });
           return out;
         }
 
-        s[num] = i;
+        hashmap[num] = i;
         out.push({
-          line:8,
+          line:16,
           i,
           currentIndex:i,
           currentNum:num,
           complement,
-          map:cloneMap(s),
+          map:cloneMap(hashmap),
           newlyAdded:num,
           returnVal:null,
           answerIndices:[],
           phase:"add",
-          explanation:`Store the current number for future checks: <code class="inline">s[${num}] = ${i}</code>.`
+          explanation:`Store the current number for future checks: <code class="inline">hashmap[${num}] = ${i}</code>.`
         });
       }
 
       out.push({
-        line:8,
+        line:16,
         i:null,
         currentIndex:null,
         currentNum:null,
         complement:null,
-        map:cloneMap(s),
+        map:cloneMap(hashmap),
         returnVal:"No pair",
         answerIndices:[],
         phase:"no-answer",
@@ -821,7 +991,7 @@
       if(step.map.length === 0){
         const empty = document.createElement("div");
         empty.className = "subtle";
-        empty.textContent = "s is empty";
+        empty.textContent = "hashmap is empty";
         mapView.appendChild(empty);
         return;
       }
