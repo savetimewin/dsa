@@ -269,8 +269,150 @@
     .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#4fc1ff,#78dfb9);transition:.2s ease}
     .result-box{font-family:"JetBrains Mono",monospace;font-size:16px;line-height:1.7;color:#dde5f6;background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;overflow-wrap:anywhere}
 
+
+
+    /* TOP/BOTTOM: STUDY NOTES */
+    .complexity-section{
+      width:min(1440px, 96vw);
+      margin:0 auto 28px auto;
+    }
+
+    .complexity-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.012));
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+
+    .complexity-title{
+      font-size:22px;
+      font-weight:800;
+      color:#f5f7ff;
+      margin:0 0 14px 0;
+    }
+
+    .complexity-subtitle{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:18px;
+    }
+
+    .complexity-block{
+      margin:18px 0;
+      line-height:1.65;
+      color:#dde5f6;
+      font-size:15px;
+    }
+
+    .complexity-block strong{color:#f5f7ff;}
+
+    .complexity-code{
+      background:#101318;
+      border:1px solid #2c3444;
+      border-radius:14px;
+      padding:14px 16px;
+      margin:10px 0;
+      overflow:auto;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:14px;
+      line-height:1.7;
+      color:#f5f7ff;
+    }
+
+    .complexity-code code{color:inherit;}
+
+    .complexity-inline-code{
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:5px;
+      padding:1px 5px;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:.92em;
+      color:#f5f7ff;
+    }
+
+    .complexity-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .complexity-mini-card{
+      background:#121826;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .complexity-answer{
+      display:inline-block;
+      margin-top:8px;
+      background:#101318;
+      border:1px solid #2c3444;
+      border-radius:14px;
+      padding:14px 16px;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      line-height:1.7;
+      color:#f5f7ff;
+    }
+
     @media (max-width:1100px){.app{grid-template-columns:1fr}.panel{min-height:auto}}
-    @media (max-width:700px){.state-grid,.transform-box{grid-template-columns:1fr}.word-cell{min-width:68px}.code-line{font-size:16px}input[type="text"]{min-width:220px}}
+    @media (max-width:700px){.state-grid,.transform-box,.complexity-grid{grid-template-columns:1fr}.word-cell{min-width:68px}.code-line{font-size:16px}input[type="text"]{min-width:220px}}
+  
+
+    /* SOLUTION 2: COUNT ARRAY VISUALIZER */
+    .count-array-grid{
+      display:grid;
+      grid-template-columns:repeat(13, minmax(42px, 1fr));
+      gap:8px;
+    }
+    .count-cell{
+      background:#121826;
+      border:1px solid #334055;
+      border-radius:10px;
+      padding:8px 4px;
+      text-align:center;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+      transition:.18s ease;
+    }
+    .count-cell.active{
+      background:var(--tile-active);
+      border-color:#5aa2dd;
+      box-shadow:0 0 0 3px rgba(79,193,255,.14) inset;
+    }
+    .count-cell.nonzero{
+      background:#253049;
+      border-color:#4d5a72;
+    }
+    .count-cell.bumped{
+      background:#254938;
+      border-color:#4aa36d;
+    }
+    .count-letter{font-size:15px;font-weight:800;color:#f5f7ff;}
+    .count-index{font-size:11px;color:var(--muted);margin-top:2px;}
+    .count-value{font-size:18px;font-weight:900;color:var(--warning);margin-top:4px;}
+    .fingerprint-box{
+      background:#121826;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px;
+      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+      line-height:1.65;
+      overflow-wrap:anywhere;
+      color:#dde5f6;
+    }
+    .ord-calc{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:12px;
+    }
+    .ord-card{background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;}
+    .ord-label{font-size:13px;color:var(--muted);margin-bottom:8px;}
+    .ord-value{font-family:"JetBrains Mono",monospace;font-size:20px;font-weight:800;color:#f5f7ff;overflow-wrap:anywhere;}
+    @media (max-width:900px){.count-array-grid{grid-template-columns:repeat(7, minmax(42px,1fr));}.ord-calc{grid-template-columns:1fr;}}
+
   </style>
 </head>
 <body>
@@ -278,6 +420,38 @@
     <a href="https://leetcode.com/problems/group-anagrams/" target="_blank">LeetCode Problem Link ↗</a>
     <a href="https://neetcode.io/problems/anagram-groups/question" target="_blank">NeetCode Problem Link ↗</a>
   </div>
+
+
+
+  <section class="complexity-section" style="margin-top:20px; margin-bottom:12px;">
+    <div class="complexity-card">
+      <h2 class="complexity-title">Solution 1: Sorting Key Approach</h2>
+      <div class="complexity-subtitle">Sort each string to create a stable key, then group original strings that share the same key.</div>
+
+      <div class="complexity-block">
+        <strong>Intuition</strong><br>
+        Anagrams become identical when their characters are sorted.
+        For example, <span class="complexity-inline-code">"eat"</span>, <span class="complexity-inline-code">"tea"</span>, and <span class="complexity-inline-code">"ate"</span> all become <span class="complexity-inline-code">"aet"</span> after sorting.
+        By using the sorted version of each string as a key, we can group all anagrams together.
+        Strings that share the same sorted form must be anagrams, so placing them in the same group is both natural and efficient.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Algorithm</strong>
+        <ol style="line-height:1.8; margin:10px 0 0 22px;">
+          <li>Create a hash map where each key is the sorted version of a string, and the value is a list of strings belonging to that anagram group.</li>
+          <li>Iterate through each string in the input list:
+            <ul style="line-height:1.8; margin:8px 0 0 22px;">
+              <li>Sort the characters of the string to form a key.</li>
+              <li>If the key does not exist yet, create an empty list for that key.</li>
+              <li>Append the original string to the list corresponding to this key.</li>
+            </ul>
+          </li>
+          <li>After processing all strings, return all values from the hash map, which represent the grouped anagrams.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
 
   <div class="app">
     <section class="panel editor">
@@ -376,6 +550,66 @@
       </div>
     </section>
   </div>
+
+
+
+  <section class="complexity-section">
+    <div class="complexity-card">
+      <h2 class="complexity-title">Time and Space Complexity: Sorting Key Approach</h2>
+      <div class="complexity-subtitle">Interview-ready explanation for <span class="complexity-inline-code">key = ''.join(sorted(string))</span>.</div>
+
+      <div class="complexity-block">
+        <strong>Time complexity: O(m * n log n)</strong>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Reason:</strong>
+        <pre class="complexity-code"><code><span class="kw">for</span> <span class="id">string</span> <span class="kw">in</span> <span class="id">strs</span><span class="pl">:</span>
+    <span class="id">key</span> <span class="pl">= </span><span class="str">''</span><span class="pl">.</span><span class="fn">join</span><span class="pl">(</span><span class="fn">sorted</span><span class="pl">(</span><span class="id">string</span><span class="pl">))</span>
+    <span class="id">h</span><span class="pl">[</span><span class="id">key</span><span class="pl">].</span><span class="fn">append</span><span class="pl">(</span><span class="id">string</span><span class="pl">)</span></code></pre>
+        There are <span class="complexity-inline-code">m</span> strings. For each string, sorting up to <span class="complexity-inline-code">n</span> characters costs <strong>O(n log n)</strong>.
+        Creating the key with <span class="complexity-inline-code">''.join(...)</span> costs <strong>O(n)</strong>, but sorting dominates that cost.
+      </div>
+
+      <div class="complexity-block">
+        <strong>So the total is:</strong>
+        <pre class="complexity-code"><code>m strings * O(n log n) per sorted key = O(m * n log n)</code></pre>
+        Here, <span class="complexity-inline-code">m</span> is the number of strings and <span class="complexity-inline-code">n</span> is the length of the longest string.
+      </div>
+
+      <div class="complexity-grid">
+        <div class="complexity-mini-card">
+          <div class="complexity-block" style="margin:0;">
+            <strong>Important detail</strong><br>
+            The hash map operations are average-case <span class="complexity-inline-code">O(1)</span> per string.
+            <pre class="complexity-code"><code><span class="kw">if</span> <span class="id">key</span> <span class="kw">not in</span> <span class="id">h</span><span class="pl">:</span>
+    <span class="id">h</span><span class="pl">[</span><span class="id">key</span><span class="pl">] = []</span>
+<span class="id">h</span><span class="pl">[</span><span class="id">key</span><span class="pl">].</span><span class="fn">append</span><span class="pl">(</span><span class="id">string</span><span class="pl">)</span></code></pre>
+            The main cost is not the dictionary insertion. The main cost is sorting each string.
+          </div>
+        </div>
+
+        <div class="complexity-mini-card">
+          <div class="complexity-block" style="margin:0;">
+            <strong>Example</strong><br>
+            <pre class="complexity-code"><code><span class="id">strs</span> <span class="pl">= [</span><span class="str">"eat"</span><span class="pl">, </span><span class="str">"tea"</span><span class="pl">, </span><span class="str">"tan"</span><span class="pl">, </span><span class="str">"ate"</span><span class="pl">]</span></code></pre>
+            Each word is sorted once. Words with the same sorted form are grouped under the same key.
+          </div>
+        </div>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Space complexity: O(m * n)</strong><br>
+        Reason: the hash map stores grouped output containing all strings. In the worst case, the total stored characters across all groups is proportional to <span class="complexity-inline-code">m * n</span>.
+        The sorted keys also require extra space, but the dominant stored output is still proportional to all input strings.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Final answer:</strong><br>
+        <div class="complexity-answer">Time: &nbsp;O(m * n log n)<br>Space: O(m * n)</div>
+      </div>
+    </div>
+  </section>
 
   <script>
     const codeLines = [...document.querySelectorAll('.code-line')];
@@ -614,5 +848,353 @@
 
     rebuild(strs);
   </script>
+
+  <section class="complexity-section" style="margin-top:20px; margin-bottom:12px;">
+    <div class="complexity-card">
+      <h2 class="complexity-title">Solution 2: Character Count Tuple Approach</h2>
+      <div class="complexity-subtitle">Use a fixed 26-slot frequency array as the anagram key instead of sorting each string.</div>
+
+      <div class="complexity-block">
+        <strong>Intuition</strong><br>
+        Instead of sorting each string, we can represent every string by the frequency of its characters.
+        Since the problem uses lowercase English letters, a fixed-size array of length <span class="complexity-inline-code">26</span> can capture how many times each character appears.
+        Two strings are anagrams if and only if their frequency arrays are identical.
+        By converting the frequency array to a tuple, we can safely use it as a dictionary key and group all strings that share the same character counts.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Algorithm</strong>
+        <ol style="line-height:1.8; margin:10px 0 0 22px;">
+          <li>Create a hash map where each key is a <span class="complexity-inline-code">26</span>-length tuple representing character frequencies, and each value is a list of strings belonging to that anagram group.</li>
+          <li>For each string in the input:
+            <ul style="line-height:1.8; margin:8px 0 0 22px;">
+              <li>Initialize a <span class="complexity-inline-code">count</span> array of size <span class="complexity-inline-code">26</span> with all zeros.</li>
+              <li>For each character <span class="complexity-inline-code">char</span> in the string, compute <span class="complexity-inline-code">ord(char) - ord('a')</span> to find its alphabet index.</li>
+              <li>Increment the value at that index.</li>
+              <li>Convert the <span class="complexity-inline-code">count</span> array to a tuple and use it as the key.</li>
+              <li>Append the original string to the list associated with this key.</li>
+            </ul>
+          </li>
+          <li>After processing all strings, return all the lists stored in the hash map.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <div class="app" id="countSolutionApp">
+    <section class="panel editor">
+      <div class="editor-topbar">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <div class="editor-file">group_anagrams_count_tuple.py</div>
+      </div>
+      <div class="code-wrap" id="countCodeWrap">
+        <div class="code-line" data-count-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">from</span> <span class="id">collections</span> <span class="kw">import</span> <span class="fn">defaultdict</span></code></div>
+        <div class="code-line" data-count-line="2"><div class="line-no">2</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-count-line="3"><div class="line-no">3</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">groupAnagrams</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">strs</span><span class="pl">: </span><span class="ty">List</span><span class="pl">[</span><span class="ty">str</span><span class="pl">]) -&gt; </span><span class="ty">List</span><span class="pl">[</span><span class="ty">List</span><span class="pl">[</span><span class="ty">str</span><span class="pl">]]:</span></code></div>
+        <div class="code-line" data-count-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="id">res</span> <span class="pl">= </span><span class="fn">defaultdict</span><span class="pl">(</span><span class="ty">list</span><span class="pl">)</span></code></div>
+        <div class="code-line" data-count-line="5"><div class="line-no">5</div><code class="code-content indent-2"><span class="cm"># defaultdict(list) automatically creates [] for a new key.</span></code></div>
+        <div class="code-line" data-count-line="6"><div class="line-no">6</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">string</span> <span class="kw">in</span> <span class="id">strs</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-count-line="7"><div class="line-no">7</div><code class="code-content indent-3"><span class="id">count</span> <span class="pl">= [</span><span class="nu">0</span><span class="pl">] * </span><span class="nu">26</span></code></div>
+        <div class="code-line" data-count-line="8"><div class="line-no">8</div><code class="code-content indent-3"><span class="cm"># count indexes: a=0, b=1, c=2, ..., z=25</span></code></div>
+        <div class="code-line" data-count-line="9"><div class="line-no">9</div><code class="code-content indent-3"><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">string</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-count-line="10"><div class="line-no">10</div><code class="code-content indent-4"><span class="id">count</span><span class="pl">[</span><span class="fn">ord</span><span class="pl">(</span><span class="id">char</span><span class="pl">) - </span><span class="fn">ord</span><span class="pl">(</span><span class="str">'a'</span><span class="pl">)] += </span><span class="nu">1</span></code></div>
+        <div class="code-line" data-count-line="11"><div class="line-no">11</div><code class="code-content indent-4"><span class="cm"># convert char to alphabet index, then increase that bucket.</span></code></div>
+        <div class="code-line" data-count-line="12"><div class="line-no">12</div><code class="code-content indent-3"><span class="id">res</span><span class="pl">[</span><span class="fn">tuple</span><span class="pl">(</span><span class="id">count</span><span class="pl">)].</span><span class="fn">append</span><span class="pl">(</span><span class="id">string</span><span class="pl">)</span></code></div>
+        <div class="code-line" data-count-line="13"><div class="line-no">13</div><code class="code-content indent-3"><span class="cm"># tuple(count) is the letter-frequency fingerprint key.</span></code></div>
+        <div class="code-line" data-count-line="14"><div class="line-no">14</div><code class="code-content indent-2"><span class="kw">return</span> <span class="fn">list</span><span class="pl">(</span><span class="id">res</span><span class="pl">.</span><span class="fn">values</span><span class="pl">())</span></code></div>
+        <div class="code-line" data-count-line="15"><div class="line-no">15</div><code class="code-content indent-2"><span class="cm"># return only the groups, not the frequency keys.</span></code></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Group Anagrams Visualizer: Count Tuple Solution</div>
+          <div class="subtle">Array scan + 26-count fingerprint + defaultdict(list)</div>
+        </div>
+        <div class="pill">Current example: <span id="countExampleLabel">["eat", "tea", "tan", "ate", "nat", "bat"]</span></div>
+      </div>
+
+      <div class="viz">
+        <div class="input-row">
+          <label class="subtle" for="countStrsInput">strs:</label>
+          <input id="countStrsInput" type="text" value="eat, tea, tan, ate, nat, bat" />
+          <button id="countApplyBtn">Apply</button>
+          <button id="countSample1Btn">Classic</button>
+          <button id="countSample2Btn">Small</button>
+          <button id="countSample3Btn">Mixed</button>
+        </div>
+
+        <div class="controls">
+          <button id="countPrevBtn">◀ Back</button>
+          <button id="countNextBtn">Next ▶</button>
+          <button id="countResetBtn">Reset</button>
+          <button id="countPlayBtn">Auto Play</button>
+        </div>
+
+        <div class="progress">
+          <span id="countStepLabel">Step 1 / 1</span>
+          <div class="bar"><div class="bar-fill" id="countBarFill"></div></div>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <div class="card-title">Input strings</div>
+            <div class="word-row" id="countWordView"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Current character → count index</div>
+            <div class="ord-calc">
+              <div class="ord-card"><div class="ord-label">char</div><div class="ord-value" id="countCharValue">—</div></div>
+              <div class="ord-card"><div class="ord-label">ord(char) - ord('a')</div><div class="ord-value" id="countIndexValue">—</div></div>
+              <div class="ord-card"><div class="ord-label">action</div><div class="ord-value" id="countActionValue">—</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">count = [0] * 26</div>
+            <div class="count-array-grid" id="countArrayView"></div>
+            <div class="subtle" style="margin-top:10px;">Each box is one alphabet bucket. Example: a is index 0, e is index 4, t is index 19.</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Letter-frequency fingerprint</div>
+            <div class="fingerprint-box" id="countFingerprintView">—</div>
+          </div>
+
+          <div class="hash-box">
+            <div class="hash-title">res = groups by tuple(count)</div>
+            <div class="group-grid" id="countHashView"></div>
+          </div>
+
+          <div class="state-grid">
+            <div class="mini"><div class="mini-label">Current string</div><div class="mini-value" id="countCurStringValue">—</div></div>
+            <div class="mini"><div class="mini-label">Current char</div><div class="mini-value" id="countCurCharValue">—</div></div>
+            <div class="mini"><div class="mini-label">Tuple key ready?</div><div class="mini-value" id="countKeyReadyValue">—</div></div>
+            <div class="mini"><div class="mini-label">Return value</div><div class="mini-value" id="countReturnValue">—</div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Final result</div>
+            <div class="result-box" id="countResultView">—</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Explanation</div>
+            <div class="explain" id="countExplanation">Create a defaultdict(list). Every frequency tuple will point to a list of words with that same frequency pattern.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="complexity-section">
+    <div class="complexity-card">
+      <h2 class="complexity-title">Time and Space Complexity: Character Count Tuple Approach</h2>
+      <div class="complexity-subtitle">Interview-ready explanation for <span class="complexity-inline-code">count[ord(char) - ord('a')] += 1</span> and <span class="complexity-inline-code">res[tuple(count)].append(string)</span>.</div>
+
+      <div class="complexity-block">
+        <strong>Time complexity: O(m * n)</strong>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Reason:</strong>
+        <pre class="complexity-code"><code><span class="kw">for</span> <span class="id">string</span> <span class="kw">in</span> <span class="id">strs</span><span class="pl">:</span>
+    <span class="id">count</span> <span class="pl">= [</span><span class="nu">0</span><span class="pl">] * </span><span class="nu">26</span>
+    <span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">string</span><span class="pl">:</span>
+        <span class="id">count</span><span class="pl">[</span><span class="fn">ord</span><span class="pl">(</span><span class="id">char</span><span class="pl">) - </span><span class="fn">ord</span><span class="pl">(</span><span class="str">'a'</span><span class="pl">)] += </span><span class="nu">1</span>
+    <span class="id">res</span><span class="pl">[</span><span class="fn">tuple</span><span class="pl">(</span><span class="id">count</span><span class="pl">)].</span><span class="fn">append</span><span class="pl">(</span><span class="id">string</span><span class="pl">)</span></code></pre>
+        There are <span class="complexity-inline-code">m</span> strings. For each string, we scan up to <span class="complexity-inline-code">n</span> characters. Each character updates one bucket in the fixed 26-slot array.
+        Creating <span class="complexity-inline-code">count = [0] * 26</span> and converting <span class="complexity-inline-code">tuple(count)</span> both cost <strong>O(26)</strong>, which is constant because 26 does not grow with the input.
+      </div>
+
+      <div class="complexity-block">
+        <strong>So the total is:</strong>
+        <pre class="complexity-code"><code>m strings * O(n) character scan = O(m * n)</code></pre>
+        Here, <span class="complexity-inline-code">m</span> is the number of strings and <span class="complexity-inline-code">n</span> is the length of the longest string.
+      </div>
+
+      <div class="complexity-grid">
+        <div class="complexity-mini-card">
+          <div class="complexity-block" style="margin:0;">
+            <strong>Why this is faster than sorting</strong><br>
+            Sorting each string costs <span class="complexity-inline-code">O(n log n)</span>. Counting each string costs <span class="complexity-inline-code">O(n)</span> because each character is touched once.
+          </div>
+        </div>
+
+        <div class="complexity-mini-card">
+          <div class="complexity-block" style="margin:0;">
+            <strong>Important detail</strong><br>
+            The tuple key always has length <span class="complexity-inline-code">26</span>, so comparing and hashing the key is treated as constant time for this lowercase-English-letter version of the problem.
+          </div>
+        </div>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Space complexity:</strong>
+        <ul style="line-height:1.8; margin:10px 0 0 22px;">
+          <li><span class="complexity-inline-code">O(m)</span> extra space for the hash map keys/groups structure.</li>
+          <li><span class="complexity-inline-code">O(m * n)</span> space for the output list, because all original strings appear in the returned groups.</li>
+        </ul>
+        The temporary <span class="complexity-inline-code">count</span> array is <span class="complexity-inline-code">O(26)</span>, which simplifies to <span class="complexity-inline-code">O(1)</span> per processed string.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Final answer:</strong><br>
+        <div class="complexity-answer">Time: &nbsp;O(m * n)<br>Space: O(m) extra space + O(m * n) output space</div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (function(){
+      const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+      const codeLines = [...document.querySelectorAll('[data-count-line]')];
+      const wordView = document.getElementById('countWordView');
+      const arrayView = document.getElementById('countArrayView');
+      const hashView = document.getElementById('countHashView');
+      const explanation = document.getElementById('countExplanation');
+      const charValue = document.getElementById('countCharValue');
+      const indexValue = document.getElementById('countIndexValue');
+      const actionValue = document.getElementById('countActionValue');
+      const fingerprintView = document.getElementById('countFingerprintView');
+      const curStringValue = document.getElementById('countCurStringValue');
+      const curCharValue = document.getElementById('countCurCharValue');
+      const keyReadyValue = document.getElementById('countKeyReadyValue');
+      const returnValue = document.getElementById('countReturnValue');
+      const resultView = document.getElementById('countResultView');
+      const stepLabel = document.getElementById('countStepLabel');
+      const barFill = document.getElementById('countBarFill');
+      const exampleLabel = document.getElementById('countExampleLabel');
+      const input = document.getElementById('countStrsInput');
+      const applyBtn = document.getElementById('countApplyBtn');
+      const sample1Btn = document.getElementById('countSample1Btn');
+      const sample2Btn = document.getElementById('countSample2Btn');
+      const sample3Btn = document.getElementById('countSample3Btn');
+      const prevBtn = document.getElementById('countPrevBtn');
+      const nextBtn = document.getElementById('countNextBtn');
+      const resetBtn = document.getElementById('countResetBtn');
+      const playBtn = document.getElementById('countPlayBtn');
+
+      let strs = ['eat','tea','tan','ate','nat','bat'];
+      let steps = [];
+      let stepIndex = 0;
+      let timer = null;
+
+      function parseInput(text){ return text.split(',').map(x => x.trim().toLowerCase()).filter(Boolean); }
+      function zeroCount(){ return Array(26).fill(0); }
+      function cloneCount(c){ return c.slice(); }
+      function fingerprint(count){
+        const pairs = [];
+        count.forEach((v,i) => { if(v > 0) pairs.push(`${letters[i]}:${v}`); });
+        return pairs.length ? pairs.join(', ') : 'all zeros';
+      }
+      function tupleKey(count){ return '(' + count.join(',') + ')'; }
+      function groupsText(map){
+        const groups = Object.values(map);
+        return '[' + groups.map(g => '[' + g.map(w => `"${w}"`).join(', ') + ']').join(', ') + ']';
+      }
+      function cloneMap(map){ return JSON.parse(JSON.stringify(map)); }
+
+      function buildSteps(arr){
+        const out = [];
+        const res = {};
+        out.push({line:'4', phase:'init', wordIndex:null, charIndex:null, string:null, char:null, index:null, count:zeroCount(), key:null, res:cloneMap(res), returnVal:null, explanation:'Create <code>res = defaultdict(list)</code>. Each key will be a 26-number letter fingerprint, and each value will be the list of words with that same fingerprint.'});
+        arr.forEach((string, wi) => {
+          let count = zeroCount();
+          out.push({line:'6', phase:'word-loop', wordIndex:wi, charIndex:null, string, char:null, index:null, count:cloneCount(count), key:null, res:cloneMap(res), returnVal:null, explanation:`Move to the next word: <code>"${string}"</code>. We will build a fresh 26-slot count array for this word.`});
+          out.push({line:'7', phase:'count-init', wordIndex:wi, charIndex:null, string, char:null, index:null, count:cloneCount(count), key:null, res:cloneMap(res), returnVal:null, explanation:`Initialize <code>count = [0] * 26</code>. Each slot represents one letter: <code>a=0</code>, <code>b=1</code>, ..., <code>z=25</code>.`});
+          [...string].forEach((char, ci) => {
+            const idx = char.charCodeAt(0) - 'a'.charCodeAt(0);
+            out.push({line:'9', phase:'char-loop', wordIndex:wi, charIndex:ci, string, char, index:idx, count:cloneCount(count), key:null, res:cloneMap(res), returnVal:null, explanation:`Read character <code>'${char}'</code> from <code>"${string}"</code>. Next, convert it to its alphabet index.`});
+            if(idx >= 0 && idx < 26){ count[idx] += 1; }
+            out.push({line:'10', phase:'increment', wordIndex:wi, charIndex:ci, string, char, index:idx, count:cloneCount(count), key:null, bumpedIndex:idx, res:cloneMap(res), returnVal:null, explanation: idx >= 0 && idx < 26 ? `<code>ord('${char}') - ord('a')</code> gives <code>${idx}</code>, so we run <code>count[${idx}] += 1</code>. This increases the bucket for letter <code>'${char}'</code>.` : `This visualizer expects lowercase English letters. Character <code>'${char}'</code> is outside a-z, so it is ignored in the visualization.`});
+          });
+          const key = tupleKey(count);
+          if(!res[key]) res[key] = [];
+          res[key].push(string);
+          out.push({line:'12', phase:'append', wordIndex:wi, charIndex:null, string, char:null, index:null, count:cloneCount(count), key, activeKey:key, newWord:string, res:cloneMap(res), returnVal:null, explanation:`The count array is finished for <code>"${string}"</code>. <code>tuple(count)</code> becomes the fingerprint key: <code>${fingerprint(count)}</code>. Append the original word into that group.`});
+        });
+        out.push({line:'14', phase:'return', wordIndex:null, charIndex:null, string:null, char:null, index:null, count:zeroCount(), key:null, res:cloneMap(res), returnVal:groupsText(res), explanation:'Return <code>list(res.values())</code>. We do not return the tuple keys; we only return the grouped anagram lists.'});
+        return out;
+      }
+
+      function renderCode(step){ codeLines.forEach(line => line.classList.toggle('active', line.dataset.countLine === step.line)); }
+      function renderWords(step){
+        wordView.innerHTML = '';
+        if(strs.length === 0){ wordView.innerHTML = '<div class="empty">(empty input)</div>'; return; }
+        strs.forEach((word, i) => {
+          const wrap = document.createElement('div'); wrap.className = 'word-wrap';
+          const pointer = document.createElement('div'); pointer.className = 'pointer' + (step.wordIndex === i ? '' : ' hidden'); pointer.textContent = step.wordIndex === i ? 'current' : ''; wrap.appendChild(pointer);
+          const cell = document.createElement('div'); cell.className = 'word-cell'; if(step.wordIndex === i) cell.classList.add('current'); if(step.wordIndex !== null && i < step.wordIndex) cell.classList.add('done','grouped'); if(step.phase === 'return') cell.classList.add('grouped'); cell.textContent = `"${word}"`; wrap.appendChild(cell);
+          const idx = document.createElement('div'); idx.className = 'index'; idx.textContent = `idx ${i}`; wrap.appendChild(idx);
+          wordView.appendChild(wrap);
+        });
+      }
+      function renderArray(step){
+        arrayView.innerHTML = '';
+        step.count.forEach((val, i) => {
+          const cell = document.createElement('div'); cell.className = 'count-cell';
+          if(val > 0) cell.classList.add('nonzero');
+          if(step.index === i) cell.classList.add('active');
+          if(step.bumpedIndex === i) cell.classList.add('bumped');
+          cell.innerHTML = `<div class="count-letter">${letters[i]}</div><div class="count-index">idx ${i}</div><div class="count-value">${val}</div>`;
+          arrayView.appendChild(cell);
+        });
+      }
+      function renderHash(step){
+        hashView.innerHTML = '';
+        const entries = Object.entries(step.res);
+        if(entries.length === 0){ hashView.innerHTML = '<div class="empty">res is empty</div>'; return; }
+        entries.forEach(([key, words]) => {
+          const counts = key.slice(1,-1).split(',').map(Number);
+          const card = document.createElement('div'); card.className = 'group-card';
+          if(step.activeKey === key) card.classList.add('active');
+          const values = words.map(w => `<span class="group-word ${step.newWord === w && step.activeKey === key ? 'new' : ''}">"${w}"</span>`).join('');
+          card.innerHTML = `<div class="group-key">key: ${fingerprint(counts)}</div><div class="group-values">${values}</div>`;
+          hashView.appendChild(card);
+        });
+      }
+      function renderMeta(step){
+        const validIndex = step.index !== null && step.index >= 0 && step.index < 26;
+        charValue.textContent = step.char === null ? '—' : `'${step.char}'`;
+        indexValue.textContent = step.index === null ? '—' : String(step.index);
+        actionValue.textContent = validIndex ? `count[${step.index}] += 1` : '—';
+        fingerprintView.textContent = step.key ? `tuple(count) key = ${fingerprint(step.count)}` : `current count = ${fingerprint(step.count)}`;
+        curStringValue.textContent = step.string === null ? '—' : `"${step.string}"`;
+        curCharValue.textContent = step.char === null ? '—' : `'${step.char}'`;
+        keyReadyValue.textContent = step.key ? 'yes' : 'not yet';
+        returnValue.textContent = step.returnVal === null ? '—' : step.returnVal;
+        resultView.textContent = step.phase === 'return' ? step.returnVal : groupsText(step.res);
+        explanation.innerHTML = step.explanation;
+        stepLabel.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+        barFill.style.width = `${((stepIndex + 1) / steps.length) * 100}%`;
+      }
+      function render(){
+        const step = steps[stepIndex];
+        renderCode(step); renderWords(step); renderArray(step); renderHash(step); renderMeta(step);
+        prevBtn.disabled = stepIndex === 0; nextBtn.disabled = stepIndex === steps.length - 1;
+      }
+      function stopAuto(){ if(timer){ clearInterval(timer); timer = null; } playBtn.textContent = 'Auto Play'; }
+      function nextStep(){ if(stepIndex < steps.length - 1){ stepIndex++; render(); } else stopAuto(); }
+      function prevStep(){ if(stepIndex > 0){ stepIndex--; render(); } }
+      function reset(){ stopAuto(); stepIndex = 0; render(); }
+      function rebuild(newStrs){ stopAuto(); strs = newStrs; steps = buildSteps(strs); stepIndex = 0; exampleLabel.textContent = '[' + strs.map(w => `"${w}"`).join(', ') + ']'; render(); }
+      prevBtn.addEventListener('click', prevStep);
+      nextBtn.addEventListener('click', nextStep);
+      resetBtn.addEventListener('click', reset);
+      playBtn.addEventListener('click', () => { if(timer){ stopAuto(); return; } playBtn.textContent = 'Pause'; timer = setInterval(() => { if(stepIndex >= steps.length - 1) stopAuto(); else nextStep(); }, 1200); });
+      applyBtn.addEventListener('click', () => rebuild(parseInput(input.value)));
+      sample1Btn.addEventListener('click', () => { input.value='eat, tea, tan, ate, nat, bat'; rebuild(['eat','tea','tan','ate','nat','bat']); });
+      sample2Btn.addEventListener('click', () => { input.value='a, b, ab, ba'; rebuild(['a','b','ab','ba']); });
+      sample3Btn.addEventListener('click', () => { input.value='stop, pots, tops, dog, god, cat'; rebuild(['stop','pots','tops','dog','god','cat']); });
+      input.addEventListener('keydown', e => { if(e.key === 'Enter') rebuild(parseInput(input.value)); });
+      rebuild(strs);
+    })();
+  </script>
+
 </body>
 </html>
