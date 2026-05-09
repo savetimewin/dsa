@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Top K Frequent Elements Visualizer</title>
+  <title>Top K Frequent Elements - Bucket Sort Visualizer</title>
   <style>
     :root{
       --bg:#0f1117;
@@ -29,7 +29,7 @@
       --tile:#202736;
       --tile-active:#264766;
       --tile-found:#2d5a39;
-      --tile-dup:#61313c;
+      --tile-bucket:#243047;
       --shadow:0 14px 40px rgba(0,0,0,.35);
     }
 
@@ -59,10 +59,10 @@
     .top-links a:hover{opacity:.78}
 
     .app{
-      width:min(1440px, 96vw);
+      width:min(1480px, 96vw);
       margin:20px auto;
       display:grid;
-      grid-template-columns:1.05fr 1fr;
+      grid-template-columns:1.04fr 1fr;
       gap:18px;
     }
 
@@ -72,7 +72,7 @@
       border-radius:16px;
       overflow:hidden;
       box-shadow:var(--shadow);
-      min-height:780px;
+      min-height:820px;
     }
 
     .panel-header{
@@ -159,10 +159,12 @@
     .code-content.indent-2{padding-left:76px;}
     .code-content.indent-3{padding-left:108px;}
     .code-content.indent-4{padding-left:140px;}
+    .code-content.indent-5{padding-left:172px;}
     .code-content.indent-1,
     .code-content.indent-2,
     .code-content.indent-3,
-    .code-content.indent-4{
+    .code-content.indent-4,
+    .code-content.indent-5{
       background-image:linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));
       background-size:1px 100%;
       background-repeat:repeat-y;
@@ -171,6 +173,7 @@
     .code-content.indent-2{background-position:28px 0,60px 0;background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12));}
     .code-content.indent-3{background-position:28px 0,60px 0,92px 0;background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12));}
     .code-content.indent-4{background-position:28px 0,60px 0,92px 0,124px 0;background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12));}
+    .code-content.indent-5{background-position:28px 0,60px 0,92px 0,124px 0,156px 0;background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12));}
 
     .kw{color:var(--keyword)}
     .fn{color:var(--func)}
@@ -235,7 +238,7 @@
     .num-cell.result{background:var(--tile-found);border-color:#4aa36d}
     .index{color:var(--muted);font-size:12px;font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace}
 
-    .hash-box{background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:170px}
+    .hash-box{background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:150px}
     .hash-title{font-weight:700;color:#f5f7ff;margin-bottom:10px}
     .dict-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px}
     .dict-card{border:1px solid #3b4d70;background:#253049;border-radius:12px;padding:10px;font-family:"JetBrains Mono",monospace;text-align:center}
@@ -244,12 +247,19 @@
     .dict-val{font-size:13px;color:var(--muted);margin-top:4px}
     .empty{color:var(--muted);font-size:14px;padding-top:8px}
 
-    .sort-list{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;min-height:78px}
-    .sort-card{min-width:72px;border:1px solid #3b4d70;background:#253049;border-radius:12px;padding:10px;font-family:"JetBrains Mono",monospace;text-align:center;transition:.2s ease}
-    .sort-card.selected{background:#254938;border-color:#4aa36d;box-shadow:0 0 0 3px rgba(126,231,135,.12) inset}
-    .sort-card.rejected{opacity:.55}
-    .sort-num{font-size:20px;font-weight:800;color:#f5f7ff}
-    .sort-count{font-size:13px;color:var(--muted);margin-top:4px}
+    .bucket-list{display:grid;grid-template-columns:1fr;gap:8px;max-height:300px;overflow:auto;padding-right:4px}
+    .bucket-row{display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:center;background:#121826;border:1px solid var(--border);border-radius:12px;padding:9px;transition:.2s ease}
+    .bucket-row.active{background:#172b3e;border-color:#5aa2dd;box-shadow:0 0 0 3px rgba(79,193,255,.11) inset}
+    .bucket-row.scan{background:#252136;border-color:#8067d9}
+    .bucket-index{font-family:"JetBrains Mono",monospace;font-weight:800;color:#f5f7ff}
+    .bucket-label{color:var(--muted);font-size:12px;margin-top:2px}
+    .bucket-values{display:flex;flex-wrap:wrap;gap:8px;min-height:34px;align-items:center}
+    .bucket-chip{min-width:38px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--tile-bucket);border:1px solid #41527a;font-family:"JetBrains Mono",monospace;font-weight:800;color:#f5f7ff}
+    .bucket-chip.added{background:#254938;border-color:#4aa36d}
+    .bucket-chip.selected{background:#2d5a39;border-color:#7ee787;box-shadow:0 0 0 3px rgba(126,231,135,.13) inset}
+
+    .result-row{display:flex;gap:10px;flex-wrap:wrap;min-height:48px;align-items:center}
+    .result-chip{min-width:48px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#254938;border:1px solid #4aa36d;font-family:"JetBrains Mono",monospace;font-weight:800;font-size:18px;color:#f5f7ff}
 
     .state-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
     .mini{background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:82px}
@@ -262,10 +272,13 @@
     .progress{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
     .bar{flex:1;height:8px;background:#182030;border-radius:999px;overflow:hidden;border:1px solid #29374f}
     .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#4fc1ff,#78dfb9);transition:.2s ease}
-    .result-box{font-family:"JetBrains Mono",monospace;font-size:16px;line-height:1.7;color:#dde5f6;background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;overflow-wrap:anywhere}
+    .complexity-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .complexity-box{background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;line-height:1.55}
+    .complexity-box strong{color:#f5f7ff}
+    code.inline{font-family:"JetBrains Mono",monospace;background:#101724;border:1px solid #2e3b55;border-radius:6px;padding:1px 5px;color:#e8eefc}
 
     @media (max-width:1100px){.app{grid-template-columns:1fr}.panel{min-height:auto}}
-    @media (max-width:700px){.state-grid{grid-template-columns:1fr}.code-line{font-size:16px}input[type="text"]{min-width:220px}}
+    @media (max-width:700px){.state-grid,.complexity-grid{grid-template-columns:1fr}.code-line{font-size:16px}input[type="text"]{min-width:220px}.bucket-row{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -280,23 +293,58 @@
         <span class="dot red"></span>
         <span class="dot yellow"></span>
         <span class="dot green"></span>
-        <div class="editor-file">top_k_frequent.py</div>
+        <div class="editor-file">top_k_frequent_bucket_sort.py</div>
       </div>
       <div class="code-wrap" id="codeWrap">
         <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
         <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">topKFrequent</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">nums</span><span class="pl">: </span><span class="ty">List</span><span class="pl">[</span><span class="ty">int</span><span class="pl">], </span><span class="id">k</span><span class="pl">: </span><span class="ty">int</span><span class="pl">) -&gt; </span><span class="ty">List</span><span class="pl">[</span><span class="ty">int</span><span class="pl">]:</span></code></div>
-        <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-2"><span class="id">h</span> <span class="pl">= {}</span></code></div>
-        <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="cm"># for each unique element encountered have a running count</span></code></div>
-        <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-2"><span class="cm"># use a hash map {key:value, key0:value0, ...}</span></code></div>
-        <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-2"><span class="cm"># we see a 1 then 1 becomes a key and value as count</span></code></div>
-        <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">num</span> <span class="kw">in</span> <span class="id">nums</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-3"><span class="id">h</span><span class="pl">[</span><span class="id">num</span><span class="pl">] = </span><span class="id">h</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">num</span><span class="pl">, </span><span class="nu">0</span><span class="pl">) + </span><span class="nu">1</span></code></div>
-        <div class="code-line" data-line="9"><div class="line-no">9</div><code class="code-content indent-2"><span class="cm"># so mapped number : count going through the array</span></code></div>
-        <div class="code-line" data-line="10"><div class="line-no">10</div><code class="code-content indent-2"><span class="id">sort</span> <span class="pl">= </span><span class="fn">sorted</span><span class="pl">(</span><span class="id">h</span><span class="pl">, </span><span class="id">key</span> <span class="pl">= </span><span class="id">h</span><span class="pl">.</span><span class="fn">get</span><span class="pl">, </span><span class="id">reverse</span> <span class="pl">= </span><span class="bl">True</span><span class="pl">)</span></code></div>
-        <div class="code-line" data-line="11"><div class="line-no">11</div><code class="code-content indent-2"><span class="cm"># h -&gt; the iterable. For a dict, this gives keys.</span></code></div>
-        <div class="code-line" data-line="12"><div class="line-no">12</div><code class="code-content indent-2"><span class="cm"># key=h.get -&gt; for each key, use h.get(key) as the sorting score.</span></code></div>
-        <div class="code-line" data-line="13"><div class="line-no">13</div><code class="code-content indent-2"><span class="cm"># reverse=True -&gt; sort from biggest score to smallest score.</span></code></div>
-        <div class="code-line" data-line="14"><div class="line-no">14</div><code class="code-content indent-2"><span class="kw">return</span> <span class="id">sort</span><span class="pl">[:</span><span class="id">k</span><span class="pl">]</span></code></div>
+        <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-2"><span class="id">count</span> <span class="pl">= {}</span></code></div>
+        <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="id">freq</span> <span class="pl">= [[] </span><span class="kw">for</span> <span class="id">i</span> <span class="kw">in</span> <span class="fn">range</span><span class="pl">(</span><span class="fn">len</span><span class="pl">(</span><span class="id">nums</span><span class="pl">) + </span><span class="nu">1</span><span class="pl">)]</span></code></div>
+        <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-2"><span class="str">e.g. nums = [1, 1, 1, 2, 2, 3]</span></code></div>
+        <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-2"><span class="str">len(num) = 6 and range(start,not include)</span></code></div>
+        <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-2"><span class="str">so indexes needs to be 0 through 6. not including 7 (6+1)</span></code></div>
+        <div class="code-line" data-line="9"><div class="line-no">9</div><code class="code-content indent-2"><span class="str">freq = [[], [], [], [], [], [], []]</span></code></div>
+        <div class="code-line" data-line="10"><div class="line-no">10</div><code class="code-content indent-2"><span class="str">index:  0   1   2   3   4   5   6</span></code></div>
+        <div class="code-line" data-line="11"><div class="line-no">11</div><code class="code-content indent-2"><span class="str">freq:  []  []  []  []  []  []  []</span></code></div>
+        <div class="code-line" data-line="12"><div class="line-no">12</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="13"><div class="line-no">13</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">num</span> <span class="kw">in</span> <span class="id">nums</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="14"><div class="line-no">14</div><code class="code-content indent-3"><span class="id">count</span><span class="pl">[</span><span class="id">num</span><span class="pl">] = </span><span class="nu">1</span> <span class="pl">+ </span><span class="id">count</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">num</span><span class="pl">,</span><span class="nu">0</span><span class="pl">)</span></code></div>
+        <div class="code-line" data-line="15"><div class="line-no">15</div><code class="code-content indent-3"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="16"><div class="line-no">16</div><code class="code-content indent-3"><span class="str">If num exists in count, give me count[num].</span></code></div>
+        <div class="code-line" data-line="17"><div class="line-no">17</div><code class="code-content indent-3"><span class="str">If num does not exist in count yet, give me 0.</span></code></div>
+        <div class="code-line" data-line="18"><div class="line-no">18</div><code class="code-content indent-3"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="19"><div class="line-no">19</div><code class="code-content indent-3"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="20"><div class="line-no">20</div><code class="code-content indent-3"><span class="str">1 : 3</span></code></div>
+        <div class="code-line" data-line="21"><div class="line-no">21</div><code class="code-content indent-3"><span class="str">2 : 2</span></code></div>
+        <div class="code-line" data-line="22"><div class="line-no">22</div><code class="code-content indent-3"><span class="str">3 : 1</span></code></div>
+        <div class="code-line" data-line="23"><div class="line-no">23</div><code class="code-content indent-3"><span class="str">num : number of occurence</span></code></div>
+        <div class="code-line" data-line="24"><div class="line-no">24</div><code class="code-content indent-3"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="25"><div class="line-no">25</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">num</span><span class="pl">, </span><span class="id">cnt</span> <span class="kw">in</span> <span class="id">count</span><span class="pl">.</span><span class="fn">items</span><span class="pl">():</span></code></div>
+        <div class="code-line" data-line="26"><div class="line-no">26</div><code class="code-content indent-2"><span class="cm"># for key, value in dictionary.items():</span></code></div>
+        <div class="code-line" data-line="27"><div class="line-no">27</div><code class="code-content indent-2"><span class="cm"># this is the storing part</span></code></div>
+        <div class="code-line" data-line="28"><div class="line-no">28</div><code class="code-content indent-3"><span class="id">freq</span><span class="pl">[</span><span class="id">cnt</span><span class="pl">].</span><span class="fn">append</span><span class="pl">(</span><span class="id">num</span><span class="pl">)</span></code></div>
+        <div class="code-line" data-line="29"><div class="line-no">29</div><code class="code-content indent-3"><span class="cm"># index 3&apos;s list (from the list of lists)</span></code></div>
+        <div class="code-line" data-line="30"><div class="line-no">30</div><code class="code-content indent-3"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="31"><div class="line-no">31</div><code class="code-content indent-3"><span class="str">use cnt as the key in count</span></code></div>
+        <div class="code-line" data-line="32"><div class="line-no">32</div><code class="code-content indent-3"><span class="str"># index:  0   1   2   3   4   5   6</span></code></div>
+        <div class="code-line" data-line="33"><div class="line-no">33</div><code class="code-content indent-3"><span class="str"># freq:   []  [3]  [2]  [1]  []  []  []</span></code></div>
+        <div class="code-line" data-line="34"><div class="line-no">34</div><code class="code-content indent-3"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="35"><div class="line-no">35</div><code class="code-content indent-2"><span class="id">res</span> <span class="pl">= [] </span><span class="cm"># going to store the result as a list</span></code></div>
+        <div class="code-line" data-line="36"><div class="line-no">36</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">i</span> <span class="kw">in</span> <span class="fn">range</span><span class="pl">(</span><span class="fn">len</span><span class="pl">(</span><span class="id">freq</span><span class="pl">) - </span><span class="nu">1</span><span class="pl">, </span><span class="nu">0</span><span class="pl">, -</span><span class="nu">1</span><span class="pl">):</span></code></div>
+        <div class="code-line" data-line="37"><div class="line-no">37</div><code class="code-content indent-2"><span class="cm"># iterate through freq using i ptr from the back (right to left)</span></code></div>
+        <div class="code-line" data-line="38"><div class="line-no">38</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="39"><div class="line-no">39</div><code class="code-content indent-2"><span class="str">notice how the typical traversal from left to right is</span></code></div>
+        <div class="code-line" data-line="40"><div class="line-no">40</div><code class="code-content indent-2"><span class="str">like for i from range(0, len(nums)-1) missing third param =1</span></code></div>
+        <div class="code-line" data-line="41"><div class="line-no">41</div><code class="code-content indent-2"><span class="str">arranged differently. If third param `step` is missing,</span></code></div>
+        <div class="code-line" data-line="42"><div class="line-no">42</div><code class="code-content indent-2"><span class="str">default value is 1. So - sign instructs the direction and 1 is # of steps</span></code></div>
+        <div class="code-line" data-line="43"><div class="line-no">43</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="44"><div class="line-no">44</div><code class="code-content indent-3"><span class="kw">for</span> <span class="id">num</span> <span class="kw">in</span> <span class="id">freq</span><span class="pl">[</span><span class="id">i</span><span class="pl">]:</span></code></div>
+        <div class="code-line" data-line="45"><div class="line-no">45</div><code class="code-content indent-3"><span class="cm"># num is the actual number stored inside the current frequency bucket.</span></code></div>
+        <div class="code-line" data-line="46"><div class="line-no">46</div><code class="code-content indent-3"><span class="cm"># freq[i] = [], go to top</span></code></div>
+        <div class="code-line" data-line="47"><div class="line-no">47</div><code class="code-content indent-4"><span class="id">res</span><span class="pl">.</span><span class="fn">append</span><span class="pl">(</span><span class="id">num</span><span class="pl">)</span></code></div>
+        <div class="code-line" data-line="48"><div class="line-no">48</div><code class="code-content indent-4"><span class="kw">if</span> <span class="fn">len</span><span class="pl">(</span><span class="id">res</span><span class="pl">) == </span><span class="id">k</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="49"><div class="line-no">49</div><code class="code-content indent-5"><span class="kw">return</span> <span class="id">res</span></code></div>
       </div>
     </section>
 
@@ -304,7 +352,7 @@
       <div class="panel-header">
         <div>
           <div class="panel-title">Top K Frequent Elements Visualizer</div>
-          <div class="subtle">Array scan + frequency hash map + sort keys by count</div>
+          <div class="subtle">Hash map count + bucket sort by frequency + reverse scan</div>
         </div>
         <div class="pill">Current example: <span id="exampleLabel">nums=[1, 1, 1, 2, 2, 3], k=2</span></div>
       </div>
@@ -339,36 +387,56 @@
             <div class="num-row" id="numsView"></div>
             <div class="legend">
               <div class="legend-item"><span class="legend-box" style="background:var(--tile-active);border-color:#5aa2dd;"></span> Current num</div>
-              <div class="legend-item"><span class="legend-box" style="background:var(--tile-found);border-color:#4aa36d;"></span> Final top k</div>
+              <div class="legend-item"><span class="legend-box" style="background:var(--tile-found);border-color:#4aa36d;"></span> Final top k value</div>
               <div class="legend-item"><span class="legend-box" style="background:var(--tile);"></span> Not processed yet</div>
             </div>
           </div>
 
           <div class="hash-box">
-            <div class="hash-title">h = frequency hash map</div>
+            <div class="hash-title">count = frequency hash map</div>
             <div class="dict-grid" id="hashView"></div>
           </div>
 
           <div class="card">
-            <div class="card-title">sort = sorted(h, key=h.get, reverse=True)</div>
-            <div class="sort-list" id="sortView"></div>
+            <div class="card-title">freq = bucket array</div>
+            <div class="subtle" style="margin-bottom:10px">Bucket index means frequency. Example: <code class="inline">freq[3] = [1]</code> means number <code class="inline">1</code> appears 3 times.</div>
+            <div class="bucket-list" id="bucketView"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">res = collected answer</div>
+            <div class="result-row" id="resultView"></div>
           </div>
 
           <div class="state-grid">
-            <div class="mini"><div class="mini-label">Loop index</div><div class="mini-value" id="iValue">—</div></div>
+            <div class="mini"><div class="mini-label">Phase</div><div class="mini-value" id="phaseValue">—</div></div>
             <div class="mini"><div class="mini-label">Current num</div><div class="mini-value" id="numValue">—</div></div>
-            <div class="mini"><div class="mini-label">Count update</div><div class="mini-value" id="countValue">—</div></div>
+            <div class="mini"><div class="mini-label">Bucket index / count</div><div class="mini-value" id="bucketValue">—</div></div>
             <div class="mini"><div class="mini-label">k / return</div><div class="mini-value" id="returnValue">—</div></div>
           </div>
 
           <div class="card">
-            <div class="card-title">Final result</div>
-            <div class="result-box" id="resultView">—</div>
+            <div class="card-title">Explanation</div>
+            <div class="explain" id="explanation">Create an empty hash map and a bucket array.</div>
           </div>
 
           <div class="card">
-            <div class="card-title">Explanation</div>
-            <div class="explain" id="explanation">Create an empty hash map. Each key is a number. Each value is how many times that number appears.</div>
+            <div class="card-title">Time and Space Complexity</div>
+            <div class="complexity-grid">
+              <div class="complexity-box">
+                <strong>Time: O(n)</strong><br>
+                Count all numbers once: <code class="inline">O(n)</code>.<br>
+                Put each unique number into a frequency bucket: <code class="inline">O(u)</code>.<br>
+                Scan buckets from right to left: <code class="inline">O(n)</code>.<br>
+                Since <code class="inline">u ≤ n</code>, total time is <code class="inline">O(n)</code>.
+              </div>
+              <div class="complexity-box">
+                <strong>Space: O(n)</strong><br>
+                The hash map can store up to <code class="inline">n</code> unique values.<br>
+                The bucket array has <code class="inline">len(nums) + 1</code> buckets.<br>
+                Therefore auxiliary space is <code class="inline">O(n)</code>.
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -379,13 +447,13 @@
     const codeLines = [...document.querySelectorAll('.code-line')];
     const numsView = document.getElementById('numsView');
     const hashView = document.getElementById('hashView');
-    const sortView = document.getElementById('sortView');
-    const explanation = document.getElementById('explanation');
-    const iValue = document.getElementById('iValue');
-    const numValue = document.getElementById('numValue');
-    const countValue = document.getElementById('countValue');
-    const returnValue = document.getElementById('returnValue');
+    const bucketView = document.getElementById('bucketView');
     const resultView = document.getElementById('resultView');
+    const explanation = document.getElementById('explanation');
+    const phaseValue = document.getElementById('phaseValue');
+    const numValue = document.getElementById('numValue');
+    const bucketValue = document.getElementById('bucketValue');
+    const returnValue = document.getElementById('returnValue');
     const stepLabel = document.getElementById('stepLabel');
     const barFill = document.getElementById('barFill');
     const exampleLabel = document.getElementById('exampleLabel');
@@ -411,51 +479,89 @@
       return text.split(',').map(x => x.trim()).filter(x => x.length > 0).map(Number).filter(x => !Number.isNaN(x));
     }
     function cloneObj(obj){ return JSON.parse(JSON.stringify(obj)); }
+    function cloneBuckets(buckets){ return buckets.map(bucket => [...bucket]); }
     function entriesByNumber(obj){ return Object.entries(obj).sort((a,b) => Number(a[0]) - Number(b[0])); }
-    function sortedKeysByFreq(obj){
-      return Object.keys(obj).map(Number).sort((a,b) => {
-        const diff = obj[b] - obj[a];
-        return diff !== 0 ? diff : a - b;
-      });
-    }
     function listText(arr){ return '[' + arr.join(', ') + ']'; }
 
     function buildSteps(arr, kVal){
       const out = [];
-      const h = {};
+      const count = {};
+      const freq = Array.from({length: arr.length + 1}, () => []);
+      const res = [];
 
       out.push({
-        line:3, phase:'init', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted:[], result:null, countText:'—', activeKey:null,
-        explanation:`Create an empty hash map <code>h</code>. The map will store <code>number → frequency count</code>.`
+        line:3, phase:'init count', currentIndex:null, currentNum:null, bucketIndex:null, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:null, activeBucket:null, selectedNum:null,
+        explanation:`Create <code>count = {}</code>. It will store each number as a key and that number's frequency as the value.`
+      });
+
+      out.push({
+        line:4, phase:'init buckets', currentIndex:null, currentNum:null, bucketIndex:null, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:null, activeBucket:null, selectedNum:null,
+        explanation:`Create <code>freq</code> with <code>len(nums) + 1</code> empty buckets. Index <code>i</code> will hold numbers that appear exactly <code>i</code> times.`
       });
 
       for(let i=0;i<arr.length;i++){
         const num = arr[i];
         out.push({
-          line:7, phase:'loop', i, currentIndex:i, currentNum:num, h:cloneObj(h), sorted:[], result:null, countText:'—', activeKey:String(num),
-          explanation:`Move to the next number in <code>nums</code>. Current number is <code>${num}</code> at index <code>${i}</code>.`
+          line:13, phase:'count loop', currentIndex:i, currentNum:num, bucketIndex:null, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:null, selectedNum:null,
+          explanation:`Read the next number from <code>nums</code>. Current number is <code>${num}</code> at index <code>${i}</code>.`
         });
-        const oldCount = h[num] || 0;
-        h[num] = oldCount + 1;
+        const oldCount = count[num] || 0;
+        count[num] = oldCount + 1;
         out.push({
-          line:8, phase:'update-count', i, currentIndex:i, currentNum:num, h:cloneObj(h), sorted:[], result:null, countText:`${oldCount} + 1 = ${h[num]}`, activeKey:String(num),
-          explanation:`Update <code>h[${num}]</code>. <code>h.get(${num}, 0)</code> gives old count <code>${oldCount}</code>, then add <code>1</code>, so the new count is <code>${h[num]}</code>.`
+          line:14, phase:'update count', currentIndex:i, currentNum:num, bucketIndex:count[num], count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:null, selectedNum:null,
+          explanation:`Update <code>count[${num}]</code>. Old count is <code>${oldCount}</code>, so new count is <code>${oldCount} + 1 = ${count[num]}</code>.`
         });
       }
 
+      const countEntries = Object.entries(count).sort((a,b) => Number(a[0]) - Number(b[0]));
+      for(const [key, value] of countEntries){
+        const num = Number(key);
+        const cnt = Number(value);
+        out.push({
+          line:25, phase:'bucket loop', currentIndex:null, currentNum:num, bucketIndex:cnt, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:cnt, selectedNum:null,
+          explanation:`Take one pair from <code>count.items()</code>: <code>num = ${num}</code>, <code>cnt = ${cnt}</code>. The frequency count tells us the bucket index.`
+        });
+        freq[cnt].push(num);
+        out.push({
+          line:28, phase:'place in bucket', currentIndex:null, currentNum:num, bucketIndex:cnt, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:cnt, selectedNum:num,
+          explanation:`Append <code>${num}</code> into <code>freq[${cnt}]</code>. This means number <code>${num}</code> appeared <code>${cnt}</code> time${cnt === 1 ? '' : 's'}.`
+        });
+      }
 
-      const sorted = sortedKeysByFreq(h);
       out.push({
-        line:10, phase:'sort', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted, result:null, countText:'sorted by h.get', activeKey:null,
-        explanation:`Run <code>sorted(h, key=h.get, reverse=True)</code>. Since <code>h</code> is a dictionary, iterating over <code>h</code> gives its keys. <code>key=h.get</code> means each key is scored by its frequency count. <code>reverse=True</code> puts the highest counts first.`
+        line:35, phase:'init result', currentIndex:null, currentNum:null, bucketIndex:null, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:null, activeBucket:null, selectedNum:null,
+        explanation:`Create <code>res = []</code>. This will collect the top <code>k</code> most frequent numbers.`
       });
 
-      const safeK = Math.max(0, Math.min(kVal, sorted.length));
-      const result = sorted.slice(0, safeK);
-      out.push({
-        line:14, phase:'return', i:null, currentIndex:null, currentNum:null, h:cloneObj(h), sorted, result, countText:`first ${safeK}`, activeKey:null,
-        explanation:`Return <code>sort[:k]</code>. Slicing keeps the first <code>${safeK}</code> elements from the sorted list, so the answer is <code>${listText(result)}</code>.`
-      });
+      const safeK = Math.max(0, Math.min(kVal, countEntries.length));
+      for(let i=freq.length-1;i>0;i--){
+        out.push({
+          line:36, phase:'scan buckets', currentIndex:null, currentNum:null, bucketIndex:i, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:null, activeBucket:i, selectedNum:null,
+          explanation:`Scan bucket <code>freq[${i}]</code>. We go from high index to low index because larger index means higher frequency.`
+        });
+        for(const num of freq[i]){
+          out.push({
+            line:44, phase:'read bucket', currentIndex:null, currentNum:num, bucketIndex:i, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:i, selectedNum:num,
+            explanation:`Found <code>${num}</code> inside <code>freq[${i}]</code>. Since we are scanning from high frequency to low frequency, this is one of the next most frequent values.`
+          });
+          res.push(num);
+          out.push({
+            line:47, phase:'append result', currentIndex:null, currentNum:num, bucketIndex:i, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:i, selectedNum:num,
+            explanation:`Append <code>${num}</code> to <code>res</code>. Current result is <code>${listText(res)}</code>.`
+          });
+          out.push({
+            line:48, phase:'check k', currentIndex:null, currentNum:num, bucketIndex:i, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:i, selectedNum:num,
+            explanation:`Check whether <code>len(res) == k</code>. Right now <code>len(res) = ${res.length}</code> and <code>k = ${safeK}</code>.`
+          });
+          if(res.length === safeK){
+            out.push({
+              line:49, phase:'return', currentIndex:null, currentNum:num, bucketIndex:i, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:i, selectedNum:num,
+              explanation:`We collected <code>k</code> values, so return <code>${listText(res)}</code>.`
+            });
+            return out;
+          }
+        }
+      }
       return out;
     }
 
@@ -468,7 +574,7 @@
         numsView.appendChild(empty);
         return;
       }
-      const resultSet = new Set((step.result || []).map(String));
+      const resultSet = new Set((step.res || []).map(String));
       nums.forEach((num, index) => {
         const wrap = document.createElement('div');
         wrap.className = 'num-wrap';
@@ -493,11 +599,11 @@
 
     function renderHash(step){
       hashView.innerHTML = '';
-      const entries = entriesByNumber(step.h);
+      const entries = entriesByNumber(step.count);
       if(entries.length === 0){
         const empty = document.createElement('div');
         empty.className = 'empty';
-        empty.textContent = 'h is empty';
+        empty.textContent = 'count is empty';
         hashView.appendChild(empty);
         return;
       }
@@ -510,25 +616,50 @@
       });
     }
 
-    function renderSort(step){
-      sortView.innerHTML = '';
-      if(step.sorted.length === 0){
+    function renderBuckets(step){
+      bucketView.innerHTML = '';
+      for(let i=step.freq.length-1;i>=0;i--){
+        const row = document.createElement('div');
+        row.className = 'bucket-row';
+        if(step.activeBucket === i) row.classList.add(step.phase.includes('scan') || step.phase.includes('read') || step.phase.includes('append') || step.phase.includes('check') || step.phase.includes('return') ? 'scan' : 'active');
+        const label = document.createElement('div');
+        label.innerHTML = `<div class="bucket-index">freq[${i}]</div><div class="bucket-label">${i} time${i === 1 ? '' : 's'}</div>`;
+        const values = document.createElement('div');
+        values.className = 'bucket-values';
+        if(step.freq[i].length === 0){
+          const empty = document.createElement('span');
+          empty.className = 'empty';
+          empty.textContent = '[]';
+          values.appendChild(empty);
+        }else{
+          step.freq[i].forEach(num => {
+            const chip = document.createElement('div');
+            chip.className = 'bucket-chip';
+            if(step.selectedNum === num && step.activeBucket === i) chip.classList.add(step.phase === 'place in bucket' ? 'added' : 'selected');
+            chip.textContent = num;
+            values.appendChild(chip);
+          });
+        }
+        row.appendChild(label);
+        row.appendChild(values);
+        bucketView.appendChild(row);
+      }
+    }
+
+    function renderResult(step){
+      resultView.innerHTML = '';
+      if(!step.res || step.res.length === 0){
         const empty = document.createElement('div');
         empty.className = 'empty';
-        empty.textContent = step.phase === 'sort' ? 'sort is empty' : 'sort has not been created yet';
-        sortView.appendChild(empty);
+        empty.textContent = 'res is empty';
+        resultView.appendChild(empty);
         return;
       }
-      const resultSet = new Set((step.result || []).map(String));
-      step.sorted.forEach((num, index) => {
-        const card = document.createElement('div');
-        card.className = 'sort-card';
-        if(step.phase === 'return'){
-          if(resultSet.has(String(num))) card.classList.add('selected');
-          else card.classList.add('rejected');
-        }
-        card.innerHTML = `<div class="sort-num">${num}</div><div class="sort-count">h.get → ${step.h[num]}</div><div class="index">sort idx ${index}</div>`;
-        sortView.appendChild(card);
+      step.res.forEach(num => {
+        const chip = document.createElement('div');
+        chip.className = 'result-chip';
+        chip.textContent = num;
+        resultView.appendChild(chip);
       });
     }
 
@@ -537,11 +668,10 @@
     }
 
     function renderMeta(step){
-      iValue.textContent = step.i === null ? '—' : step.i;
+      phaseValue.textContent = step.phase || '—';
       numValue.textContent = step.currentNum === null ? '—' : step.currentNum;
-      countValue.textContent = step.countText || '—';
-      returnValue.textContent = step.result === null ? `k = ${k}` : listText(step.result);
-      resultView.textContent = step.result === null ? '—' : listText(step.result);
+      bucketValue.textContent = step.bucketIndex === null ? '—' : step.bucketIndex;
+      returnValue.textContent = step.phase === 'return' ? listText(step.res) : `k = ${k}`;
       explanation.innerHTML = step.explanation;
       stepLabel.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
       barFill.style.width = `${((stepIndex + 1) / steps.length) * 100}%`;
@@ -551,7 +681,8 @@
       const step = steps[stepIndex];
       renderNums(step);
       renderHash(step);
-      renderSort(step);
+      renderBuckets(step);
+      renderResult(step);
       renderCode(step);
       renderMeta(step);
       prevBtn.disabled = stepIndex === 0;
@@ -587,7 +718,7 @@
       timer = setInterval(() => {
         if(stepIndex >= steps.length - 1) stopAuto();
         else nextStep();
-      }, 1200);
+      }, 1150);
     });
     applyBtn.addEventListener('click', () => rebuild(parseNums(numsInput.value), Number(kInput.value)));
     sample1Btn.addEventListener('click', () => {
