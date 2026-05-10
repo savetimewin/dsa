@@ -179,6 +179,7 @@
     .bl{color:var(--bool)}
     .nu{color:var(--num)}
     .cm{color:var(--comment)}
+    .str{color:#ce9178}
 
     /* RIGHT: VISUAL PANEL */
     .viz{
@@ -549,14 +550,44 @@
 
       <div class="code-wrap" id="codeWrap">
         <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">containsDuplicate</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">nums</span><span class="pl">: </span><span class="ty">list</span><span class="pl">[</span><span class="ty">int</span><span class="pl">]) -&gt; </span><span class="ty">bool</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">hasDuplicate</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">nums</span><span class="pl">: </span><span class="ty">List</span><span class="pl">[</span><span class="ty">int</span><span class="pl">]) -&gt; </span><span class="ty">bool</span><span class="pl">:</span></code></div>
         <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-2"><span class="id">seen</span> <span class="pl">=</span> <span class="ty">set</span><span class="pl">()</span></code></div>
         <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">num</span> <span class="kw">in</span> <span class="id">nums</span><span class="pl">:</span></code></div>
         <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-3"><span class="kw">if</span> <span class="id">num</span> <span class="kw">in</span> <span class="id">seen</span><span class="pl">:</span></code></div>
         <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-4"><span class="kw">return</span> <span class="bl">True</span></code></div>
         <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-3"><span class="id">seen</span><span class="pl">.</span><span class="fn">add</span><span class="pl">(</span><span class="id">num</span><span class="pl">)</span></code></div>
         <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-2"><span class="kw">return</span> <span class="bl">False</span></code></div>
-      </div>
+        <div class="code-line" data-line="9"><div class="line-no">9</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="10"><div class="line-no">10</div><code class="code-content indent-2"><span class="cm"># time complexity</span></code></div>
+        <div class="code-line" data-line="11"><div class="line-no">11</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="12"><div class="line-no">12</div><code class="code-content indent-2"><span class="str">n = number of elements in the input array nums</span></code></div>
+        <div class="code-line" data-line="13"><div class="line-no">13</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="14"><div class="line-no">14</div><code class="code-content indent-2"><span class="str">We scan through nums once.</span></code></div>
+        <div class="code-line" data-line="15"><div class="line-no">15</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="16"><div class="line-no">16</div><code class="code-content indent-2"><span class="str">For each num:</span></code></div>
+        <div class="code-line" data-line="17"><div class="line-no">17</div><code class="code-content indent-2"><span class="str">- checking if num is in seen takes O(1) average time</span></code></div>
+        <div class="code-line" data-line="18"><div class="line-no">18</div><code class="code-content indent-2"><span class="str">- adding num to seen takes O(1) average time</span></code></div>
+        <div class="code-line" data-line="19"><div class="line-no">19</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="20"><div class="line-no">20</div><code class="code-content indent-2"><span class="str">Since we do O(1) work for each of the n elements,</span></code></div>
+        <div class="code-line" data-line="21"><div class="line-no">21</div><code class="code-content indent-2"><span class="str">total time complexity is O(n).</span></code></div>
+        <div class="code-line" data-line="22"><div class="line-no">22</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="23"><div class="line-no">23</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="24"><div class="line-no">24</div><code class="code-content indent-2"><span class="cm"># space complexity</span></code></div>
+        <div class="code-line" data-line="25"><div class="line-no">25</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="26"><div class="line-no">26</div><code class="code-content indent-2"><span class="str">n = number of elements in the input array nums</span></code></div>
+        <div class="code-line" data-line="27"><div class="line-no">27</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="28"><div class="line-no">28</div><code class="code-content indent-2"><span class="str">seen is a hash set that stores numbers we have already visited.</span></code></div>
+        <div class="code-line" data-line="29"><div class="line-no">29</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="30"><div class="line-no">30</div><code class="code-content indent-2"><span class="str">Best case:</span></code></div>
+        <div class="code-line" data-line="31"><div class="line-no">31</div><code class="code-content indent-2"><span class="str">- If a duplicate is found early, seen may store only a few elements.</span></code></div>
+        <div class="code-line" data-line="32"><div class="line-no">32</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="33"><div class="line-no">33</div><code class="code-content indent-2"><span class="str">Worst case:</span></code></div>
+        <div class="code-line" data-line="34"><div class="line-no">34</div><code class="code-content indent-2"><span class="str">- If there are no duplicates, seen stores every element in nums.</span></code></div>
+        <div class="code-line" data-line="35"><div class="line-no">35</div><code class="code-content indent-2"><span class="str">- Therefore, seen can grow up to n elements.</span></code></div>
+        <div class="code-line" data-line="36"><div class="line-no">36</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="37"><div class="line-no">37</div><code class="code-content indent-2"><span class="str">Total space complexity is O(n).</span></code></div>
+        <div class="code-line" data-line="38"><div class="line-no">38</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
+      </div>      </div>
     </section>
 
     <!-- RIGHT PANEL -->
@@ -694,6 +725,51 @@
         <strong>Space complexity: O(n)</strong>
         <br>
         Reason: in the worst case, every number is unique, so <span class="complexity-inline-code">seen</span> stores all <span class="complexity-inline-code">n</span> numbers.
+      </div>
+
+
+
+      <div class="complexity-block">
+        <strong>Other solution tradeoffs:</strong>
+        <div class="complexity-grid">
+          <div class="complexity-mini-card">
+            <strong>Brute force</strong><br>
+            Compares every pair.<br>
+            <div class="complexity-answer">Time: &nbsp;O(n²)<br>Space: O(1)</div>
+            <div class="complexity-block" style="margin:10px 0 0 0;">
+              Space is <span class="complexity-inline-code">O(1)</span> because it only uses loop variables like
+              <span class="complexity-inline-code">i</span> and <span class="complexity-inline-code">j</span>; it does not create a hash set, hash map, or extra array that grows with input size.
+            </div>
+          </div>
+
+          <div class="complexity-mini-card">
+            <strong>Hash set</strong><br>
+            Improves time by remembering numbers already seen.<br>
+            <div class="complexity-answer">Time: &nbsp;O(n)<br>Space: O(n)</div>
+            <div class="complexity-block" style="margin:10px 0 0 0;">
+              This is the main solution to know. It trades extra memory for faster lookup.
+            </div>
+          </div>
+
+          <div class="complexity-mini-card">
+            <strong>Sorting</strong><br>
+            If asked to reduce extra space and mutation is allowed, sort first, then check adjacent values.
+            <div class="complexity-answer">Time: &nbsp;O(n log n)<br>Space: O(1) or O(n)</div>
+            <div class="complexity-block" style="margin:10px 0 0 0;">
+              Sorting usually uses less extra space than a hash set, but the exact space depends on the sorting algorithm / implementation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="complexity-block">
+        <strong>Interview summary:</strong>
+        <pre class="complexity-code"><code>Brute force compares every pair: O(n²) time, O(1) space.
+
+Hash set improves time: O(n) time, O(n) space.
+
+If we are asked to reduce extra space and mutation is allowed, sorting is possible:
+O(n log n) time, usually less extra space than a hash set; O(1) or O(n) space depending on the sorting algorithm.</code></pre>
       </div>
 
       <div class="complexity-block">

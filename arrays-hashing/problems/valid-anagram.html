@@ -783,7 +783,6 @@ sorted(t) = O(m log m)</code></pre>
       <div class="complexity-block">
         <strong>Algorithm</strong>
         <ol style="line-height:1.8; margin:10px 0 0 22px;">
-          <li>If the two strings have different lengths, return <span class="complexity-inline-code">False</span> immediately.</li>
           <li>Create two hash maps: <span class="complexity-inline-code">a</span> for <span class="complexity-inline-code">s</span>, and <span class="complexity-inline-code">b</span> for <span class="complexity-inline-code">t</span>.</li>
           <li>Loop through <span class="complexity-inline-code">s</span> and increase the count for each character in <span class="complexity-inline-code">a</span>.</li>
           <li>Loop through <span class="complexity-inline-code">t</span> and increase the count for each character in <span class="complexity-inline-code">b</span>.</li>
@@ -802,27 +801,34 @@ sorted(t) = O(m log m)</code></pre>
         <div class="editor-file">valid_anagram.py</div>
       </div>
       <div class="code-wrap" id="codeWrap">
-        <div class="code-line" data-line="2"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="3"><div class="line-no">2</div><code class="code-content indent-1"><span class="cm"># The method gets two strings and must return True or False.</span></code></div>
-        <div class="code-line" data-line="4"><div class="line-no">3</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">isAnagram</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">s</span><span class="pl">: </span><span class="ty">str</span><span class="pl">, </span><span class="id">t</span><span class="pl">: </span><span class="ty">str</span><span class="pl">) -&gt; </span><span class="ty">bool</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="5"><div class="line-no">4</div><code class="code-content indent-2"><span class="cm"># Anagrams must use the same number of characters.</span></code></div>
-        <div class="code-line" data-line="6"><div class="line-no">5</div><code class="code-content indent-2"><span class="kw">if</span> <span class="fn">len</span><span class="pl">(</span><span class="id">s</span><span class="pl">) != </span><span class="fn">len</span><span class="pl">(</span><span class="id">t</span><span class="pl">):</span></code></div>
-        <div class="code-line" data-line="7"><div class="line-no">6</div><code class="code-content indent-3"><span class="cm"># Different lengths cannot be rearranged into each other.</span></code></div>
-        <div class="code-line" data-line="8"><div class="line-no">7</div><code class="code-content indent-3"><span class="kw">return</span> <span class="bl">False</span></code></div>
-        <div class="code-line" data-line="9"><div class="line-no">8</div><code class="code-content indent-2"><span class="cm"># Need a frequency map for characters in s.</span></code></div>
-        <div class="code-line" data-line="10"><div class="line-no">9</div><code class="code-content indent-2"><span class="id">a</span> <span class="pl">= {}</span></code></div>
-        <div class="code-line" data-line="11"><div class="line-no">10</div><code class="code-content indent-2"><span class="cm"># Need a separate frequency map for characters in t.</span></code></div>
-        <div class="code-line" data-line="12"><div class="line-no">11</div><code class="code-content indent-2"><span class="id">b</span> <span class="pl">= {}</span></code></div>
-        <div class="code-line" data-line="13"><div class="line-no">12</div><code class="code-content indent-2"><span class="cm"># Count every character from s.</span></code></div>
-        <div class="code-line" data-line="14"><div class="line-no">13</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">s</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="15"><div class="line-no">14</div><code class="code-content indent-3"><span class="cm"># Add 1 to this character's old count, or start from 0.</span></code></div>
-        <div class="code-line" data-line="16"><div class="line-no">15</div><code class="code-content indent-3"><span class="id">a</span><span class="pl">[</span><span class="id">char</span><span class="pl">] = </span><span class="id">a</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">char</span><span class="pl">, </span><span class="nu">0</span><span class="pl">) + </span><span class="nu">1</span></code></div>
-        <div class="code-line" data-line="17"><div class="line-no">16</div><code class="code-content indent-2"><span class="cm"># Count every character from t the same way.</span></code></div>
-        <div class="code-line" data-line="18"><div class="line-no">17</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">t</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="19"><div class="line-no">18</div><code class="code-content indent-3"><span class="cm"># Add 1 to this character's old count, or start from 0.</span></code></div>
-        <div class="code-line" data-line="20"><div class="line-no">19</div><code class="code-content indent-3"><span class="id">b</span><span class="pl">[</span><span class="id">char</span><span class="pl">] = </span><span class="id">b</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">char</span><span class="pl">, </span><span class="nu">0</span><span class="pl">) + </span><span class="nu">1</span></code></div>
-        <div class="code-line" data-line="21"><div class="line-no">20</div><code class="code-content indent-2"><span class="cm"># Same character counts means the strings are anagrams.</span></code></div>
-        <div class="code-line" data-line="22"><div class="line-no">21</div><code class="code-content indent-2"><span class="kw">return</span> <span class="id">a</span> <span class="pl">==</span> <span class="id">b</span></code></div>
+        <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">isAnagram</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">s</span><span class="pl">: </span><span class="ty">str</span><span class="pl">, </span><span class="id">t</span><span class="pl">: </span><span class="ty">str</span><span class="pl">) -&gt; </span><span class="ty">bool</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-2"><span class="id">a</span> <span class="pl">= {}</span></code></div>
+        <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="id">b</span> <span class="pl">= {}</span></code></div>
+        <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">s</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-3"><span class="id">a</span><span class="pl">[</span><span class="id">char</span><span class="pl">] = </span><span class="id">a</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">char</span><span class="pl">,</span><span class="nu">0</span><span class="pl">) + </span><span class="nu">1</span></code></div>
+        <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">t</span><span class="pl">:</span></code></div>
+        <div class="code-line" data-line="9"><div class="line-no">9</div><code class="code-content indent-3"><span class="id">b</span><span class="pl">[</span><span class="id">char</span><span class="pl">] = </span><span class="id">b</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">char</span><span class="pl">,</span><span class="nu">0</span><span class="pl">) + </span><span class="nu">1</span></code></div>
+        <div class="code-line" data-line="10"><div class="line-no">10</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="11"><div class="line-no">11</div><code class="code-content indent-2"><span class="kw">return</span> <span class="id">a</span> <span class="pl">==</span> <span class="id">b</span></code></div>
+        <div class="code-line" data-line="12"><div class="line-no">12</div><code class="code-content"></code></div>
+        <div class="code-line" data-line="13"><div class="line-no">13</div><code class="code-content indent-2"><span class="cm"># n is the length of string s</span></code></div>
+        <div class="code-line" data-line="14"><div class="line-no">14</div><code class="code-content indent-2"><span class="cm"># m is the length of string t</span></code></div>
+        <div class="code-line" data-line="15"><div class="line-no">15</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="16"><div class="line-no">16</div><code class="code-content indent-2"><span class="cm"># time complexity</span></code></div>
+        <div class="code-line" data-line="17"><div class="line-no">17</div><code class="code-content indent-2"><span class="str">"""</span></code></div>
+        <div class="code-line" data-line="18"><div class="line-no">18</div><code class="code-content indent-2"><span class="str">scanning through s and counting number of char is O(n)</span></code></div>
+        <div class="code-line" data-line="19"><div class="line-no">19</div><code class="code-content indent-2"><span class="str">scanning throught t and counting number of char is O(m)</span></code></div>
+        <div class="code-line" data-line="20"><div class="line-no">20</div><code class="code-content indent-2"><span class="str">O(n) + O(m) = O(n+m)</span></code></div>
+        <div class="code-line" data-line="21"><div class="line-no">21</div><code class="code-content indent-2"><span class="str">"""</span></code></div>
+        <div class="code-line" data-line="22"><div class="line-no">22</div><code class="code-content"></code></div>
+        <div class="code-line" data-line="23"><div class="line-no">23</div><code class="code-content indent-2"><span class="cm"># space complexity</span></code></div>
+        <div class="code-line" data-line="24"><div class="line-no">24</div><code class="code-content indent-2"><span class="str">"""</span></code></div>
+        <div class="code-line" data-line="25"><div class="line-no">25</div><code class="code-content indent-2"><span class="str">O(1) since we have at most 26 different characters.</span></code></div>
+        <div class="code-line" data-line="26"><div class="line-no">26</div><code class="code-content indent-2"><span class="str">Fixed number of different characters.</span></code></div>
+        <div class="code-line" data-line="27"><div class="line-no">27</div><code class="code-content indent-2"><span class="str">Even with 52 lower- and upper- case. It is fixed.</span></code></div>
+        <div class="code-line" data-line="28"><div class="line-no">28</div><code class="code-content indent-2"><span class="str">"""</span></code></div>
       </div>
     </section>
 
@@ -830,7 +836,7 @@ sorted(t) = O(m log m)</code></pre>
       <div class="panel-header">
         <div>
           <div class="panel-title">Valid Anagram Visualizer: Hash Map Solution</div>
-          <div class="subtle">Two separate string scans + two frequency hash maps</div>
+          <div class="subtle">Two string scans + two frequency hash maps</div>
         </div>
         <div class="pill">Current example: <span id="exampleLabel">s="anagram", t="nagaram"</span></div>
       </div>
@@ -844,7 +850,7 @@ sorted(t) = O(m log m)</code></pre>
           <button id="applyBtn">Apply</button>
           <button id="sample1Btn">Anagram</button>
           <button id="sample2Btn">Not Anagram</button>
-          <button id="sample3Btn">Length Mismatch</button>
+          <button id="sample3Btn">Not Anagram 2</button>
         </div>
 
         <div class="controls">
@@ -914,17 +920,10 @@ sorted(t) = O(m log m)</code></pre>
   <section class="complexity-section">
     <div class="complexity-card">
       <h2 class="complexity-title">Time and Space Complexity: Hash Map Solution</h2>
-      <div class="complexity-subtitle">Interview-ready explanation for the original two-loop dictionary-counting solution.</div>
+      <div class="complexity-subtitle">Interview-ready explanation for the two-loop dictionary-counting solution.</div>
 
       <div class="complexity-block">
         <strong>Time complexity: O(n + m)</strong>
-      </div>
-
-      <div class="complexity-block">
-        <strong>Reason:</strong>
-        <pre class="complexity-code"><code><span class="kw">if</span> <span class="fn">len</span><span class="pl">(</span><span class="id">s</span><span class="pl">) != </span><span class="fn">len</span><span class="pl">(</span><span class="id">t</span><span class="pl">):</span>
-    <span class="kw">return</span> <span class="bl">False</span></code></pre>
-        The length check is <strong>O(1)</strong>. If the lengths differ, the function returns <span class="complexity-inline-code">False</span> immediately.
       </div>
 
       <div class="complexity-block">
@@ -950,7 +949,7 @@ sorted(t) = O(m log m)</code></pre>
       <div class="complexity-block">
         <strong>So the total is:</strong>
         <pre class="complexity-code"><code>O(n) to scan s + O(m) to scan t + O(1) to compare maps = O(n + m)</code></pre>
-        Where <span class="complexity-inline-code">n</span> is the length of string <span class="complexity-inline-code">s</span> and <span class="complexity-inline-code">m</span> is the length of string <span class="complexity-inline-code">t</span>. Because the function checks that the lengths match before counting, this is often simplified to <span class="complexity-inline-code">O(n)</span>, but <span class="complexity-inline-code">O(n + m)</span> is the more explicit expression.
+        Where <span class="complexity-inline-code">n</span> is the length of string <span class="complexity-inline-code">s</span> and <span class="complexity-inline-code">m</span> is the length of string <span class="complexity-inline-code">t</span>.
       </div>
 
       <div class="complexity-block">
@@ -1023,43 +1022,28 @@ sorted(t) = O(m log m)</code></pre>
       const b = {};
 
       out.push({
-        line:6, phase:'length-check', activeString:null, currentIndex:null, currentChar:null,
-        a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'—', mismatch:false,
-        explanation:`Check the lengths first: <code>len(s) = ${sVal.length}</code> and <code>len(t) = ${tVal.length}</code>. If lengths differ, they cannot be anagrams.`
-      });
-
-      if(sVal.length !== tVal.length){
-        out.push({
-          line:8, phase:'return-false-length', activeString:null, currentIndex:null, currentChar:null,
-          a:cloneObj(a), b:cloneObj(b), returnVal:false, countText:'—', mismatch:true,
-          explanation:`The lengths are different, so the function immediately returns <code>False</code>. No hash maps are needed.`
-        });
-        return out;
-      }
-
-      out.push({
-        line:10, phase:'init-a', activeString:null, currentIndex:null, currentChar:null,
-        a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'a = {}',
+        line:3, phase:'init-a', activeString:null, currentIndex:null, currentChar:null,
+        a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'a = {}', mismatch:false,
         explanation:`Create the first hash map, <code>a</code>. It will count every character in <code>s</code>.`
       });
       out.push({
-        line:12, phase:'init-b', activeString:null, currentIndex:null, currentChar:null,
-        a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'b = {}',
+        line:4, phase:'init-b', activeString:null, currentIndex:null, currentChar:null,
+        a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'b = {}', mismatch:false,
         explanation:`Create the second hash map, <code>b</code>. It will count every character in <code>t</code>.`
       });
 
       for(let i=0;i<sVal.length;i++){
         const ch = sVal[i];
         out.push({
-          line:14, phase:'loop-s', activeString:'s', currentIndex:i, currentChar:ch,
-          a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'—',
+          line:5, phase:'loop-s', activeString:'s', currentIndex:i, currentChar:ch,
+          a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'—', mismatch:false,
           explanation:`Start/continue the loop over <code>s</code>. The current character is <code>'${ch}'</code> at index <code>${i}</code>.`
         });
         const oldCount = a[ch] || 0;
         a[ch] = oldCount + 1;
         out.push({
-          line:16, phase:'update-a', activeString:'s', currentIndex:i, currentChar:ch,
-          a:cloneObj(a), b:cloneObj(b), returnVal:null, newKey:ch, newMap:'a', countText:`${oldCount} + 1 = ${a[ch]}`,
+          line:6, phase:'update-a', activeString:'s', currentIndex:i, currentChar:ch,
+          a:cloneObj(a), b:cloneObj(b), returnVal:null, newKey:ch, newMap:'a', countText:`${oldCount} + 1 = ${a[ch]}`, mismatch:false,
           explanation:`Update <code>a['${ch}']</code>. <code>a.get('${ch}', 0)</code> gives the old count <code>${oldCount}</code>, then we add <code>1</code>, so the new count is <code>${a[ch]}</code>.`
         });
       }
@@ -1067,23 +1051,23 @@ sorted(t) = O(m log m)</code></pre>
       for(let i=0;i<tVal.length;i++){
         const ch = tVal[i];
         out.push({
-          line:18, phase:'loop-t', activeString:'t', currentIndex:i, currentChar:ch,
-          a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'—',
+          line:8, phase:'loop-t', activeString:'t', currentIndex:i, currentChar:ch,
+          a:cloneObj(a), b:cloneObj(b), returnVal:null, countText:'—', mismatch:false,
           explanation:`Now loop over <code>t</code>. The current character is <code>'${ch}'</code> at index <code>${i}</code>.`
         });
         const oldCount = b[ch] || 0;
         b[ch] = oldCount + 1;
         out.push({
-          line:20, phase:'update-b', activeString:'t', currentIndex:i, currentChar:ch,
-          a:cloneObj(a), b:cloneObj(b), returnVal:null, newKey:ch, newMap:'b', countText:`${oldCount} + 1 = ${b[ch]}`,
+          line:9, phase:'update-b', activeString:'t', currentIndex:i, currentChar:ch,
+          a:cloneObj(a), b:cloneObj(b), returnVal:null, newKey:ch, newMap:'b', countText:`${oldCount} + 1 = ${b[ch]}`, mismatch:false,
           explanation:`Update <code>b['${ch}']</code>. <code>b.get('${ch}', 0)</code> gives the old count <code>${oldCount}</code>, then we add <code>1</code>, so the new count is <code>${b[ch]}</code>.`
         });
       }
 
       const same = dictEqual(a,b);
       out.push({
-        line:22, phase:'compare', activeString:null, currentIndex:null, currentChar:null,
-        a:cloneObj(a), b:cloneObj(b), returnVal:same, countText:same ? 'a == b' : 'a != b', mismatchKeys:[...mismatchKeys(a,b)],
+        line:11, phase:'compare', activeString:null, currentIndex:null, currentChar:null,
+        a:cloneObj(a), b:cloneObj(b), returnVal:same, countText:same ? 'a == b' : 'a != b', mismatchKeys:[...mismatchKeys(a,b)], mismatch:!same,
         explanation:same
           ? `Compare the two hash maps. They are equal, so <code>s</code> and <code>t</code> contain the same characters with the same counts. Return <code>True</code>.`
           : `Compare the two hash maps. They are not equal, so at least one character count is different. Return <code>False</code>.`

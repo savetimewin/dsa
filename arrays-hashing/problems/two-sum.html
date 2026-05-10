@@ -789,6 +789,31 @@
         Reason: in the worst case, the hash map stores many previous numbers before the answer is found. The map can grow up to <span class="complexity-inline-code">n</span> entries.
       </div>
 
+
+      <div class="complexity-block">
+        <strong>Can we improve the hash map solution's space?</strong>
+        <br>
+        The hash map solution uses <span class="complexity-inline-code">O(n)</span> extra space because it stores previous numbers and their indices.
+        To reduce extra space to <span class="complexity-inline-code">O(1)</span>, we can use the brute force two-pointer-style idea with two indices, but the tradeoff is much worse time complexity.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Brute force tradeoff:</strong>
+        <pre class="complexity-code"><code><span class="kw">for</span> <span class="id">i</span> <span class="kw">in</span> <span class="fn">range</span><span class="pl">(</span><span class="fn">len</span><span class="pl">(</span><span class="id">nums</span><span class="pl">)):</span>
+    <span class="kw">for</span> <span class="id">j</span> <span class="kw">in</span> <span class="fn">range</span><span class="pl">(</span><span class="id">i</span> <span class="pl">+ </span><span class="nu">1</span><span class="pl">, </span><span class="fn">len</span><span class="pl">(</span><span class="id">nums</span><span class="pl">)):</span>
+        <span class="kw">if</span> <span class="id">nums</span><span class="pl">[</span><span class="id">i</span><span class="pl">] + </span><span class="id">nums</span><span class="pl">[</span><span class="id">j</span><span class="pl">] == </span><span class="id">target</span><span class="pl">:</span>
+            <span class="kw">return</span> <span class="pl">[</span><span class="id">i</span><span class="pl">, </span><span class="id">j</span><span class="pl">]</span></code></pre>
+        This uses only a few variables, so extra space is <span class="complexity-inline-code">O(1)</span>.
+        But it compares many pairs repeatedly, so time becomes <span class="complexity-inline-code">O(n²)</span> instead of <span class="complexity-inline-code">O(n)</span>.
+      </div>
+
+      <div class="complexity-block">
+        <strong>Interview takeaway:</strong>
+        <br>
+        Use the hash map solution as the main optimized solution because it removes redundant pair scanning.
+        The brute force solution improves extra space to <span class="complexity-inline-code">O(1)</span>, but it is usually not preferred because it sacrifices too much time: <span class="complexity-inline-code">O(n²)</span>.
+      </div>
+
       <div class="complexity-block">
         <strong>Final answer:</strong><br>
         <div class="complexity-answer">Time: &nbsp;O(n)<br>Space: O(n)</div>

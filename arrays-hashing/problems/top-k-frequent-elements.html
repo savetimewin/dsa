@@ -279,6 +279,81 @@
 
     @media (max-width:1100px){.app{grid-template-columns:1fr}.panel{min-height:auto}}
     @media (max-width:700px){.state-grid,.complexity-grid{grid-template-columns:1fr}.code-line{font-size:16px}input[type="text"]{min-width:220px}.bucket-row{grid-template-columns:1fr}}
+
+    /* Compact interview-review layout */
+    body{min-height:auto;}
+    .top-links{padding:8px 14px;}
+    .top-links a{font-size:13px;margin-bottom:3px;}
+    .app{width:min(1500px,98vw);margin:10px auto 12px;grid-template-columns:0.98fr 1.02fr;gap:10px;align-items:start;}
+    .panel{border-radius:12px;min-height:0;}
+    .panel-header{padding:8px 10px;gap:8px;}
+    .panel-title{font-size:14px;}
+    .pill{font-size:11px;padding:4px 7px;}
+    .editor-topbar{padding:6px 10px;}
+    .dot{width:9px;height:9px;}
+    .editor-file{font-size:12px;}
+    .code-wrap{font-size:12px;line-height:15.6px;padding:6px 0 8px 0;overflow:auto;}
+    .code-line{grid-template-columns:34px max-content;min-height:15.6px;}
+    .line-no{font-size:10px;line-height:15.6px;padding-right:8px;}
+    .code-content{line-height:15.6px;padding-left:8px;}
+    .code-content.indent-1{padding-left:26px;}
+    .code-content.indent-2{padding-left:44px;}
+    .code-content.indent-3{padding-left:62px;}
+    .code-content.indent-4{padding-left:80px;}
+    .code-content.indent-5{padding-left:98px;}
+    .code-content.indent-1,.code-content.indent-2,.code-content.indent-3,.code-content.indent-4,.code-content.indent-5{background-position:16px 0;}
+    .code-content.indent-2{background-position:16px 0,34px 0;}
+    .code-content.indent-3{background-position:16px 0,34px 0,52px 0;}
+    .code-content.indent-4{background-position:16px 0,34px 0,52px 0,70px 0;}
+    .code-content.indent-5{background-position:16px 0,34px 0,52px 0,70px 0,88px 0;}
+
+    .viz{padding:8px;gap:7px;}
+    .input-row,.controls{gap:6px;}
+    button{padding:5px 8px;border-radius:8px;font-size:12px;}
+    input[type="text"], input[type="number"]{padding:5px 7px;border-radius:8px;font-size:12px;}
+    input[type="text"]{min-width:230px;}
+    input[type="number"]{width:56px;}
+    .grid{gap:7px;}
+    .card{border-radius:10px;padding:8px;}
+    .card-title{font-size:13px;margin-bottom:6px;}
+    .subtle{font-size:11.5px;}
+    .num-row{gap:6px;margin-bottom:0;}
+    .num-wrap{min-width:38px;gap:3px;}
+    .pointer{min-height:13px;font-size:9px;}
+    .num-cell{width:38px;height:30px;border-radius:8px;font-size:15px;}
+    .index{font-size:9px;}
+    .legend{display:none;}
+    .hash-box{border-radius:10px;padding:8px;min-height:78px;}
+    .hash-title{font-size:13px;margin-bottom:6px;}
+    .dict-grid{grid-template-columns:repeat(auto-fit,minmax(58px,1fr));gap:5px;}
+    .dict-card{border-radius:8px;padding:5px;}
+    .dict-key{font-size:15px;}
+    .dict-val{font-size:10px;margin-top:1px;}
+    .bucket-list{max-height:190px;gap:4px;}
+    .bucket-row{grid-template-columns:62px 1fr;gap:6px;border-radius:8px;padding:5px;}
+    .bucket-index{font-size:12px;}
+    .bucket-label{font-size:9.5px;margin-top:0;}
+    .bucket-values{gap:4px;min-height:24px;}
+    .bucket-chip{min-width:28px;height:23px;border-radius:7px;font-size:12px;}
+    .result-row{gap:6px;min-height:28px;}
+    .result-chip{min-width:34px;height:28px;border-radius:8px;font-size:14px;}
+    .state-grid{grid-template-columns:repeat(4,1fr);gap:6px;}
+    .mini{border-radius:9px;padding:6px;min-height:50px;}
+    .mini-label{font-size:10px;margin-bottom:4px;}
+    .mini-value{font-size:13px;}
+    .explain{font-size:12.5px;line-height:1.35;}
+    .progress{font-size:11px;gap:6px;}
+    .bar{height:6px;}
+    .empty{font-size:11px;padding-top:2px;}
+    code.inline{font-size:0.9em;padding:0 4px;}
+
+    .complexity-section{width:min(1500px,98vw);margin:0 auto 18px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));box-shadow:var(--shadow);}
+    .complexity-header{border-bottom:1px solid var(--border);}
+    .complexity-grid-wide{grid-template-columns:1fr 1fr 1fr;padding:10px;}
+    .complexity-box{font-size:13px;padding:10px;border-radius:10px;}
+
+    @media (max-width:1100px){.app{grid-template-columns:1fr}.complexity-grid-wide{grid-template-columns:1fr}.code-wrap{font-size:12px;line-height:16px}.code-line,.line-no,.code-content{line-height:16px;min-height:16px}}
+
   </style>
 </head>
 <body>
@@ -420,28 +495,42 @@
             <div class="explain" id="explanation">Create an empty hash map and a bucket array.</div>
           </div>
 
-          <div class="card">
-            <div class="card-title">Time and Space Complexity</div>
-            <div class="complexity-grid">
-              <div class="complexity-box">
-                <strong>Time: O(n)</strong><br>
-                Count all numbers once: <code class="inline">O(n)</code>.<br>
-                Put each unique number into a frequency bucket: <code class="inline">O(u)</code>.<br>
-                Scan buckets from right to left: <code class="inline">O(n)</code>.<br>
-                Since <code class="inline">u ≤ n</code>, total time is <code class="inline">O(n)</code>.
-              </div>
-              <div class="complexity-box">
-                <strong>Space: O(n)</strong><br>
-                The hash map can store up to <code class="inline">n</code> unique values.<br>
-                The bucket array has <code class="inline">len(nums) + 1</code> buckets.<br>
-                Therefore auxiliary space is <code class="inline">O(n)</code>.
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
   </div>
+
+  <section class="complexity-section">
+    <div class="panel-header complexity-header">
+      <div>
+        <div class="panel-title">Time and Space Complexity</div>
+        <div class="subtle">Separated from the step-by-step visualizer so the visualizer stays compact.</div>
+      </div>
+    </div>
+    <div class="complexity-grid complexity-grid-wide">
+      <div class="complexity-box">
+        <strong>Variables</strong><br>
+        <code class="inline">n</code> = total number of elements in <code class="inline">nums</code>.<br>
+        <code class="inline">u</code> = number of unique elements in <code class="inline">nums</code>.<br>
+        Example: <code class="inline">nums = [7, 7, 2]</code> gives <code class="inline">n = 3</code>, <code class="inline">u = 2</code>.
+      </div>
+      <div class="complexity-box">
+        <strong>Time: O(n)</strong><br>
+        Build <code class="inline">count</code>: <code class="inline">O(n)</code>.<br>
+        Place unique values into buckets: <code class="inline">O(u)</code>.<br>
+        Scan <code class="inline">freq</code> from right to left: <code class="inline">O(n)</code>.<br>
+        Since <code class="inline">u ≤ n</code>, <code class="inline">O(n + u + n)</code> simplifies to <code class="inline">O(n)</code>.
+      </div>
+      <div class="complexity-box">
+        <strong>Space: O(n)</strong><br>
+        <code class="inline">count</code> stores up to <code class="inline">u</code> keys.<br>
+        <code class="inline">freq</code> has <code class="inline">n + 1</code> buckets.<br>
+        <code class="inline">res</code> stores <code class="inline">k</code> answers.<br>
+        Auxiliary space is <code class="inline">O(u + n + k)</code>, simplified to <code class="inline">O(n)</code>.
+      </div>
+    </div>
+  </section>
+
 
   <script>
     const codeLines = [...document.querySelectorAll('.code-line')];

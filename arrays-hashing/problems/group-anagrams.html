@@ -462,15 +462,48 @@
         <div class="editor-file">group_anagrams.py</div>
       </div>
       <div class="code-wrap" id="codeWrap">
-        <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">groupAnagrams</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">strs</span><span class="pl">: </span><span class="ty">List</span><span class="pl">[</span><span class="ty">str</span><span class="pl">]) -&gt; </span><span class="ty">List</span><span class="pl">[</span><span class="ty">List</span><span class="pl">[</span><span class="ty">str</span><span class="pl">]]:</span></code></div>
-        <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-2"><span class="id">h</span> <span class="pl">= {}</span></code></div>
-        <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">string</span> <span class="kw">in</span> <span class="id">strs</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-3"><span class="id">key</span> <span class="pl">= </span><span class="str">''</span><span class="pl">.</span><span class="fn">join</span><span class="pl">(</span><span class="fn">sorted</span><span class="pl">(</span><span class="id">string</span><span class="pl">))</span></code></div>
-        <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-3"><span class="kw">if</span> <span class="id">key</span> <span class="kw">not in</span> <span class="id">h</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-4"><span class="id">h</span><span class="pl">[</span><span class="id">key</span><span class="pl">] = []</span></code></div>
-        <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-3"><span class="id">h</span><span class="pl">[</span><span class="id">key</span><span class="pl">].</span><span class="fn">append</span><span class="pl">(</span><span class="id">string</span><span class="pl">)</span></code></div>
-        <div class="code-line" data-line="9"><div class="line-no">9</div><code class="code-content indent-2"><span class="kw">return</span> <span class="fn">list</span><span class="pl">(</span><span class="id">h</span><span class="pl">.</span><span class="fn">values</span><span class="pl">())</span></code></div>
+        <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> Solution:</code></div>
+        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="kw">def</span> groupAnagrams(self, strs: <span class="ty">List</span>[<span class="ty">str</span>]) -&gt; <span class="ty">List</span>[<span class="ty">List</span>[<span class="ty">str</span>]]:</code></div>
+        <div class="code-line" data-line="comment-3"><div class="line-no">3</div><code class="code-content indent-2"><span class="cm"># sorting with hashmap</span></code></div>
+        <div class="code-line" data-line="3"><div class="line-no">4</div><code class="code-content indent-2">h = {}</code></div>
+        <div class="code-line" data-line="4"><div class="line-no">5</div><code class="code-content indent-2"><span class="kw">for</span> string <span class="kw">in</span> strs:</code></div>
+        <div class="code-line" data-line="comment-6"><div class="line-no">6</div><code class="code-content indent-2"><span class="cm"># for every string in strs,</span></code></div>
+        <div class="code-line" data-line="5"><div class="line-no">7</div><code class="code-content indent-3">key = &#x27;&#x27;.<span class="fn">join</span>(<span class="fn">sorted</span>(string))</code></div>
+        <div class="code-line" data-line="comment-8"><div class="line-no">8</div><code class="code-content indent-3"><span class="cm"># sort the string alphabetically, store as key</span></code></div>
+        <div class="code-line" data-line="6"><div class="line-no">9</div><code class="code-content indent-3"><span class="kw">if</span> key <span class="kw">not</span> <span class="kw">in</span> h:</code></div>
+        <div class="code-line" data-line="comment-10"><div class="line-no">10</div><code class="code-content indent-3"><span class="cm"># if that sorted key is not in hash map h,</span></code></div>
+        <div class="code-line" data-line="7"><div class="line-no">11</div><code class="code-content indent-4">h[key] = []</code></div>
+        <div class="code-line" data-line="comment-12"><div class="line-no">12</div><code class="code-content indent-4"><span class="cm"># make that key (sorted string) -&gt; empty list</span></code></div>
+        <div class="code-line" data-line="8"><div class="line-no">13</div><code class="code-content indent-3">h[key].append(string)</code></div>
+        <div class="code-line" data-line="comment-14"><div class="line-no">14</div><code class="code-content indent-3"><span class="cm">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="comment-15"><div class="line-no">15</div><code class="code-content indent-3"><span class="cm">e.g.</span></code></div>
+        <div class="code-line" data-line="comment-16"><div class="line-no">16</div><code class="code-content indent-3"><span class="cm">&quot;act&quot;: [&quot;act&quot;, &quot;cat&quot;],</span></code></div>
+        <div class="code-line" data-line="comment-17"><div class="line-no">17</div><code class="code-content indent-3"><span class="cm">&quot;aht&quot;: [&quot;hat&quot;]</span></code></div>
+        <div class="code-line" data-line="comment-18"><div class="line-no">18</div><code class="code-content indent-3"><span class="cm">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="9"><div class="line-no">19</div><code class="code-content indent-2"><span class="kw">return</span> <span class="fn">list</span>(h.<span class="fn">values</span>())</code></div>
+        <div class="code-line" data-line="comment-20"><div class="line-no">20</div><code class="code-content indent-2"><span class="cm"># e.g. [[&quot;act&quot;, &quot;cat&quot;], [&quot;pots&quot;, &quot;tops&quot;, &quot;stop&quot;], [&quot;hat&quot;]]</span></code></div>
+        <div class="code-line" data-line="comment-21"><div class="line-no">21</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="comment-22"><div class="line-no">22</div><code class="code-content indent-2"></code></div>
+        <div class="code-line" data-line="comment-23"><div class="line-no">23</div><code class="code-content indent-2"><span class="cm">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="comment-24"><div class="line-no">24</div><code class="code-content indent-2"><span class="cm">m is the number of strings</span></code></div>
+        <div class="code-line" data-line="comment-25"><div class="line-no">25</div><code class="code-content indent-2"><span class="cm">n is the length of the longest string</span></code></div>
+        <div class="code-line" data-line="comment-26"><div class="line-no">26</div><code class="code-content indent-2"><span class="cm">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="comment-27"><div class="line-no">27</div><code class="code-content"></code></div>
+        <div class="code-line" data-line="comment-28"><div class="line-no">28</div><code class="code-content indent-2"><span class="cm"># time complexity</span></code></div>
+        <div class="code-line" data-line="comment-29"><div class="line-no">29</div><code class="code-content indent-2"><span class="cm">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="comment-30"><div class="line-no">30</div><code class="code-content indent-2"><span class="cm">&quot;key = &#x27;&#x27;.join(sorted(string))&quot; is expensive, because for each string, it sorts its characters.</span></code></div>
+        <div class="code-line" data-line="comment-31"><div class="line-no">31</div><code class="code-content indent-2"><span class="cm">Sorting one string of length n costs O(n log n), then you do that for every string in strs.</span></code></div>
+        <div class="code-line" data-line="comment-32"><div class="line-no">32</div><code class="code-content indent-2"><span class="cm">Since there are m strings, m strings * O(n log n) per string = O(m * n log n)</span></code></div>
+        <div class="code-line" data-line="comment-33"><div class="line-no">33</div><code class="code-content indent-2"><span class="cm">&quot;h[key].append(string)&quot; part is average O(1)</span></code></div>
+        <div class="code-line" data-line="comment-34"><div class="line-no">34</div><code class="code-content indent-2"><span class="cm">&quot;return list(h.values())&quot; costs about O(m), because it collects all groups, but O(m) is smaller than O(m * n log n).</span></code></div>
+        <div class="code-line" data-line="comment-35"><div class="line-no">35</div><code class="code-content indent-2"><span class="cm">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="comment-36"><div class="line-no">36</div><code class="code-content"></code></div>
+        <div class="code-line" data-line="comment-37"><div class="line-no">37</div><code class="code-content indent-2"><span class="cm"># space complexity</span></code></div>
+        <div class="code-line" data-line="comment-38"><div class="line-no">38</div><code class="code-content indent-2"><span class="cm">&quot;&quot;&quot;</span></code></div>
+        <div class="code-line" data-line="comment-39"><div class="line-no">39</div><code class="code-content indent-2"><span class="cm">Because the hash map stores all the original strings inside groups, space complexity is O(m * n).</span></code></div>
+        <div class="code-line" data-line="comment-40"><div class="line-no">40</div><code class="code-content indent-2"><span class="cm">There are m strings and each string can have up to n characters.</span></code></div>
+        <div class="code-line" data-line="comment-41"><div class="line-no">41</div><code class="code-content indent-2"><span class="cm">The sorted key for each group also takes space, but O(m * n) is the main stored output/grouping cost.</span></code></div>
+        <div class="code-line" data-line="comment-42"><div class="line-no">42</div><code class="code-content indent-2"><span class="cm">&quot;&quot;&quot;</span></code></div>
       </div>
     </section>
 
@@ -890,21 +923,70 @@
         <div class="editor-file">group_anagrams_count_tuple.py</div>
       </div>
       <div class="code-wrap" id="countCodeWrap">
-        <div class="code-line" data-count-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">from</span> <span class="id">collections</span> <span class="kw">import</span> <span class="fn">defaultdict</span></code></div>
-        <div class="code-line" data-count-line="2"><div class="line-no">2</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-count-line="3"><div class="line-no">3</div><code class="code-content indent-1"><span class="kw">def</span> <span class="fn">groupAnagrams</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">strs</span><span class="pl">: </span><span class="ty">List</span><span class="pl">[</span><span class="ty">str</span><span class="pl">]) -&gt; </span><span class="ty">List</span><span class="pl">[</span><span class="ty">List</span><span class="pl">[</span><span class="ty">str</span><span class="pl">]]:</span></code></div>
-        <div class="code-line" data-count-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="id">res</span> <span class="pl">= </span><span class="fn">defaultdict</span><span class="pl">(</span><span class="ty">list</span><span class="pl">)</span></code></div>
-        <div class="code-line" data-count-line="5"><div class="line-no">5</div><code class="code-content indent-2"><span class="cm"># defaultdict(list) automatically creates [] for a new key.</span></code></div>
-        <div class="code-line" data-count-line="6"><div class="line-no">6</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">string</span> <span class="kw">in</span> <span class="id">strs</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-count-line="7"><div class="line-no">7</div><code class="code-content indent-3"><span class="id">count</span> <span class="pl">= [</span><span class="nu">0</span><span class="pl">] * </span><span class="nu">26</span></code></div>
-        <div class="code-line" data-count-line="8"><div class="line-no">8</div><code class="code-content indent-3"><span class="cm"># count indexes: a=0, b=1, c=2, ..., z=25</span></code></div>
-        <div class="code-line" data-count-line="9"><div class="line-no">9</div><code class="code-content indent-3"><span class="kw">for</span> <span class="id">char</span> <span class="kw">in</span> <span class="id">string</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-count-line="10"><div class="line-no">10</div><code class="code-content indent-4"><span class="id">count</span><span class="pl">[</span><span class="fn">ord</span><span class="pl">(</span><span class="id">char</span><span class="pl">) - </span><span class="fn">ord</span><span class="pl">(</span><span class="str">'a'</span><span class="pl">)] += </span><span class="nu">1</span></code></div>
-        <div class="code-line" data-count-line="11"><div class="line-no">11</div><code class="code-content indent-4"><span class="cm"># convert char to alphabet index, then increase that bucket.</span></code></div>
-        <div class="code-line" data-count-line="12"><div class="line-no">12</div><code class="code-content indent-3"><span class="id">res</span><span class="pl">[</span><span class="fn">tuple</span><span class="pl">(</span><span class="id">count</span><span class="pl">)].</span><span class="fn">append</span><span class="pl">(</span><span class="id">string</span><span class="pl">)</span></code></div>
-        <div class="code-line" data-count-line="13"><div class="line-no">13</div><code class="code-content indent-3"><span class="cm"># tuple(count) is the letter-frequency fingerprint key.</span></code></div>
-        <div class="code-line" data-count-line="14"><div class="line-no">14</div><code class="code-content indent-2"><span class="kw">return</span> <span class="fn">list</span><span class="pl">(</span><span class="id">res</span><span class="pl">.</span><span class="fn">values</span><span class="pl">())</span></code></div>
-        <div class="code-line" data-count-line="15"><div class="line-no">15</div><code class="code-content indent-2"><span class="cm"># return only the groups, not the frequency keys.</span></code></div>
+        <div class="code-line" data-count-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span>:</code></div>
+        <div class="code-line" data-count-line="2"><div class="line-no">2</div><code class="code-content indent-1">    <span class="kw">def</span> <span class="fn">groupAnagrams</span>(self, strs: <span class="ty">List</span>[<span class="ty">str</span>]) -&gt; <span class="ty">List</span>[<span class="ty">List</span>[<span class="ty">str</span>]]:</code></div>
+        <div class="code-line" data-count-line="3"><div class="line-no">3</div><code class="code-content indent-2">        res = <span class="fn">defaultdict</span>(<span class="fn">list</span>)</code></div>
+        <div class="code-line" data-count-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="cm">        # res = defaultdict() is the basically the same as res = {} (hashmap)</span></code></div>
+        <div class="code-line" data-count-line="5"><div class="line-no">5</div><code class="code-content indent-2"><span class="cm">        # note: if missing a value for res then returns error</span></code></div>
+        <div class="code-line" data-count-line="6"><div class="line-no">6</div><code class="code-content indent-2"><span class="cm">        # example form with elements in it res = {&#x27;a&#x27;:1, &#x27;b&#x27;:2, etc.}</span></code></div>
+        <div class="code-line" data-count-line="7"><div class="line-no">7</div><code class="code-content indent-2"><span class="cm">        # so then res = defaultdict(list) would be </span></code></div>
+        <div class="code-line" data-count-line="8"><div class="line-no">8</div><code class="code-content indent-2"><span class="cm">        # res = {&#x27;a&#x27; : [1,2,3], &#x27;b&#x27; : [4,5,6], etc.}</span></code></div>
+        <div class="code-line" data-count-line="9"><div class="line-no">9</div><code class="code-content indent-2">        <span class="kw">for</span> string <span class="kw">in</span> strs:</code></div>
+        <div class="code-line" data-count-line="10"><div class="line-no">10</div><code class="code-content indent-3">            count = [<span class="nu">0</span>] * <span class="nu">26</span></code></div>
+        <div class="code-line" data-count-line="11"><div class="line-no">11</div><code class="code-content indent-3"><span class="cm">            # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]</span></code></div>
+        <div class="code-line" data-count-line="12"><div class="line-no">12</div><code class="code-content indent-3"><span class="cm">            # these have indexes btw.</span></code></div>
+        <div class="code-line" data-count-line="13"><div class="line-no">13</div><code class="code-content indent-3">            <span class="kw">for</span> char <span class="kw">in</span> string:</code></div>
+        <div class="code-line" data-count-line="14"><div class="line-no">14</div><code class="code-content indent-3"><span class="cm">            # so for every character in the string</span></code></div>
+        <div class="code-line" data-count-line="15"><div class="line-no">15</div><code class="code-content indent-4">                count[<span class="fn">ord</span>(char) - <span class="fn">ord</span>(&#x27;a&#x27;)] += <span class="nu">1</span></code></div>
+        <div class="code-line" data-count-line="16"><div class="line-no">16</div><code class="code-content indent-4"><span class="cm">                # at count[index] + 1</span></code></div>
+        <div class="code-line" data-count-line="17"><div class="line-no">17</div><code class="code-content indent-4"><span class="cm">                # where index is the position calculated by the character(char) in question</span></code></div>
+        <div class="code-line" data-count-line="18"><div class="line-no">18</div><code class="code-content indent-4"><span class="cm">                # minus ord(&#x27;a&#x27;) which is 97 in the ascii table so that</span></code></div>
+        <div class="code-line" data-count-line="19"><div class="line-no">19</div><code class="code-content indent-4"><span class="cm">                # if you were to make &#x27;a&#x27; as the first value shown in `count` aka [0,0,0,...] above,</span></code></div>
+        <div class="code-line" data-count-line="20"><div class="line-no">20</div><code class="code-content indent-4"><span class="cm">                # to have a count increased by one, the correct value at that index gets triggered to increase a count</span></code></div>
+        <div class="code-line" data-count-line="21"><div class="line-no">21</div><code class="code-content indent-4"><span class="cm">                # so every time we encounter an arbitrary &#x27;char&#x27; from a string, </span></code></div>
+        <div class="code-line" data-count-line="22"><div class="line-no">22</div><code class="code-content indent-4"><span class="cm">                # we can correctly increase the count at the correct index (position of the letter)</span></code></div>
+        <div class="code-line" data-count-line="23"><div class="line-no">23</div><code class="code-content indent-3"><span class="cm">            # exit the loop</span></code></div>
+        <div class="code-line" data-count-line="24"><div class="line-no">24</div><code class="code-content indent-3"><span class="cm">            # outer loop to always do this below</span></code></div>
+        <div class="code-line" data-count-line="25"><div class="line-no">25</div><code class="code-content indent-3">            res[<span class="fn">tuple</span>(count)].<span class="fn">append</span>(string)</code></div>
+        <div class="code-line" data-count-line="26"><div class="line-no">26</div><code class="code-content indent-3"><span class="cm">            # now count is finished for this string</span></code></div>
+        <div class="code-line" data-count-line="27"><div class="line-no">27</div><code class="code-content indent-3"><span class="cm">            # count represents the &quot;letter fingerprint&quot; of the string</span></code></div>
+        <div class="code-line" data-count-line="28"><div class="line-no">28</div><code class="code-content indent-3"><span class="cm">            #</span></code></div>
+        <div class="code-line" data-count-line="29"><div class="line-no">29</div><code class="code-content indent-3"><span class="cm">            # example:</span></code></div>
+        <div class="code-line" data-count-line="30"><div class="line-no">30</div><code class="code-content indent-3"><span class="cm">            # &quot;eat&quot; -&gt; count pattern for a:1, e:1, t:1</span></code></div>
+        <div class="code-line" data-count-line="31"><div class="line-no">31</div><code class="code-content indent-3"><span class="cm">            # &quot;tea&quot; -&gt; same exact count pattern</span></code></div>
+        <div class="code-line" data-count-line="32"><div class="line-no">32</div><code class="code-content indent-3"><span class="cm">            # &quot;ate&quot; -&gt; same exact count pattern</span></code></div>
+        <div class="code-line" data-count-line="33"><div class="line-no">33</div><code class="code-content indent-3"><span class="cm">            #</span></code></div>
+        <div class="code-line" data-count-line="34"><div class="line-no">34</div><code class="code-content indent-3"><span class="cm">            # lists cannot be used as hashmap keys because they can change</span></code></div>
+        <div class="code-line" data-count-line="35"><div class="line-no">35</div><code class="code-content indent-3"><span class="cm">            # so tuple(count) freezes the count list into a usable key</span></code></div>
+        <div class="code-line" data-count-line="36"><div class="line-no">36</div><code class="code-content indent-3"><span class="cm">            #</span></code></div>
+        <div class="code-line" data-count-line="37"><div class="line-no">37</div><code class="code-content indent-3"><span class="cm">            # res[tuple(count)] means:</span></code></div>
+        <div class="code-line" data-count-line="38"><div class="line-no">38</div><code class="code-content indent-3"><span class="cm">            # go to the group for this exact letter-count pattern</span></code></div>
+        <div class="code-line" data-count-line="39"><div class="line-no">39</div><code class="code-content indent-3"><span class="cm">            #</span></code></div>
+        <div class="code-line" data-count-line="40"><div class="line-no">40</div><code class="code-content indent-3"><span class="cm">            # .append(string) means:</span></code></div>
+        <div class="code-line" data-count-line="41"><div class="line-no">41</div><code class="code-content indent-3"><span class="cm">            # add the original word into that group</span></code></div>
+        <div class="code-line" data-count-line="42"><div class="line-no">42</div><code class="code-content indent-3"><span class="cm">            #</span></code></div>
+        <div class="code-line" data-count-line="43"><div class="line-no">43</div><code class="code-content indent-3"><span class="cm">            # because res = defaultdict(list),</span></code></div>
+        <div class="code-line" data-count-line="44"><div class="line-no">44</div><code class="code-content indent-3"><span class="cm">            # if this key does not exist yet, it automatically starts as []</span></code></div>
+        <div class="code-line" data-count-line="45"><div class="line-no">45</div><code class="code-content indent-2">        <span class="kw">return</span> <span class="fn">list</span>(res.<span class="fn">values</span>())</code></div>
+        <div class="code-line" data-count-line="46"><div class="line-no">46</div><code class="code-content indent-2"><span class="cm">        # after all strings are processed, res looks conceptually like:</span></code></div>
+        <div class="code-line" data-count-line="47"><div class="line-no">47</div><code class="code-content indent-2"><span class="cm">        #</span></code></div>
+        <div class="code-line" data-count-line="48"><div class="line-no">48</div><code class="code-content indent-2"><span class="cm">        # {</span></code></div>
+        <div class="code-line" data-count-line="49"><div class="line-no">49</div><code class="code-content indent-2"><span class="cm">        #   key_for_aet: [&quot;eat&quot;, &quot;tea&quot;, &quot;ate&quot;],</span></code></div>
+        <div class="code-line" data-count-line="50"><div class="line-no">50</div><code class="code-content indent-2"><span class="cm">        #   key_for_ant: [&quot;tan&quot;, &quot;nat&quot;],</span></code></div>
+        <div class="code-line" data-count-line="51"><div class="line-no">51</div><code class="code-content indent-2"><span class="cm">        #   key_for_abt: [&quot;bat&quot;]</span></code></div>
+        <div class="code-line" data-count-line="52"><div class="line-no">52</div><code class="code-content indent-2"><span class="cm">        # }</span></code></div>
+        <div class="code-line" data-count-line="53"><div class="line-no">53</div><code class="code-content indent-2"><span class="cm">        #</span></code></div>
+        <div class="code-line" data-count-line="54"><div class="line-no">54</div><code class="code-content indent-2"><span class="cm">        # but the answer should NOT include the keys</span></code></div>
+        <div class="code-line" data-count-line="55"><div class="line-no">55</div><code class="code-content indent-2"><span class="cm">        # the answer only needs the grouped lists</span></code></div>
+        <div class="code-line" data-count-line="56"><div class="line-no">56</div><code class="code-content indent-2"><span class="cm">        #</span></code></div>
+        <div class="code-line" data-count-line="57"><div class="line-no">57</div><code class="code-content indent-2"><span class="cm">        # res.values() gets:</span></code></div>
+        <div class="code-line" data-count-line="58"><div class="line-no">58</div><code class="code-content indent-2"><span class="cm">        # [</span></code></div>
+        <div class="code-line" data-count-line="59"><div class="line-no">59</div><code class="code-content indent-2"><span class="cm">        #   [&quot;eat&quot;, &quot;tea&quot;, &quot;ate&quot;],</span></code></div>
+        <div class="code-line" data-count-line="60"><div class="line-no">60</div><code class="code-content indent-2"><span class="cm">        #   [&quot;tan&quot;, &quot;nat&quot;],</span></code></div>
+        <div class="code-line" data-count-line="61"><div class="line-no">61</div><code class="code-content indent-2"><span class="cm">        #   [&quot;bat&quot;]</span></code></div>
+        <div class="code-line" data-count-line="62"><div class="line-no">62</div><code class="code-content indent-2"><span class="cm">        # ]</span></code></div>
+        <div class="code-line" data-count-line="63"><div class="line-no">63</div><code class="code-content indent-2"><span class="cm">        #</span></code></div>
+        <div class="code-line" data-count-line="64"><div class="line-no">64</div><code class="code-content indent-2"><span class="cm">        # list(...) converts dictionary values into a normal list for LeetCode</span></code></div>
       </div>
     </section>
 
@@ -1102,23 +1184,23 @@
       function buildSteps(arr){
         const out = [];
         const res = {};
-        out.push({line:'4', phase:'init', wordIndex:null, charIndex:null, string:null, char:null, index:null, count:zeroCount(), key:null, res:cloneMap(res), returnVal:null, explanation:'Create <code>res = defaultdict(list)</code>. Each key will be a 26-number letter fingerprint, and each value will be the list of words with that same fingerprint.'});
+        out.push({line:'3', phase:'init', wordIndex:null, charIndex:null, string:null, char:null, index:null, count:zeroCount(), key:null, res:cloneMap(res), returnVal:null, explanation:'Create <code>res = defaultdict(list)</code>. Each key will be a 26-number letter fingerprint, and each value will be the list of words with that same fingerprint.'});
         arr.forEach((string, wi) => {
           let count = zeroCount();
-          out.push({line:'6', phase:'word-loop', wordIndex:wi, charIndex:null, string, char:null, index:null, count:cloneCount(count), key:null, res:cloneMap(res), returnVal:null, explanation:`Move to the next word: <code>"${string}"</code>. We will build a fresh 26-slot count array for this word.`});
-          out.push({line:'7', phase:'count-init', wordIndex:wi, charIndex:null, string, char:null, index:null, count:cloneCount(count), key:null, res:cloneMap(res), returnVal:null, explanation:`Initialize <code>count = [0] * 26</code>. Each slot represents one letter: <code>a=0</code>, <code>b=1</code>, ..., <code>z=25</code>.`});
+          out.push({line:'9', phase:'word-loop', wordIndex:wi, charIndex:null, string, char:null, index:null, count:cloneCount(count), key:null, res:cloneMap(res), returnVal:null, explanation:`Move to the next word: <code>"${string}"</code>. We will build a fresh 26-slot count array for this word.`});
+          out.push({line:'10', phase:'count-init', wordIndex:wi, charIndex:null, string, char:null, index:null, count:cloneCount(count), key:null, res:cloneMap(res), returnVal:null, explanation:`Initialize <code>count = [0] * 26</code>. Each slot represents one letter: <code>a=0</code>, <code>b=1</code>, ..., <code>z=25</code>.`});
           [...string].forEach((char, ci) => {
             const idx = char.charCodeAt(0) - 'a'.charCodeAt(0);
-            out.push({line:'9', phase:'char-loop', wordIndex:wi, charIndex:ci, string, char, index:idx, count:cloneCount(count), key:null, res:cloneMap(res), returnVal:null, explanation:`Read character <code>'${char}'</code> from <code>"${string}"</code>. Next, convert it to its alphabet index.`});
+            out.push({line:'13', phase:'char-loop', wordIndex:wi, charIndex:ci, string, char, index:idx, count:cloneCount(count), key:null, res:cloneMap(res), returnVal:null, explanation:`Read character <code>'${char}'</code> from <code>"${string}"</code>. Next, convert it to its alphabet index.`});
             if(idx >= 0 && idx < 26){ count[idx] += 1; }
-            out.push({line:'10', phase:'increment', wordIndex:wi, charIndex:ci, string, char, index:idx, count:cloneCount(count), key:null, bumpedIndex:idx, res:cloneMap(res), returnVal:null, explanation: idx >= 0 && idx < 26 ? `<code>ord('${char}') - ord('a')</code> gives <code>${idx}</code>, so we run <code>count[${idx}] += 1</code>. This increases the bucket for letter <code>'${char}'</code>.` : `This visualizer expects lowercase English letters. Character <code>'${char}'</code> is outside a-z, so it is ignored in the visualization.`});
+            out.push({line:'15', phase:'increment', wordIndex:wi, charIndex:ci, string, char, index:idx, count:cloneCount(count), key:null, bumpedIndex:idx, res:cloneMap(res), returnVal:null, explanation: idx >= 0 && idx < 26 ? `<code>ord('${char}') - ord('a')</code> gives <code>${idx}</code>, so we run <code>count[${idx}] += 1</code>. This increases the bucket for letter <code>'${char}'</code>.` : `This visualizer expects lowercase English letters. Character <code>'${char}'</code> is outside a-z, so it is ignored in the visualization.`});
           });
           const key = tupleKey(count);
           if(!res[key]) res[key] = [];
           res[key].push(string);
-          out.push({line:'12', phase:'append', wordIndex:wi, charIndex:null, string, char:null, index:null, count:cloneCount(count), key, activeKey:key, newWord:string, res:cloneMap(res), returnVal:null, explanation:`The count array is finished for <code>"${string}"</code>. <code>tuple(count)</code> becomes the fingerprint key: <code>${fingerprint(count)}</code>. Append the original word into that group.`});
+          out.push({line:'25', phase:'append', wordIndex:wi, charIndex:null, string, char:null, index:null, count:cloneCount(count), key, activeKey:key, newWord:string, res:cloneMap(res), returnVal:null, explanation:`The count array is finished for <code>"${string}"</code>. <code>tuple(count)</code> becomes the fingerprint key: <code>${fingerprint(count)}</code>. Append the original word into that group.`});
         });
-        out.push({line:'14', phase:'return', wordIndex:null, charIndex:null, string:null, char:null, index:null, count:zeroCount(), key:null, res:cloneMap(res), returnVal:groupsText(res), explanation:'Return <code>list(res.values())</code>. We do not return the tuple keys; we only return the grouped anagram lists.'});
+        out.push({line:'61', phase:'return', wordIndex:null, charIndex:null, string:null, char:null, index:null, count:zeroCount(), key:null, res:cloneMap(res), returnVal:groupsText(res), explanation:'Return <code>list(res.values())</code>. We do not return the tuple keys; we only return the grouped anagram lists.'});
         return out;
       }
 
