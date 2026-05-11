@@ -420,6 +420,41 @@
         <div class="code-line" data-line="47"><div class="line-no">47</div><code class="code-content indent-4"><span class="id">res</span><span class="pl">.</span><span class="fn">append</span><span class="pl">(</span><span class="id">num</span><span class="pl">)</span></code></div>
         <div class="code-line" data-line="48"><div class="line-no">48</div><code class="code-content indent-4"><span class="kw">if</span> <span class="fn">len</span><span class="pl">(</span><span class="id">res</span><span class="pl">) == </span><span class="id">k</span><span class="pl">:</span></code></div>
         <div class="code-line" data-line="49"><div class="line-no">49</div><code class="code-content indent-5"><span class="kw">return</span> <span class="id">res</span></code></div>
+        <div class="code-line" data-line="50"><div class="line-no">50</div><code class="code-content"></code></div>
+        <div class="code-line" data-line="51"><div class="line-no">51</div><code class="code-content indent-2"><span class="cm"># time complexity</span></code></div>
+        <div class="code-line" data-line="52"><div class="line-no">52</div><code class="code-content indent-2"><span class="str">"""</span></code></div>
+        <div class="code-line" data-line="53"><div class="line-no">53</div><code class="code-content indent-2"><span class="str">n = # of elements in nums</span></code></div>
+        <div class="code-line" data-line="54"><div class="line-no">54</div><code class="code-content indent-2"><span class="str">u = # of unique elements in nums</span></code></div>
+        <div class="code-line" data-line="55"><div class="line-no">55</div><code class="code-content indent-2"><span class="str">u &lt;= n</span></code></div>
+        <div class="code-line" data-line="56"><div class="line-no">56</div><code class="code-content indent-2"><span class="str">going through num is worst case O(n)</span></code></div>
+        <div class="code-line" data-line="57"><div class="line-no">57</div><code class="code-content indent-2"><span class="str">and inserting values into d, worst case is O(1)</span></code></div>
+        <div class="code-line" data-line="58"><div class="line-no">58</div><code class="code-content indent-2"><span class="str">placing unique elements into buckets is O(u)</span></code></div>
+        <div class="code-line" data-line="59"><div class="line-no">59</div><code class="code-content indent-2"><span class="str">iterating through freq is O(n)</span></code></div>
+        <div class="code-line" data-line="60"><div class="line-no">60</div><code class="code-content indent-2"><span class="str">and inserting values into res is O(1)</span></code></div>
+        <div class="code-line" data-line="61"><div class="line-no">61</div><code class="code-content indent-2"><span class="str">hence, O(n + u + n) = O(n)</span></code></div>
+        <div class="code-line" data-line="62"><div class="line-no">62</div><code class="code-content indent-2"><span class="str">"""</span></code></div>
+        <div class="code-line" data-line="63"><div class="line-no">63</div><code class="code-content"></code></div>
+        <div class="code-line" data-line="64"><div class="line-no">64</div><code class="code-content indent-2"><span class="cm"># space complexity</span></code></div>
+        <div class="code-line" data-line="65"><div class="line-no">65</div><code class="code-content indent-2"><span class="str">"""</span></code></div>
+        <div class="code-line" data-line="66"><div class="line-no">66</div><code class="code-content indent-2"><span class="str">d stores up to u unique elements</span></code></div>
+        <div class="code-line" data-line="67"><div class="line-no">67</div><code class="code-content indent-2"><span class="str">freq has n + 1 buckets</span></code></div>
+        <div class="code-line" data-line="68"><div class="line-no">68</div><code class="code-content indent-2"><span class="str">res stores k values</span></code></div>
+        <div class="code-line" data-line="69"><div class="line-no">69</div><code class="code-content indent-2"><span class="str">Hence, auxiliary (extra) space is O(u+n+k),</span></code></div>
+        <div class="code-line" data-line="70"><div class="line-no">70</div><code class="code-content indent-2"><span class="str">simplified to O(n) space</span></code></div>
+        <div class="code-line" data-line="71"><div class="line-no">71</div><code class="code-content indent-2"><span class="str">"""</span></code></div>
+        <div class="code-line" data-line="72"><div class="line-no">72</div><code class="code-content"></code></div>
+        <div class="code-line" data-line="73"><div class="line-no">73</div><code class="code-content indent-2"><span class="cm"># improvement</span></code></div>
+        <div class="code-line" data-line="74"><div class="line-no">74</div><code class="code-content indent-2"><span class="str">"""</span></code></div>
+        <div class="code-line" data-line="75"><div class="line-no">75</div><code class="code-content indent-2"><span class="str">This bucket sort solution is already optimal in time: O(n),</span></code></div>
+        <div class="code-line" data-line="76"><div class="line-no">76</div><code class="code-content indent-2"><span class="str">since we must scan all nums to build the frequency map.</span></code></div>
+        <div class="code-line" data-line="77"><div class="line-no">77</div><code class="code-content indent-2"><span class="str">The main tradeoff is space: it uses O(n) space for the buckets.</span></code></div>
+        <div class="code-line" data-line="78"><div class="line-no">78</div><code class="code-content indent-2"><span class="str">If memory matters or k is small,</span></code></div>
+        <div class="code-line" data-line="79"><div class="line-no">79</div><code class="code-content indent-2"><span class="str">I could use a min-heap of size k,</span></code></div>
+        <div class="code-line" data-line="80"><div class="line-no">80</div><code class="code-content indent-2"><span class="str">which takes O(u log k) time and O(k) heap space,</span></code></div>
+        <div class="code-line" data-line="81"><div class="line-no">81</div><code class="code-content indent-2"><span class="str">where u is the number of unique values.</span></code></div>
+        <div class="code-line" data-line="82"><div class="line-no">82</div><code class="code-content indent-2"><span class="str">So I would keep bucket sort for fastest time,</span></code></div>
+        <div class="code-line" data-line="83"><div class="line-no">83</div><code class="code-content indent-2"><span class="str">and use heap if space/practicality matters.</span></code></div>
+        <div class="code-line" data-line="84"><div class="line-no">84</div><code class="code-content indent-2"><span class="str">"""</span></code></div>
       </div>
     </section>
 
