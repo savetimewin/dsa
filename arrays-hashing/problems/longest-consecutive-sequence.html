@@ -466,16 +466,42 @@
     const codeLines = [
       { n: 1, html: '<span class="kw">class</span> <span class="type">Solution</span>:' },
       { n: 2, html: '    <span class="kw">def</span> <span class="fn">longestConsecutive</span>(<span class="var">self</span>, <span class="var">nums</span>: <span class="type">List</span>[<span class="type">int</span>]) -> <span class="type">int</span>:' },
-      { n: 3, html: '        <span class="var">numSet</span> = <span class="fn">set</span>(<span class="var">nums</span>)' },
-      { n: 4, html: '        <span class="var">longest</span> = <span class="num">0</span>' },
-      { n: 5, html: '' },
-      { n: 6, html: '        <span class="kw">for</span> <span class="var">num</span> <span class="kw">in</span> <span class="var">numSet</span>:' },
-      { n: 7, html: '            <span class="kw">if</span> (<span class="var">num</span> - <span class="num">1</span>) <span class="kw">not in</span> <span class="var">numSet</span>:' },
-      { n: 8, html: '                <span class="var">length</span> = <span class="num">1</span>' },
-      { n: 9, html: '                <span class="kw">while</span> (<span class="var">num</span> + <span class="var">length</span>) <span class="kw">in</span> <span class="var">numSet</span>:' },
-      { n: 10, html: '                    <span class="var">length</span> += <span class="num">1</span>' },
-      { n: 11, html: '                <span class="var">longest</span> = <span class="fn">max</span>(<span class="var">length</span>, <span class="var">longest</span>)' },
-      { n: 12, html: '        <span class="kw">return</span> <span class="var">longest</span>' }
+      { n: 3, html: '        <span class="cm"># Convert nums into a set so lookup is fast.</span>' },
+      { n: 4, html: '        <span class="var">numSet</span> = <span class="fn">set</span>(<span class="var">nums</span>)' },
+      { n: 5, html: '        <span class="cm"># longest stores the best sequence length found so far.</span>' },
+      { n: 6, html: '        <span class="var">longest</span> = <span class="num">0</span>' },
+      { n: 7, html: '' },
+      { n: 8, html: '        <span class="kw">for</span> <span class="var">num</span> <span class="kw">in</span> <span class="var">numSet</span>:' },
+      { n: 9, html: '            <span class="cm"># Only start counting if num is the beginning of a sequence.</span>' },
+      { n: 10, html: '            <span class="kw">if</span> (<span class="var">num</span> - <span class="num">1</span>) <span class="kw">not in</span> <span class="var">numSet</span>:' },
+      { n: 11, html: '                <span class="var">length</span> = <span class="num">1</span>' },
+      { n: 12, html: '                <span class="cm"># Keep checking the next consecutive number.</span>' },
+      { n: 13, html: '                <span class="kw">while</span> (<span class="var">num</span> + <span class="var">length</span>) <span class="kw">in</span> <span class="var">numSet</span>:' },
+      { n: 14, html: '                    <span class="var">length</span> += <span class="num">1</span>' },
+      { n: 15, html: '                <span class="var">longest</span> = <span class="fn">max</span>(<span class="var">length</span>, <span class="var">longest</span>)' },
+      { n: 16, html: '        <span class="kw">return</span> <span class="var">longest</span>' },
+      { n: 17, html: '        <span class="cm"># tc</span>' },
+      { n: 18, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 19, html: '        <span class="str">Time complexity is O(n), where n is the length of nums.</span>' },
+      { n: 20, html: '        <span class="str">Creating the hash set takes O(n).</span>' },
+      { n: 21, html: '        <span class="str">Then we iterate through each unique number in the set.</span>' },
+      { n: 22, html: '        <span class="str">Even though there is a nested while loop,</span>' },
+      { n: 23, html: '        <span class="str">the while loop only runs when we find the start of a sequence,</span>' },
+      { n: 24, html: '        <span class="str">meaning num - 1 is not in the set.</span>' },
+      { n: 25, html: '        <span class="str">Because of that, each number is only counted once across all sequences,</span>' },
+      { n: 26, html: '        <span class="str">so the total work is still O(n).</span>' },
+      { n: 27, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 28, html: '        <span class="cm"># sc</span>' },
+      { n: 29, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 30, html: '        <span class="str">Space complexity is O(n) because we store the unique numbers from nums in a hash set.</span>' },
+      { n: 31, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 32, html: '        <span class="cm"># optimization</span>' },
+      { n: 33, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 34, html: '        <span class="str">This is already the optimal solution for time complexity,</span>' },
+      { n: 35, html: '        <span class="str">because we need to inspect the input at least once.</span>' },
+      { n: 36, html: '        <span class="str">We can optimize for O(1) space, if nums is sorted in-place (not take extra space like hash set)</span>' },
+      { n: 37, html: '        <span class="str">However, the time complexity worsens to O(n log n) because sorting is more expensive than scanning the hash set.</span>' },
+      { n: 38, html: '        <span class="str">&#39;&#39;&#39;</span>' }
     ];
 
     const cases = {
@@ -524,7 +550,7 @@
       let longest = 0;
 
       out.push({
-        line: 3,
+        line: 4,
         title: 'Create numSet',
         msg: 'Convert nums into a set so the visualizer can check whether a value exists.',
         num: null,
@@ -539,7 +565,7 @@
       });
 
       out.push({
-        line: 4,
+        line: 6,
         title: 'Initialize longest = 0',
         msg: 'longest stores the best sequence length found so far. It starts at 0, which also handles the empty nums case.',
         num: null,
@@ -555,7 +581,7 @@
 
       for (const num of setValues) {
         out.push({
-          line: 6,
+          line: 8,
           title: `Loop over num = ${num}`,
           msg: `Now consider ${num} from numSet.`,
           num,
@@ -571,7 +597,7 @@
 
         const hasPrev = numSet.has(num - 1);
         out.push({
-          line: 7,
+          line: 10,
           title: `Check if ${num} is a sequence start`,
           msg: hasPrev
             ? `${num} - 1 = ${num - 1} exists in numSet, so ${num} is not the start. Skip counting from here.`
@@ -595,7 +621,7 @@
         let currentSequence = [num];
 
         out.push({
-          line: 8,
+          line: 11,
           title: 'Set length = 1',
           msg: `The sequence starts at ${num}, so its current length is 1.`,
           num,
@@ -612,7 +638,7 @@
         while (numSet.has(num + length)) {
           const nextValue = num + length;
           out.push({
-            line: 9,
+            line: 13,
             title: `Check num + length = ${nextValue}`,
             msg: `${nextValue} exists in numSet, so the sequence continues.`,
             num,
@@ -630,7 +656,7 @@
           currentSequence.push(nextValue);
 
           out.push({
-            line: 10,
+            line: 14,
             title: `Increase length to ${length}`,
             msg: `After including ${nextValue}, the sequence is now length ${length}.`,
             num,
@@ -647,7 +673,7 @@
 
         const stopValue = num + length;
         out.push({
-          line: 9,
+          line: 13,
           title: `Check num + length = ${stopValue}`,
           msg: `${stopValue} is not in numSet, so the while loop stops.`,
           num,
@@ -665,7 +691,7 @@
         longest = Math.max(length, longest);
 
         out.push({
-          line: 11,
+          line: 15,
           title: 'Update longest',
           msg: `longest = max(${length}, ${oldLongest}) = ${longest}.`,
           num,
@@ -681,7 +707,7 @@
       }
 
       out.push({
-        line: 12,
+        line: 16,
         title: `Return ${longest}`,
         msg: `Finished checking every possible sequence start. The longest consecutive sequence length is ${longest}.`,
         num: null,
