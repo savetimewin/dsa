@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valid Sudoku Visualizer</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel2: #0f1620;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --line: #30363d;
+      --blue: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --orange: #ffa657;
+      --cell: #101820;
+      --cell2: #0b1320;
+      --highlight: rgba(88, 166, 255, 0.18);
+      --active: rgba(210, 153, 34, 0.28);
+      --ok: rgba(63, 185, 80, 0.22);
+      --bad: rgba(248, 81, 73, 0.22);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: #090d13;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(460px, 0.92fr) minmax(560px, 1.08fr);
+      gap: 16px;
+      padding: 16px;
+      height: calc(100vh - 78px);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+      min-height: 0;
+    }
+
+    .layout > .panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-title {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      background: #0f141c;
+    }
+
+    .code-wrap {
+      position: relative;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.55;
+      background: #0d1117;
+    }
+
+    .code-line {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      min-height: 24px;
+      border-left: 3px solid transparent;
+    }
+
+    .code-line.active {
+      background: var(--highlight);
+      border-left-color: var(--blue);
+    }
+
+    .ln {
+      color: #6e7681;
+      text-align: right;
+      padding-right: 12px;
+      user-select: none;
+    }
+
+    .code {
+      white-space: pre;
+      padding-right: 16px;
+    }
+
+    .kw { color: #ff7b72; }
+    .fn { color: #d2a8ff; }
+    .type { color: #ffa657; }
+    .str { color: #a5d6ff; }
+    .num { color: #79c0ff; }
+    .op { color: #ff7b72; }
+    .cm { color: #8b949e; font-style: italic; }
+    .var { color: #c9d1d9; }
+    .meth { color: #d2a8ff; }
+
+    .right {
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 16px;
+      min-height: 0;
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    button {
+      background: #238636;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 9px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    button.secondary { background: #21262d; }
+    button.danger { background: #da3633; }
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    select {
+      background: #0d1117;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 9px 11px;
+      min-width: 180px;
+    }
+
+    .status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .board-state {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 16px;
+    }
+
+    .board-card, .explain-card, .sets-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .board-body { padding: 14px; }
+
+    .sudoku {
+      width: 302px;
+      height: 302px;
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      grid-template-rows: repeat(9, 1fr);
+      border: 3px solid #8b949e;
+      background: #8b949e;
+    }
+
+    .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cell);
+      color: var(--text);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 18px;
+      font-weight: 750;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      position: relative;
+    }
+
+    .cell:nth-child(3n) { border-right: 3px solid #8b949e; }
+    .cell:nth-child(n+19):nth-child(-n+27),
+    .cell:nth-child(n+46):nth-child(-n+54) { border-bottom: 3px solid #8b949e; }
+
+    .cell.empty {
+      color: #484f58;
+      font-weight: 500;
+    }
+
+    .cell.current {
+      background: var(--active);
+      outline: 3px solid var(--yellow);
+      z-index: 2;
+    }
+
+    .cell.same-row, .cell.same-col, .cell.same-box {
+      background: rgba(88, 166, 255, 0.12);
+    }
+
+    .cell.added {
+      background: var(--ok);
+    }
+
+    .cell.duplicate {
+      background: var(--bad);
+      outline: 3px solid var(--red);
+      z-index: 3;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: -1px;
+    }
+    .dot.current { background: var(--yellow); }
+    .dot.related { background: var(--blue); }
+    .dot.added { background: var(--green); }
+    .dot.bad { background: var(--red); }
+
+    .explain-body {
+      padding: 14px;
+    }
+
+    .big-step {
+      font-size: 18px;
+      font-weight: 750;
+      margin-bottom: 8px;
+    }
+
+    .message {
+      color: var(--text);
+      line-height: 1.45;
+      min-height: 58px;
+    }
+
+    .mini {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini-card {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      border-radius: 10px;
+      padding: 9px;
+      min-height: 62px;
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .mini-value {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 15px;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+
+    .sets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 14px;
+      height: 100%;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .sets-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .set-section {
+      border: 1px solid var(--line);
+      background: #0d1117;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .set-heading {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      color: var(--muted);
+      background: #090d13;
+    }
+
+    .set-list {
+      margin: 0;
+      padding: 10px;
+      min-height: 175px;
+      white-space: pre-wrap;
+      overflow: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--text);
+      background: #0d1117;
+    }
+
+    .plain-active {
+      color: var(--yellow);
+      font-weight: 700;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 0 14px 14px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 1080px) {
+      html, body { overflow: auto; }
+      .layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+      }
+      .code-wrap { max-height: 520px; flex: initial; }
+      .board-state { grid-template-columns: 1fr; }
+      .status { margin-left: 0; width: 100%; }
+      .right { overflow: visible; }
+      .sets-grid { height: auto; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Valid Sudoku: One-Pass Hash Set Visualizer</h1>
+    <div class="subtitle">Scan each cell. Skip dots. Check row, column, and 3x3 square. If safe, add the value to all three tracking sets.</div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <div class="panel-title">Python code</div>
+      <div class="code-wrap" id="codeWrap"></div>
+    </section>
+
+    <section class="right">
+      <div class="controls">
+        <button id="prevBtn" class="secondary">Back</button>
+        <button id="nextBtn">Next</button>
+        <button id="playBtn" class="secondary">Play</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+        <select id="caseSelect" title="Example board">
+          <option value="valid">Valid board</option>
+          <option value="rowDuplicate">Invalid: row duplicate</option>
+          <option value="colDuplicate">Invalid: column duplicate</option>
+          <option value="boxDuplicate">Invalid: 3x3 box duplicate</option>
+        </select>
+        <div class="status" id="statusText">Step 0 / 0</div>
+      </div>
+
+      <div class="board-state">
+        <div class="board-card">
+          <div class="panel-title">Sudoku board</div>
+          <div class="board-body">
+            <div class="sudoku" id="board"></div>
+            <div class="legend">
+              <div><span class="dot current"></span>current cell</div>
+              <div><span class="dot related"></span>same row/col/box</div>
+              <div><span class="dot added"></span>just added</div>
+              <div><span class="dot bad"></span>duplicate</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="explain-card">
+          <div class="panel-title">Current step</div>
+          <div class="explain-body">
+            <div class="big-step" id="bigStep">Initialize</div>
+            <div class="message" id="message">Click Next to start scanning the board from top-left.</div>
+            <div class="mini">
+              <div class="mini-card">
+                <div class="mini-label">r</div>
+                <div class="mini-value" id="rVal">-</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">c</div>
+                <div class="mini-value" id="cVal">-</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">board[r][c]</div>
+                <div class="mini-value" id="cellVal">-</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">square key</div>
+                <div class="mini-value" id="boxVal">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sets-card">
+        <div class="panel-title">Tracking sets</div>
+        <div class="sets-grid">
+          <div class="set-section">
+            <div class="set-heading">rows</div>
+            <pre class="set-list" id="rowsList"></pre>
+          </div>
+          <div class="set-section">
+            <div class="set-heading">cols</div>
+            <pre class="set-list" id="colsList"></pre>
+          </div>
+          <div class="set-section">
+            <div class="set-heading">squares</div>
+            <pre class="set-list" id="squaresList"></pre>
+          </div>
+        </div>
+        <div class="footer-note">
+          The tracking sets now use plain-text output. The important pattern is still: check first, then add. If the value is already in the current row set, column set, or square set, return False immediately.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const codeLines = [
+      { n: 1, html: '<span class="kw">class</span> <span class="type">Solution</span>:' },
+      { n: 2, html: '    <span class="kw">def</span> <span class="fn">isValidSudoku</span>(<span class="var">self</span>, <span class="var">board</span>: <span class="type">List</span>[<span class="type">List</span>[<span class="type">str</span>]]) -> <span class="type">bool</span>:' },
+      { n: 3, html: '        <span class="var">cols</span> = <span class="fn">defaultdict</span>(<span class="fn">set</span>)' },
+      { n: 4, html: '        <span class="var">rows</span> = <span class="fn">defaultdict</span>(<span class="fn">set</span>)' },
+      { n: 5, html: '        <span class="var">squares</span> = <span class="fn">defaultdict</span>(<span class="fn">set</span>)' },
+      { n: 6, html: '' },
+      { n: 7, html: '        <span class="kw">for</span> <span class="var">r</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">9</span>):' },
+      { n: 8, html: '            <span class="kw">for</span> <span class="var">c</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">9</span>):' },
+      { n: 9, html: '                <span class="kw">if</span> <span class="var">board</span>[<span class="var">r</span>][<span class="var">c</span>] == <span class="str">&quot;.&quot;</span>:' },
+      { n: 10, html: '                    <span class="kw">continue</span>' },
+      { n: 11, html: '                <span class="kw">if</span> ( <span class="var">board</span>[<span class="var">r</span>][<span class="var">c</span>] <span class="kw">in</span> <span class="var">rows</span>[<span class="var">r</span>]' },
+      { n: 12, html: '                    <span class="kw">or</span> <span class="var">board</span>[<span class="var">r</span>][<span class="var">c</span>] <span class="kw">in</span> <span class="var">cols</span>[<span class="var">c</span>]' },
+      { n: 13, html: '                    <span class="kw">or</span> <span class="var">board</span>[<span class="var">r</span>][<span class="var">c</span>] <span class="kw">in</span> <span class="var">squares</span>[(<span class="var">r</span> // <span class="num">3</span>, <span class="var">c</span> // <span class="num">3</span>)]):' },
+      { n: 14, html: '                    <span class="kw">return</span> <span class="type">False</span>' },
+      { n: 15, html: '' },
+      { n: 16, html: '                <span class="var">cols</span>[<span class="var">c</span>].<span class="meth">add</span>(<span class="var">board</span>[<span class="var">r</span>][<span class="var">c</span>])' },
+      { n: 17, html: '                <span class="var">rows</span>[<span class="var">r</span>].<span class="meth">add</span>(<span class="var">board</span>[<span class="var">r</span>][<span class="var">c</span>])' },
+      { n: 18, html: '                <span class="var">squares</span>[(<span class="var">r</span> // <span class="num">3</span>, <span class="var">c</span> // <span class="num">3</span>)].<span class="meth">add</span>(<span class="var">board</span>[<span class="var">r</span>][<span class="var">c</span>])' },
+      { n: 19, html: '' },
+      { n: 20, html: '        <span class="kw">return</span> <span class="type">True</span>' }
+    ];
+
+    const boards = {
+      valid: [
+        ["5","3",".",".","7",".",".",".","."],
+        ["6",".",".","1","9","5",".",".","."],
+        [".","9","8",".",".",".",".","6","."],
+        ["8",".",".",".","6",".",".",".","3"],
+        ["4",".",".","8",".","3",".",".","1"],
+        ["7",".",".",".","2",".",".",".","6"],
+        [".","6",".",".",".",".","2","8","."],
+        [".",".",".","4","1","9",".",".","5"],
+        [".",".",".",".","8",".",".","7","9"]
+      ],
+      rowDuplicate: [
+        ["5","3",".",".","7",".",".",".","5"],
+        ["6",".",".","1","9","5",".",".","."],
+        [".","9","8",".",".",".",".","6","."],
+        ["8",".",".",".","6",".",".",".","3"],
+        ["4",".",".","8",".","3",".",".","1"],
+        ["7",".",".",".","2",".",".",".","6"],
+        [".","6",".",".",".",".","2","8","."],
+        [".",".",".","4","1","9",".",".","5"],
+        [".",".",".",".","8",".",".","7","9"]
+      ],
+      colDuplicate: [
+        ["5","3",".",".","7",".",".",".","."],
+        ["6",".",".","1","9","5",".",".","."],
+        [".","9","8",".",".",".",".","6","."],
+        ["8",".",".",".","6",".",".",".","3"],
+        ["4",".",".","8",".","3",".",".","1"],
+        ["7",".",".",".","2",".",".",".","6"],
+        [".","6",".",".",".",".","2","8","."],
+        [".",".",".","4","1","9",".",".","5"],
+        ["5",".",".",".","8",".",".","7","9"]
+      ],
+      boxDuplicate: [
+        ["5","3",".",".","7",".",".",".","."],
+        ["6",".","5","1","9",".",".",".","."],
+        [".","9","8",".",".",".",".","6","."],
+        ["8",".",".",".","6",".",".",".","3"],
+        ["4",".",".","8",".","3",".",".","1"],
+        ["7",".",".",".","2",".",".",".","6"],
+        [".","6",".",".",".",".","2","8","."],
+        [".",".",".","4","1","9",".",".","5"],
+        [".",".",".",".","8",".",".","7","9"]
+      ]
+    };
+
+    let board = boards.valid;
+    let steps = [];
+    let stepIndex = 0;
+    let timer = null;
+
+    const codeWrap = document.getElementById('codeWrap');
+    const boardEl = document.getElementById('board');
+    const rowsList = document.getElementById('rowsList');
+    const colsList = document.getElementById('colsList');
+    const squaresList = document.getElementById('squaresList');
+    const bigStep = document.getElementById('bigStep');
+    const message = document.getElementById('message');
+    const statusText = document.getElementById('statusText');
+    const rVal = document.getElementById('rVal');
+    const cVal = document.getElementById('cVal');
+    const cellVal = document.getElementById('cellVal');
+    const boxVal = document.getElementById('boxVal');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const playBtn = document.getElementById('playBtn');
+    const caseSelect = document.getElementById('caseSelect');
+
+    function cloneState(rows, cols, squares) {
+      return {
+        rows: Object.fromEntries(Object.entries(rows).map(([k, v]) => [k, [...v]])),
+        cols: Object.fromEntries(Object.entries(cols).map(([k, v]) => [k, [...v]])),
+        squares: Object.fromEntries(Object.entries(squares).map(([k, v]) => [k, [...v]]))
+      };
+    }
+
+    function keySquare(r, c) {
+      return `${Math.floor(r / 3)},${Math.floor(c / 3)}`;
+    }
+
+    function generateSteps(inputBoard) {
+      const rows = {};
+      const cols = {};
+      const squares = {};
+      const out = [];
+
+      function ensure(r, c) {
+        const sq = keySquare(r, c);
+        if (!rows[r]) rows[r] = new Set();
+        if (!cols[c]) cols[c] = new Set();
+        if (!squares[sq]) squares[sq] = new Set();
+        return sq;
+      }
+
+      out.push({
+        line: 3,
+        title: 'Initialize tracking sets',
+        msg: 'Create cols, rows, and squares as defaultdict(set). These remember which values have already appeared.',
+        r: null, c: null, val: null, square: null,
+        phase: 'init',
+        ...cloneState(rows, cols, squares)
+      });
+
+      for (let r = 0; r < 9; r++) {
+        out.push({
+          line: 7,
+          title: `Outer loop: r = ${r}`,
+          msg: `Start scanning row ${r}.`,
+          r, c: null, val: null, square: null,
+          phase: 'row-loop',
+          ...cloneState(rows, cols, squares)
+        });
+
+        for (let c = 0; c < 9; c++) {
+          const val = inputBoard[r][c];
+          const sq = ensure(r, c);
+
+          out.push({
+            line: 8,
+            title: `Inner loop: c = ${c}`,
+            msg: `Point at cell board[${r}][${c}].`,
+            r, c, val, square: sq,
+            phase: 'point',
+            ...cloneState(rows, cols, squares)
+          });
+
+          out.push({
+            line: 9,
+            title: 'Check if the cell is empty',
+            msg: val === '.'
+              ? `board[${r}][${c}] is '.', so this cell is empty.`
+              : `board[${r}][${c}] is '${val}', so it must be checked for duplicates.`,
+            r, c, val, square: sq,
+            phase: 'empty-check',
+            ...cloneState(rows, cols, squares)
+          });
+
+          if (val === '.') {
+            out.push({
+              line: 10,
+              title: 'Skip empty cell',
+              msg: 'continue means: do not add anything to rows, cols, or squares. Move to the next cell.',
+              r, c, val, square: sq,
+              phase: 'skip',
+              ...cloneState(rows, cols, squares)
+            });
+            continue;
+          }
+
+          const inRow = rows[r].has(val);
+          const inCol = cols[c].has(val);
+          const inSquare = squares[sq].has(val);
+
+          out.push({
+            line: 11,
+            title: 'Check row, column, and square',
+            msg: `Check whether '${val}' is already in rows[${r}], cols[${c}], or squares[(${sq})].`,
+            r, c, val, square: sq,
+            phase: 'duplicate-check',
+            inRow, inCol, inSquare,
+            ...cloneState(rows, cols, squares)
+          });
+
+          if (inRow || inCol || inSquare) {
+            let reason = [];
+            if (inRow) reason.push(`rows[${r}]`);
+            if (inCol) reason.push(`cols[${c}]`);
+            if (inSquare) reason.push(`squares[(${sq})]`);
+            out.push({
+              line: 14,
+              title: 'Duplicate found: return False',
+              msg: `'${val}' already exists in ${reason.join(' and ')}. The Sudoku board is invalid.`,
+              r, c, val, square: sq,
+              phase: 'duplicate',
+              inRow, inCol, inSquare,
+              ...cloneState(rows, cols, squares)
+            });
+            return out;
+          }
+
+          out.push({
+            line: 16,
+            title: 'Add to cols[c]',
+            msg: `No duplicate found yet. Add '${val}' to cols[${c}].`,
+            r, c, val, square: sq,
+            phase: 'add-col',
+            ...cloneState(rows, cols, squares)
+          });
+          cols[c].add(val);
+
+          out.push({
+            line: 17,
+            title: 'Add to rows[r]',
+            msg: `Add '${val}' to rows[${r}].`,
+            r, c, val, square: sq,
+            phase: 'add-row',
+            ...cloneState(rows, cols, squares)
+          });
+          rows[r].add(val);
+
+          out.push({
+            line: 18,
+            title: 'Add to squares[(r // 3, c // 3)]',
+            msg: `Add '${val}' to squares[(${sq})]. This square key comes from (${r} // 3, ${c} // 3).`,
+            r, c, val, square: sq,
+            phase: 'add-square',
+            justAdded: true,
+            ...cloneState(rows, cols, squares)
+          });
+          squares[sq].add(val);
+        }
+      }
+
+      out.push({
+        line: 20,
+        title: 'Finished scanning: return True',
+        msg: 'No duplicate was found in any row, column, or 3x3 square. The board is valid.',
+        r: null, c: null, val: null, square: null,
+        phase: 'done',
+        ...cloneState(rows, cols, squares)
+      });
+
+      return out;
+    }
+
+    function renderCode(activeLine) {
+      codeWrap.innerHTML = codeLines.map(line => `
+        <div class="code-line ${line.n === activeLine ? 'active' : ''}" data-line="${line.n}">
+          <div class="ln">${line.n}</div>
+          <div class="code">${line.html || '&nbsp;'}</div>
+        </div>
+      `).join('');
+
+      const active = codeWrap.querySelector('.code-line.active');
+      if (active) {
+        const targetTop = active.offsetTop - (codeWrap.clientHeight / 2) + (active.clientHeight / 2);
+        codeWrap.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+      }
+    }
+
+    function renderBoard(step) {
+      boardEl.innerHTML = '';
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          const val = board[r][c];
+          const div = document.createElement('div');
+          div.className = 'cell';
+          div.textContent = val;
+          if (val === '.') div.classList.add('empty');
+
+          if (step && step.r === r && step.c === c) {
+            div.classList.add('current');
+            if (step.phase === 'duplicate') div.classList.add('duplicate');
+            if (step.justAdded) div.classList.add('added');
+          } else if (step && step.r !== null && step.c !== null) {
+            const sameRow = r === step.r;
+            const sameCol = c === step.c;
+            const sameBox = keySquare(r, c) === step.square;
+            if (sameRow || sameCol || sameBox) div.classList.add('same-row');
+          }
+
+          boardEl.appendChild(div);
+        }
+      }
+    }
+
+    function renderSetList(el, data, prefix, activeKey) {
+      const keys = Object.keys(data).sort((a, b) => {
+        const na = Number(a), nb = Number(b);
+        if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+        return a.localeCompare(b);
+      });
+
+      if (keys.length === 0) {
+        el.textContent = '{}';
+        return;
+      }
+
+      const lines = ['{'];
+      for (const k of keys) {
+        const values = data[k] || [];
+        const valueText = values.length
+          ? `{${values.map(v => `'${v}'`).join(', ')}}`
+          : 'set()';
+        const keyText = prefix === 'square' ? `(${k})` : Number(k);
+        const marker = String(k) === String(activeKey) ? '  <-- current' : '';
+        lines.push(`  ${JSON.stringify(keyText)}: ${valueText},${marker}`);
+      }
+      lines.push('}');
+      el.textContent = lines.join('\n');
+    }
+
+    function renderStep() {
+      const step = steps[stepIndex];
+      renderCode(step.line);
+      renderBoard(step);
+      renderSetList(rowsList, step.rows, 'row', step.r);
+      renderSetList(colsList, step.cols, 'col', step.c);
+      renderSetList(squaresList, step.squares, 'square', step.square);
+
+      bigStep.textContent = step.title;
+      message.textContent = step.msg;
+      rVal.textContent = step.r === null ? '-' : step.r;
+      cVal.textContent = step.c === null ? '-' : step.c;
+      cellVal.textContent = step.val === null ? '-' : step.val;
+      boxVal.textContent = step.square === null ? '-' : `(${step.square})`;
+      statusText.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+
+      prevBtn.disabled = stepIndex === 0;
+      nextBtn.disabled = stepIndex === steps.length - 1;
+    }
+
+    function reset() {
+      stopPlay();
+      stepIndex = 0;
+      steps = generateSteps(board);
+      renderStep();
+    }
+
+    function next() {
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        renderStep();
+      } else {
+        stopPlay();
+      }
+    }
+
+    function prev() {
+      if (stepIndex > 0) {
+        stepIndex--;
+        renderStep();
+      }
+    }
+
+    function stopPlay() {
+      if (timer) clearInterval(timer);
+      timer = null;
+      playBtn.textContent = 'Play';
+    }
+
+    function togglePlay() {
+      if (timer) {
+        stopPlay();
+      } else {
+        playBtn.textContent = 'Pause';
+        timer = setInterval(() => {
+          if (stepIndex >= steps.length - 1) {
+            stopPlay();
+          } else {
+            next();
+          }
+        }, 750);
+      }
+    }
+
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+    resetBtn.addEventListener('click', reset);
+    playBtn.addEventListener('click', togglePlay);
+    caseSelect.addEventListener('change', () => {
+      board = boards[caseSelect.value];
+      reset();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') prev();
+      if (e.key === ' ') {
+        e.preventDefault();
+        togglePlay();
+      }
+    });
+
+    reset();
+  </script>
+</body>
+</html>

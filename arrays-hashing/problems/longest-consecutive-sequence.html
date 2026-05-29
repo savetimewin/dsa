@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Longest Consecutive Sequence Visualizer</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel2: #0f1620;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --line: #30363d;
+      --blue: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --orange: #ffa657;
+      --cell: #101820;
+      --highlight: rgba(88, 166, 255, 0.18);
+      --active: rgba(210, 153, 34, 0.28);
+      --ok: rgba(63, 185, 80, 0.22);
+      --bad: rgba(248, 81, 73, 0.22);
+      --skip: rgba(139, 148, 158, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: #090d13;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(460px, 0.92fr) minmax(560px, 1.08fr);
+      gap: 16px;
+      padding: 16px;
+      height: calc(100vh - 78px);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+      min-height: 0;
+    }
+
+    .layout > .panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-title {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      background: #0f141c;
+    }
+
+    .code-wrap {
+      position: relative;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.55;
+      background: #0d1117;
+    }
+
+    .code-line {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      min-height: 24px;
+      border-left: 3px solid transparent;
+    }
+
+    .code-line.active {
+      background: var(--highlight);
+      border-left-color: var(--blue);
+    }
+
+    .ln {
+      color: #6e7681;
+      text-align: right;
+      padding-right: 12px;
+      user-select: none;
+    }
+
+    .code {
+      white-space: pre;
+      padding-right: 16px;
+    }
+
+    .kw { color: #ff7b72; }
+    .fn { color: #d2a8ff; }
+    .type { color: #ffa657; }
+    .str { color: #a5d6ff; }
+    .num { color: #79c0ff; }
+    .op { color: #ff7b72; }
+    .cm { color: #8b949e; font-style: italic; }
+    .var { color: #c9d1d9; }
+    .meth { color: #d2a8ff; }
+
+    .right {
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 16px;
+      min-height: 0;
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    button {
+      background: #238636;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 9px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    button.secondary { background: #21262d; }
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    select {
+      background: #0d1117;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 9px 11px;
+      min-width: 210px;
+    }
+
+    .status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .top-state {
+      display: grid;
+      grid-template-columns: minmax(360px, 1fr) minmax(360px, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .card-body { padding: 14px; }
+
+    .number-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .num-chip {
+      min-width: 44px;
+      height: 42px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--cell);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 18px;
+      font-weight: 750;
+      position: relative;
+    }
+
+    .num-chip.current {
+      background: var(--active);
+      outline: 3px solid var(--yellow);
+      z-index: 2;
+    }
+
+    .num-chip.start {
+      background: var(--ok);
+      outline: 2px solid var(--green);
+    }
+
+    .num-chip.skip {
+      background: var(--skip);
+      color: var(--muted);
+    }
+
+    .num-chip.counting {
+      background: rgba(88, 166, 255, 0.22);
+      outline: 2px solid var(--blue);
+    }
+
+    .num-chip.missing {
+      background: var(--bad);
+      outline: 2px solid var(--red);
+    }
+
+    .chip-label {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--muted);
+      font-size: 10px;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: -1px;
+    }
+    .dot.current { background: var(--yellow); }
+    .dot.start { background: var(--green); }
+    .dot.counting { background: var(--blue); }
+    .dot.bad { background: var(--red); }
+
+    .big-step {
+      font-size: 18px;
+      font-weight: 750;
+      margin-bottom: 8px;
+    }
+
+    .message {
+      color: var(--text);
+      line-height: 1.45;
+      min-height: 58px;
+    }
+
+    .mini {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini-card {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      border-radius: 10px;
+      padding: 9px;
+      min-height: 62px;
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .mini-value {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 15px;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    .plain-box {
+      margin: 0;
+      padding: 14px;
+      min-height: 180px;
+      white-space: pre-wrap;
+      overflow: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text);
+      background: #0d1117;
+      height: 100%;
+    }
+
+    .sequence-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      min-height: 62px;
+      align-items: center;
+    }
+
+    .arrow {
+      color: var(--muted);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 16px;
+    }
+
+
+    @media (max-width: 1080px) {
+      html, body { overflow: auto; }
+      .layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+      }
+      .code-wrap { max-height: 520px; flex: initial; }
+      .right { overflow: visible; }
+      .top-state, .bottom-grid { grid-template-columns: 1fr; }
+      .status { margin-left: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Longest Consecutive Sequence: Hash Set Visualizer</h1>
+    <div class="subtitle">Code and step-by-step visualizer.</div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <div class="panel-title">Python code</div>
+      <div class="code-wrap" id="codeWrap"></div>
+    </section>
+
+    <section class="right">
+      <div class="controls">
+        <button id="prevBtn" class="secondary">Back</button>
+        <button id="nextBtn">Next</button>
+        <button id="playBtn" class="secondary">Play</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+        <select id="caseSelect" title="Example input">
+          <option value="classic">[100, 4, 200, 1, 3, 2]</option>
+          <option value="duplicates">[0, 3, 7, 2, 5, 8, 4, 6, 0, 1]</option>
+          <option value="negative">[-2, -3, -1, 10, 11, 15]</option>
+          <option value="empty">[]</option>
+        </select>
+        <div class="status" id="statusText">Step 0 / 0</div>
+      </div>
+
+      <div class="top-state">
+        <div class="card">
+          <div class="panel-title">Input and set</div>
+          <div class="card-body">
+            <div class="mini-label">nums</div>
+            <div class="number-row" id="numsRow"></div>
+
+            <div style="height:18px"></div>
+
+            <div class="mini-label">numSet = set(nums)</div>
+            <div class="number-row" id="setRow"></div>
+
+            <div class="legend">
+              <div><span class="dot current"></span>current num</div>
+              <div><span class="dot start"></span>sequence start</div>
+              <div><span class="dot counting"></span>counting forward</div>
+              <div><span class="dot bad"></span>missing number stops while loop</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="panel-title">Current step</div>
+          <div class="card-body">
+            <div class="big-step" id="bigStep">Initialize</div>
+            <div class="message" id="message">Click Next to start.</div>
+            <div class="mini">
+              <div class="mini-card">
+                <div class="mini-label">num</div>
+                <div class="mini-value" id="numVal">-</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">num - 1</div>
+                <div class="mini-value" id="prevVal">-</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">length</div>
+                <div class="mini-value" id="lengthVal">-</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">longest</div>
+                <div class="mini-value" id="longestVal">0</div>
+              </div>
+            </div>
+
+            <div class="sequence-line" id="sequenceLine"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-grid single">
+        <div class="card">
+          <div class="panel-title">Plain-text state</div>
+          <pre class="plain-box" id="stateBox"></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const codeLines = [
+      { n: 1, html: '<span class="kw">class</span> <span class="type">Solution</span>:' },
+      { n: 2, html: '    <span class="kw">def</span> <span class="fn">longestConsecutive</span>(<span class="var">self</span>, <span class="var">nums</span>: <span class="type">List</span>[<span class="type">int</span>]) -> <span class="type">int</span>:' },
+      { n: 3, html: '        <span class="var">numSet</span> = <span class="fn">set</span>(<span class="var">nums</span>)' },
+      { n: 4, html: '        <span class="var">longest</span> = <span class="num">0</span>' },
+      { n: 5, html: '' },
+      { n: 6, html: '        <span class="kw">for</span> <span class="var">num</span> <span class="kw">in</span> <span class="var">numSet</span>:' },
+      { n: 7, html: '            <span class="kw">if</span> (<span class="var">num</span> - <span class="num">1</span>) <span class="kw">not in</span> <span class="var">numSet</span>:' },
+      { n: 8, html: '                <span class="var">length</span> = <span class="num">1</span>' },
+      { n: 9, html: '                <span class="kw">while</span> (<span class="var">num</span> + <span class="var">length</span>) <span class="kw">in</span> <span class="var">numSet</span>:' },
+      { n: 10, html: '                    <span class="var">length</span> += <span class="num">1</span>' },
+      { n: 11, html: '                <span class="var">longest</span> = <span class="fn">max</span>(<span class="var">length</span>, <span class="var">longest</span>)' },
+      { n: 12, html: '        <span class="kw">return</span> <span class="var">longest</span>' }
+    ];
+
+    const cases = {
+      classic: [100, 4, 200, 1, 3, 2],
+      duplicates: [0, 3, 7, 2, 5, 8, 4, 6, 0, 1],
+      negative: [-2, -3, -1, 10, 11, 15],
+      empty: []
+    };
+
+    let nums = cases.classic;
+    let steps = [];
+    let stepIndex = 0;
+    let timer = null;
+
+    const codeWrap = document.getElementById('codeWrap');
+    const numsRow = document.getElementById('numsRow');
+    const setRow = document.getElementById('setRow');
+    const sequenceLine = document.getElementById('sequenceLine');
+    const stateBox = document.getElementById('stateBox');
+    const bigStep = document.getElementById('bigStep');
+    const message = document.getElementById('message');
+    const statusText = document.getElementById('statusText');
+    const numVal = document.getElementById('numVal');
+    const prevVal = document.getElementById('prevVal');
+    const lengthVal = document.getElementById('lengthVal');
+    const longestVal = document.getElementById('longestVal');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const playBtn = document.getElementById('playBtn');
+    const caseSelect = document.getElementById('caseSelect');
+
+    function uniqueSorted(arr) {
+      return [...new Set(arr)].sort((a, b) => a - b);
+    }
+
+    function formatSet(arr) {
+      if (!arr.length) return 'set()';
+      return '{' + arr.join(', ') + '}';
+    }
+
+    function generateSteps(inputNums) {
+      const out = [];
+      const numSet = new Set(inputNums);
+      const setValues = uniqueSorted(inputNums);
+      let longest = 0;
+
+      out.push({
+        line: 3,
+        title: 'Create numSet',
+        msg: 'Convert nums into a set so the visualizer can check whether a value exists.',
+        num: null,
+        prev: null,
+        length: null,
+        longest,
+        setValues,
+        currentSequence: [],
+        checkingValue: null,
+        missingValue: null,
+        phase: 'init-set'
+      });
+
+      out.push({
+        line: 4,
+        title: 'Initialize longest = 0',
+        msg: 'longest stores the best sequence length found so far. It starts at 0, which also handles the empty nums case.',
+        num: null,
+        prev: null,
+        length: null,
+        longest,
+        setValues,
+        currentSequence: [],
+        checkingValue: null,
+        missingValue: null,
+        phase: 'init-longest'
+      });
+
+      for (const num of setValues) {
+        out.push({
+          line: 6,
+          title: `Loop over num = ${num}`,
+          msg: `Now consider ${num} from numSet.`,
+          num,
+          prev: num - 1,
+          length: null,
+          longest,
+          setValues,
+          currentSequence: [],
+          checkingValue: num,
+          missingValue: null,
+          phase: 'for-loop'
+        });
+
+        const hasPrev = numSet.has(num - 1);
+        out.push({
+          line: 7,
+          title: `Check if ${num} is a sequence start`,
+          msg: hasPrev
+            ? `${num} - 1 = ${num - 1} exists in numSet, so ${num} is not the start. Skip counting from here.`
+            : `${num} - 1 = ${num - 1} is missing, so ${num} is the start of a new sequence.`,
+          num,
+          prev: num - 1,
+          length: null,
+          longest,
+          setValues,
+          currentSequence: [],
+          checkingValue: num,
+          missingValue: hasPrev ? null : num - 1,
+          phase: hasPrev ? 'skip' : 'start'
+        });
+
+        if (hasPrev) {
+          continue;
+        }
+
+        let length = 1;
+        let currentSequence = [num];
+
+        out.push({
+          line: 8,
+          title: 'Set length = 1',
+          msg: `The sequence starts at ${num}, so its current length is 1.`,
+          num,
+          prev: num - 1,
+          length,
+          longest,
+          setValues,
+          currentSequence: [...currentSequence],
+          checkingValue: num,
+          missingValue: null,
+          phase: 'length-init'
+        });
+
+        while (numSet.has(num + length)) {
+          const nextValue = num + length;
+          out.push({
+            line: 9,
+            title: `Check num + length = ${nextValue}`,
+            msg: `${nextValue} exists in numSet, so the sequence continues.`,
+            num,
+            prev: num - 1,
+            length,
+            longest,
+            setValues,
+            currentSequence: [...currentSequence],
+            checkingValue: nextValue,
+            missingValue: null,
+            phase: 'while-true'
+          });
+
+          length += 1;
+          currentSequence.push(nextValue);
+
+          out.push({
+            line: 10,
+            title: `Increase length to ${length}`,
+            msg: `After including ${nextValue}, the sequence is now length ${length}.`,
+            num,
+            prev: num - 1,
+            length,
+            longest,
+            setValues,
+            currentSequence: [...currentSequence],
+            checkingValue: nextValue,
+            missingValue: null,
+            phase: 'length-plus'
+          });
+        }
+
+        const stopValue = num + length;
+        out.push({
+          line: 9,
+          title: `Check num + length = ${stopValue}`,
+          msg: `${stopValue} is not in numSet, so the while loop stops.`,
+          num,
+          prev: num - 1,
+          length,
+          longest,
+          setValues,
+          currentSequence: [...currentSequence],
+          checkingValue: null,
+          missingValue: stopValue,
+          phase: 'while-false'
+        });
+
+        const oldLongest = longest;
+        longest = Math.max(length, longest);
+
+        out.push({
+          line: 11,
+          title: 'Update longest',
+          msg: `longest = max(${length}, ${oldLongest}) = ${longest}.`,
+          num,
+          prev: num - 1,
+          length,
+          longest,
+          setValues,
+          currentSequence: [...currentSequence],
+          checkingValue: null,
+          missingValue: null,
+          phase: 'update-longest'
+        });
+      }
+
+      out.push({
+        line: 12,
+        title: `Return ${longest}`,
+        msg: `Finished checking every possible sequence start. The longest consecutive sequence length is ${longest}.`,
+        num: null,
+        prev: null,
+        length: null,
+        longest,
+        setValues,
+        currentSequence: [],
+        checkingValue: null,
+        missingValue: null,
+        phase: 'done'
+      });
+
+      return out;
+    }
+
+    function renderCode(activeLine) {
+      codeWrap.innerHTML = codeLines.map(line => `
+        <div class="code-line ${line.n === activeLine ? 'active' : ''}" data-line="${line.n}">
+          <div class="ln">${line.n}</div>
+          <div class="code">${line.html || '&nbsp;'}</div>
+        </div>
+      `).join('');
+
+      const active = codeWrap.querySelector('.code-line.active');
+      if (active) {
+        const targetTop = active.offsetTop - (codeWrap.clientHeight / 2) + (active.clientHeight / 2);
+        codeWrap.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+      }
+    }
+
+    function makeChip(value, classes = [], label = '') {
+      const div = document.createElement('div');
+      div.className = ['num-chip', ...classes].join(' ');
+      div.textContent = value;
+      if (label) {
+        const span = document.createElement('span');
+        span.className = 'chip-label';
+        span.textContent = label;
+        div.appendChild(span);
+      }
+      return div;
+    }
+
+    function renderNums() {
+      numsRow.innerHTML = '';
+      if (nums.length === 0) {
+        numsRow.appendChild(makeChip('empty', ['skip']));
+        return;
+      }
+      nums.forEach((value, index) => {
+        numsRow.appendChild(makeChip(value, [], `i=${index}`));
+      });
+    }
+
+    function renderSet(step) {
+      setRow.innerHTML = '';
+      if (step.setValues.length === 0) {
+        setRow.appendChild(makeChip('empty', ['skip']));
+        return;
+      }
+
+      step.setValues.forEach(value => {
+        const classes = [];
+        let label = '';
+
+        if (value === step.num) {
+          classes.push('current');
+          label = 'num';
+        }
+
+        if (step.phase === 'start' && value === step.num) {
+          classes.push('start');
+          label = 'start';
+        }
+
+        if (step.phase === 'skip' && value === step.num) {
+          classes.push('skip');
+          label = 'skip';
+        }
+
+        if (step.currentSequence && step.currentSequence.includes(value)) {
+          classes.push('counting');
+          label = 'seq';
+        }
+
+        if (value === step.checkingValue && step.phase !== 'for-loop') {
+          classes.push('counting');
+          label = 'check';
+        }
+
+        setRow.appendChild(makeChip(value, classes, label));
+      });
+
+      if (step.missingValue !== null && step.missingValue !== undefined) {
+        setRow.appendChild(makeChip(step.missingValue, ['missing'], 'missing'));
+      }
+    }
+
+    function renderSequence(step) {
+      sequenceLine.innerHTML = '';
+      const seq = step.currentSequence || [];
+      if (seq.length === 0) {
+        sequenceLine.appendChild(makeChip('-', ['skip'], 'sequence'));
+        return;
+      }
+
+      seq.forEach((value, index) => {
+        sequenceLine.appendChild(makeChip(value, ['counting']));
+        if (index !== seq.length - 1) {
+          const arrow = document.createElement('span');
+          arrow.className = 'arrow';
+          arrow.textContent = '→';
+          sequenceLine.appendChild(arrow);
+        }
+      });
+    }
+
+    function renderStateBox(step) {
+      const lines = [];
+      lines.push(`nums = [${nums.join(', ')}]`);
+      lines.push(`numSet = ${formatSet(step.setValues)}`);
+      lines.push('');
+      lines.push(`num = ${step.num === null ? '-' : step.num}`);
+      lines.push(`num - 1 = ${step.prev === null ? '-' : step.prev}`);
+      lines.push(`length = ${step.length === null ? '-' : step.length}`);
+      lines.push(`longest = ${step.longest}`);
+      lines.push('');
+      if (step.currentSequence && step.currentSequence.length) {
+        lines.push(`current sequence = [${step.currentSequence.join(', ')}]`);
+      } else {
+        lines.push('current sequence = []');
+      }
+      if (step.missingValue !== null && step.missingValue !== undefined) {
+        lines.push(`missing value checked = ${step.missingValue}`);
+      }
+      stateBox.textContent = lines.join('\n');
+    }
+
+    function renderStep() {
+      const step = steps[stepIndex];
+      renderCode(step.line);
+      renderNums();
+      renderSet(step);
+      renderSequence(step);
+      renderStateBox(step);
+
+      bigStep.textContent = step.title;
+      message.textContent = step.msg;
+      numVal.textContent = step.num === null ? '-' : step.num;
+      prevVal.textContent = step.prev === null ? '-' : step.prev;
+      lengthVal.textContent = step.length === null ? '-' : step.length;
+      longestVal.textContent = step.longest;
+      statusText.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+
+      prevBtn.disabled = stepIndex === 0;
+      nextBtn.disabled = stepIndex === steps.length - 1;
+    }
+
+    function reset() {
+      stopPlay();
+      stepIndex = 0;
+      steps = generateSteps(nums);
+      renderStep();
+    }
+
+    function next() {
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        renderStep();
+      } else {
+        stopPlay();
+      }
+    }
+
+    function prev() {
+      if (stepIndex > 0) {
+        stepIndex--;
+        renderStep();
+      }
+    }
+
+    function stopPlay() {
+      if (timer) clearInterval(timer);
+      timer = null;
+      playBtn.textContent = 'Play';
+    }
+
+    function togglePlay() {
+      if (timer) {
+        stopPlay();
+      } else {
+        playBtn.textContent = 'Pause';
+        timer = setInterval(() => {
+          if (stepIndex >= steps.length - 1) {
+            stopPlay();
+          } else {
+            next();
+          }
+        }, 800);
+      }
+    }
+
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+    resetBtn.addEventListener('click', reset);
+    playBtn.addEventListener('click', togglePlay);
+    caseSelect.addEventListener('change', () => {
+      nums = cases[caseSelect.value];
+      reset();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') prev();
+      if (e.key === ' ') {
+        e.preventDefault();
+        togglePlay();
+      }
+    });
+
+    reset();
+  </script>
+</body>
+</html>
