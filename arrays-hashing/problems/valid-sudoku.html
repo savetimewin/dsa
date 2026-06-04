@@ -29,12 +29,13 @@
     * { box-sizing: border-box; }
 
     html, body {
-      height: 100%;
-      overflow: hidden;
+      min-height: 100%;
     }
 
     body {
       margin: 0;
+      min-height: 100vh;
+      overflow: auto;
       background: var(--bg);
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -62,9 +63,10 @@
       grid-template-columns: minmax(460px, 0.92fr) minmax(560px, 1.08fr);
       gap: 16px;
       padding: 16px;
-      height: calc(100vh - 78px);
-      overflow: hidden;
-      min-height: 0;
+      min-height: calc(100vh - 78px);
+      height: auto;
+      overflow: visible;
+      align-items: stretch;
     }
 
     .panel {
@@ -96,6 +98,7 @@
       overflow: auto;
       flex: 1;
       min-height: 0;
+      max-height: calc(100vh - 132px);
       font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
       font-size: 14px;
       line-height: 1.55;
@@ -138,11 +141,10 @@
 
     .right {
       display: grid;
-      grid-template-rows: auto auto minmax(0, 1fr);
+      grid-template-rows: auto auto auto;
       gap: 16px;
       min-height: 0;
-      overflow: auto;
-      overscroll-behavior: contain;
+      overflow: visible;
     }
 
     .controls {
@@ -327,15 +329,15 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
       padding: 14px;
-      height: 100%;
       min-height: 0;
-      overflow: auto;
+      overflow: visible;
     }
 
     .sets-card {
       display: flex;
       flex-direction: column;
       min-height: 0;
+      overflow: visible;
     }
 
     .set-section {
@@ -380,17 +382,34 @@
     }
 
     @media (max-width: 1080px) {
-      html, body { overflow: auto; }
       .layout {
         grid-template-columns: 1fr;
-        height: auto;
-        overflow: visible;
+        min-height: auto;
       }
       .code-wrap { max-height: 520px; flex: initial; }
       .board-state { grid-template-columns: 1fr; }
       .status { margin-left: 0; width: 100%; }
-      .right { overflow: visible; }
       .sets-grid { height: auto; max-height: none; }
+    }
+
+    @media (max-width: 760px) {
+      header { padding: 14px 16px; }
+      .layout { padding: 12px; }
+      .controls { align-items: stretch; }
+      button, select { flex: 1 1 130px; }
+      .board-state { gap: 12px; }
+      .sudoku {
+        width: min(302px, calc(100vw - 58px));
+        height: min(302px, calc(100vw - 58px));
+      }
+      .mini { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .sets-grid { grid-template-columns: 1fr; }
+      .set-list { min-height: 120px; max-height: none; }
+    }
+
+    @media (max-height: 760px) and (min-width: 1081px) {
+      .layout { min-height: auto; }
+      .code-wrap { max-height: none; }
     }
   </style>
 </head>
