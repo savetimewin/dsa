@@ -58,6 +58,13 @@
       font-size: 14px;
     }
 
+    .solution-name {
+      color: var(--text);
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+
     .layout {
       display: grid;
       grid-template-columns: minmax(460px, 0.92fr) minmax(560px, 1.08fr);
@@ -147,15 +154,19 @@
       overflow: visible;
     }
 
+    .visualizer-card {
+      overflow: hidden;
+    }
+
     .controls {
       display: flex;
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
       padding: 14px;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 14px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
     }
 
     button {
@@ -415,8 +426,9 @@
 </head>
 <body>
   <header>
-    <h1>Valid Sudoku: One-Pass Hash Set Visualizer</h1>
-    <div class="subtitle">Scan each cell. Skip dots. Check row, column, and 3x3 square. If safe, add the value to all three tracking sets.</div>
+    <h1>Valid Sudoku</h1>
+    <div class="solution-name"><em>One-Pass Hash Set</em></div>
+    <div class="subtitle">Scan each cell, skip dots, check row, column, and 3x3 square, then add safe values to tracking sets.</div>
   </header>
 
   <main class="layout">
@@ -426,7 +438,9 @@
     </section>
 
     <section class="right">
-      <div class="controls">
+      <div class="card visualizer-card">
+        <div class="panel-title">Visualizer</div>
+        <div class="controls">
         <button id="prevBtn" class="secondary">Back</button>
         <button id="nextBtn">Next</button>
         <button id="playBtn" class="secondary">Play</button>
@@ -438,6 +452,7 @@
           <option value="boxDuplicate">Invalid: 3x3 box duplicate</option>
         </select>
         <div class="status" id="statusText">Step 0 / 0</div>
+        </div>
       </div>
 
       <div class="board-state">

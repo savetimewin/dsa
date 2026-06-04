@@ -3,860 +3,940 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Top K Frequent Elements - Bucket Sort Visualizer</title>
+  <title>Top K Frequent Elements Visualizer</title>
   <style>
-    :root{
-      --bg:#0f1117;
-      --panel:#151922;
-      --panel-2:#1a1f2b;
-      --editor:#1e1e1e;
-      --line:#2a3142;
-      --text:#d4d4d4;
-      --muted:#8b95a7;
-      --accent:#4fc1ff;
-      --accent-2:#7ee787;
-      --danger:#ff6b81;
-      --warning:#ffd166;
-      --keyword:#c586c0;
-      --func:#dcdcaa;
-      --type:#4ec9b0;
-      --id:#9cdcfe;
-      --plain:#d4d4d4;
-      --bool:#569cd6;
-      --num:#f78c6c;
-      --comment:#6a9955;
-      --border:#283041;
-      --tile:#202736;
-      --tile-active:#264766;
-      --tile-found:#2d5a39;
-      --tile-bucket:#243047;
-      --shadow:0 14px 40px rgba(0,0,0,.35);
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel2: #0f1620;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --line: #30363d;
+      --blue: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --orange: #ffa657;
+      --cell: #101820;
+      --highlight: rgba(88, 166, 255, 0.18);
+      --active: rgba(210, 153, 34, 0.28);
+      --ok: rgba(63, 185, 80, 0.22);
+      --bad: rgba(248, 81, 73, 0.22);
+      --skip: rgba(139, 148, 158, 0.18);
     }
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:radial-gradient(circle at top, #151b29 0%, #0f1117 55%);
-      color:var(--text);
-      min-height:100vh;
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: auto;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    .top-links{
-      padding:20px;
-      text-align:center;
-      border-bottom:1px solid var(--border);
-    }
-    .top-links a{
-      color:var(--accent);
-      text-decoration:none;
-      font-weight:600;
-      font-size:15px;
-      transition:opacity .2s ease;
-      display:block;
-      margin-bottom:8px;
-    }
-    .top-links a:hover{opacity:.78}
-
-    .app{
-      width:min(1480px, 96vw);
-      margin:20px auto;
-      display:grid;
-      grid-template-columns:1.04fr 1fr;
-      gap:18px;
+    header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: #090d13;
     }
 
-    .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border:1px solid var(--border);
-      border-radius:16px;
-      overflow:hidden;
-      box-shadow:var(--shadow);
-      min-height:820px;
+    h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
     }
 
-    .panel-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px 16px;
-      border-bottom:1px solid var(--border);
-      background:rgba(255,255,255,.02);
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
     }
 
-    .panel-title{font-weight:700;letter-spacing:.2px}
-    .pill{
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      font-size:13px;
-      color:var(--muted);
-      background:rgba(255,255,255,.02);
-      white-space:nowrap;
+    .solution-name {
+      color: var(--text);
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 6px;
     }
 
-    .editor{
-      background:var(--editor);
-      height:100%;
-      display:flex;
-      flex-direction:column;
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(460px, 0.92fr) minmax(560px, 1.08fr);
+      gap: 16px;
+      padding: 16px;
+      min-height: calc(100vh - 78px);
+      height: auto;
+      overflow: visible;
+      align-items: stretch;
     }
 
-    .editor-topbar{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding:10px 14px;
-      border-bottom:1px solid #2c2c2c;
-      background:#191919;
+    .panel, .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+      min-height: 0;
     }
 
-    .dot{width:12px;height:12px;border-radius:50%}
-    .dot.red{background:#ff5f56}
-    .dot.yellow{background:#ffbd2e}
-    .dot.green{background:#27c93f}
-    .editor-file{margin-left:10px;color:#a9b1c6;font-size:14px;letter-spacing:.2px}
-
-    .code-wrap{
-      padding:14px 0 18px 0;
-      overflow:auto;
-      flex:1;
-      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:17px;
-      line-height:30px;
-      tab-size:4;
+    .layout > .panel {
+      display: flex;
+      flex-direction: column;
     }
 
-    .code-line{
-      position:relative;
-      display:grid;
-      grid-template-columns:52px max-content;
-      min-height:30px;
-      padding-right:18px;
-      border-left:3px solid transparent;
+    .panel-title {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      background: #0f141c;
     }
-    .code-line.active{
-      background:linear-gradient(90deg, rgba(79,193,255,.18), rgba(79,193,255,.055));
-      border-left-color:var(--accent);
+
+    .code-wrap {
+      position: relative;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+      max-height: calc(100vh - 132px);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.55;
+      background: #0d1117;
     }
-    .line-no{
-      text-align:right;
-      padding-right:14px;
-      color:#5d6578;
-      user-select:none;
-      font-size:14px;
-      line-height:30px;
+
+    .code-line {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      min-height: 24px;
+      border-left: 3px solid transparent;
     }
-    .code-content{
-      position:relative;
-      display:block;
-      white-space:pre;
-      line-height:30px;
-      padding-left:12px;
+
+    .code-line.active {
+      background: var(--highlight);
+      border-left-color: var(--blue);
     }
-    .code-content.indent-1{padding-left:44px;}
-    .code-content.indent-2{padding-left:76px;}
-    .code-content.indent-3{padding-left:108px;}
-    .code-content.indent-4{padding-left:140px;}
-    .code-content.indent-5{padding-left:172px;}
-    .code-content.indent-1,
-    .code-content.indent-2,
-    .code-content.indent-3,
-    .code-content.indent-4,
-    .code-content.indent-5{
-      background-image:linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));
-      background-size:1px 100%;
-      background-repeat:repeat-y;
-      background-position:28px 0;
+
+    .ln {
+      color: #6e7681;
+      text-align: right;
+      padding-right: 12px;
+      user-select: none;
     }
-    .code-content.indent-2{background-position:28px 0,60px 0;background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12));}
-    .code-content.indent-3{background-position:28px 0,60px 0,92px 0;background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12));}
-    .code-content.indent-4{background-position:28px 0,60px 0,92px 0,124px 0;background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12));}
-    .code-content.indent-5{background-position:28px 0,60px 0,92px 0,124px 0,156px 0;background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12));}
 
-    .kw{color:var(--keyword)}
-    .fn{color:var(--func)}
-    .ty{color:var(--type)}
-    .id{color:var(--id)}
-    .pl{color:var(--plain)}
-    .bl{color:var(--bool)}
-    .nu{color:var(--num)}
-    .cm{color:var(--comment)}
-    .str{color:#ce9178}
-
-    .viz{
-      padding:18px;
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-      height:100%;
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+    .code {
+      white-space: pre;
+      padding-right: 16px;
     }
-    .controls,.input-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-    button{
-      background:#20283a;
-      color:#e6edf7;
-      border:1px solid #32405d;
-      padding:10px 14px;
-      border-radius:10px;
-      font-weight:600;
-      cursor:pointer;
-      transition:.18s ease;
+
+    .kw { color: #ff7b72; }
+    .fn { color: #d2a8ff; }
+    .type { color: #ffa657; }
+    .str { color: #a5d6ff; }
+    .num { color: #79c0ff; }
+    .op { color: #ff7b72; }
+    .cm { color: #8b949e; font-style: italic; }
+    .var { color: #c9d1d9; }
+    .meth { color: #d2a8ff; }
+
+    .right {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: 16px;
+      min-height: 0;
+      overflow: visible;
     }
-    button:hover{transform:translateY(-1px);background:#263149}
-    button:disabled{opacity:.45;cursor:not-allowed;transform:none}
-    input[type="text"], input[type="number"]{
-      background:#0f1522;
-      color:var(--text);
-      border:1px solid #334055;
-      border-radius:10px;
-      padding:10px 12px;
-      font-size:14px;
-      outline:none;
-      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+
+    .visualizer-card {
+      overflow: hidden;
     }
-    input[type="text"]{min-width:310px}
-    input[type="number"]{width:80px}
-    .grid{display:grid;grid-template-columns:1fr;gap:14px}
-    .card{background:var(--panel-2);border:1px solid var(--border);border-radius:14px;padding:14px}
-    .card-title{font-weight:700;margin-bottom:12px;color:#f1f5ff;display:flex;align-items:center;gap:8px}
-    .subtle{color:var(--muted);font-size:14px}
 
-    .num-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:4px}
-    .num-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;min-width:56px}
-    .pointer{min-height:22px;color:var(--warning);font-size:12px;font-weight:700;letter-spacing:.2px}
-    .pointer.hidden{visibility:hidden}
-    .num-cell{
-      width:56px;height:50px;display:flex;align-items:center;justify-content:center;
-      border-radius:12px;background:var(--tile);border:1px solid #354056;
-      font-size:20px;font-weight:800;transition:.2s ease;
-      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
     }
-    .num-cell.current{background:var(--tile-active);border-color:#5aa2dd;box-shadow:0 0 0 3px rgba(79,193,255,.14) inset}
-    .num-cell.done{opacity:.72}
-    .num-cell.result{background:var(--tile-found);border-color:#4aa36d}
-    .index{color:var(--muted);font-size:12px;font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace}
 
-    .hash-box{background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:150px}
-    .hash-title{font-weight:700;color:#f5f7ff;margin-bottom:10px}
-    .dict-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px}
-    .dict-card{border:1px solid #3b4d70;background:#253049;border-radius:12px;padding:10px;font-family:"JetBrains Mono",monospace;text-align:center}
-    .dict-card.active{background:#254938;border-color:#4aa36d}
-    .dict-key{font-size:20px;font-weight:800;color:#f5f7ff}
-    .dict-val{font-size:13px;color:var(--muted);margin-top:4px}
-    .empty{color:var(--muted);font-size:14px;padding-top:8px}
+    button {
+      background: #238636;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 9px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-weight: 650;
+    }
 
-    .bucket-list{display:grid;grid-template-columns:1fr;gap:8px;max-height:300px;overflow:auto;padding-right:4px}
-    .bucket-row{display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:center;background:#121826;border:1px solid var(--border);border-radius:12px;padding:9px;transition:.2s ease}
-    .bucket-row.active{background:#172b3e;border-color:#5aa2dd;box-shadow:0 0 0 3px rgba(79,193,255,.11) inset}
-    .bucket-row.scan{background:#252136;border-color:#8067d9}
-    .bucket-index{font-family:"JetBrains Mono",monospace;font-weight:800;color:#f5f7ff}
-    .bucket-label{color:var(--muted);font-size:12px;margin-top:2px}
-    .bucket-values{display:flex;flex-wrap:wrap;gap:8px;min-height:34px;align-items:center}
-    .bucket-chip{min-width:38px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--tile-bucket);border:1px solid #41527a;font-family:"JetBrains Mono",monospace;font-weight:800;color:#f5f7ff}
-    .bucket-chip.added{background:#254938;border-color:#4aa36d}
-    .bucket-chip.selected{background:#2d5a39;border-color:#7ee787;box-shadow:0 0 0 3px rgba(126,231,135,.13) inset}
+    button.secondary { background: #21262d; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    .result-row{display:flex;gap:10px;flex-wrap:wrap;min-height:48px;align-items:center}
-    .result-chip{min-width:48px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#254938;border:1px solid #4aa36d;font-family:"JetBrains Mono",monospace;font-weight:800;font-size:18px;color:#f5f7ff}
+    select {
+      background: #0d1117;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 9px 11px;
+      min-width: 230px;
+    }
 
-    .state-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .mini{background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:82px}
-    .mini-label{color:var(--muted);font-size:13px;margin-bottom:10px}
-    .mini-value{font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace;font-size:20px;font-weight:800;color:#f5f7ff;overflow-wrap:anywhere}
-    .explain{line-height:1.6;font-size:15px;color:#dde5f6}
-    .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-    .legend-item{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
-    .legend-box{width:16px;height:16px;border-radius:4px;border:1px solid #4d5a72}
-    .progress{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
-    .bar{flex:1;height:8px;background:#182030;border-radius:999px;overflow:hidden;border:1px solid #29374f}
-    .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#4fc1ff,#78dfb9);transition:.2s ease}
-    .complexity-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .complexity-box{background:#121826;border:1px solid var(--border);border-radius:12px;padding:12px;line-height:1.55}
-    .complexity-box strong{color:#f5f7ff}
-    code.inline{font-family:"JetBrains Mono",monospace;background:#101724;border:1px solid #2e3b55;border-radius:6px;padding:1px 5px;color:#e8eefc}
+    .status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+    }
 
-    @media (max-width:1100px){.app{grid-template-columns:1fr}.panel{min-height:auto}}
-    @media (max-width:700px){.state-grid,.complexity-grid{grid-template-columns:1fr}.code-line{font-size:16px}input[type="text"]{min-width:220px}.bucket-row{grid-template-columns:1fr}}
+    .top-state {
+      display: grid;
+      grid-template-columns: minmax(340px, 0.9fr) minmax(360px, 1.1fr);
+      gap: 16px;
+    }
 
-    /* Compact interview-review layout */
-    body{min-height:auto;}
-    .top-links{padding:8px 14px;}
-    .top-links a{font-size:13px;margin-bottom:3px;}
-    .app{width:min(1500px,98vw);margin:10px auto 12px;grid-template-columns:0.98fr 1.02fr;gap:10px;align-items:start;}
-    .panel{border-radius:12px;min-height:0;}
-    .panel-header{padding:8px 10px;gap:8px;}
-    .panel-title{font-size:14px;}
-    .pill{font-size:11px;padding:4px 7px;}
-    .editor-topbar{padding:6px 10px;}
-    .dot{width:9px;height:9px;}
-    .editor-file{font-size:12px;}
-    .code-wrap{font-size:12px;line-height:15.6px;padding:6px 0 8px 0;overflow:auto;}
-    .code-line{grid-template-columns:34px max-content;min-height:15.6px;}
-    .line-no{font-size:10px;line-height:15.6px;padding-right:8px;}
-    .code-content{line-height:15.6px;padding-left:8px;}
-    .code-content.indent-1{padding-left:26px;}
-    .code-content.indent-2{padding-left:44px;}
-    .code-content.indent-3{padding-left:62px;}
-    .code-content.indent-4{padding-left:80px;}
-    .code-content.indent-5{padding-left:98px;}
-    .code-content.indent-1,.code-content.indent-2,.code-content.indent-3,.code-content.indent-4,.code-content.indent-5{background-position:16px 0;}
-    .code-content.indent-2{background-position:16px 0,34px 0;}
-    .code-content.indent-3{background-position:16px 0,34px 0,52px 0;}
-    .code-content.indent-4{background-position:16px 0,34px 0,52px 0,70px 0;}
-    .code-content.indent-5{background-position:16px 0,34px 0,52px 0,70px 0,88px 0;}
+    .card-body { padding: 14px; }
 
-    .viz{padding:8px;gap:7px;}
-    .input-row,.controls{gap:6px;}
-    button{padding:5px 8px;border-radius:8px;font-size:12px;}
-    input[type="text"], input[type="number"]{padding:5px 7px;border-radius:8px;font-size:12px;}
-    input[type="text"]{min-width:230px;}
-    input[type="number"]{width:56px;}
-    .grid{gap:7px;}
-    .card{border-radius:10px;padding:8px;}
-    .card-title{font-size:13px;margin-bottom:6px;}
-    .subtle{font-size:11.5px;}
-    .num-row{gap:6px;margin-bottom:0;}
-    .num-wrap{min-width:38px;gap:3px;}
-    .pointer{min-height:13px;font-size:9px;}
-    .num-cell{width:38px;height:30px;border-radius:8px;font-size:15px;}
-    .index{font-size:9px;}
-    .legend{display:none;}
-    .hash-box{border-radius:10px;padding:8px;min-height:78px;}
-    .hash-title{font-size:13px;margin-bottom:6px;}
-    .dict-grid{grid-template-columns:repeat(auto-fit,minmax(58px,1fr));gap:5px;}
-    .dict-card{border-radius:8px;padding:5px;}
-    .dict-key{font-size:15px;}
-    .dict-val{font-size:10px;margin-top:1px;}
-    .bucket-list{max-height:190px;gap:4px;}
-    .bucket-row{grid-template-columns:62px 1fr;gap:6px;border-radius:8px;padding:5px;}
-    .bucket-index{font-size:12px;}
-    .bucket-label{font-size:9.5px;margin-top:0;}
-    .bucket-values{gap:4px;min-height:24px;}
-    .bucket-chip{min-width:28px;height:23px;border-radius:7px;font-size:12px;}
-    .result-row{gap:6px;min-height:28px;}
-    .result-chip{min-width:34px;height:28px;border-radius:8px;font-size:14px;}
-    .state-grid{grid-template-columns:repeat(4,1fr);gap:6px;}
-    .mini{border-radius:9px;padding:6px;min-height:50px;}
-    .mini-label{font-size:10px;margin-bottom:4px;}
-    .mini-value{font-size:13px;}
-    .explain{font-size:12.5px;line-height:1.35;}
-    .progress{font-size:11px;gap:6px;}
-    .bar{height:6px;}
-    .empty{font-size:11px;padding-top:2px;}
-    code.inline{font-size:0.9em;padding:0 4px;}
+    .number-row, .res-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
 
-    .complexity-section{width:min(1500px,98vw);margin:0 auto 18px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));box-shadow:var(--shadow);}
-    .complexity-header{border-bottom:1px solid var(--border);}
-    .complexity-grid-wide{grid-template-columns:1fr 1fr 1fr;padding:10px;}
-    .complexity-box{font-size:13px;padding:10px;border-radius:10px;}
+    .chip {
+      min-width: 44px;
+      height: 42px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--cell);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 18px;
+      font-weight: 750;
+      position: relative;
+    }
 
-    @media (max-width:1100px){.app{grid-template-columns:1fr}.complexity-grid-wide{grid-template-columns:1fr}.code-wrap{font-size:12px;line-height:16px}.code-line,.line-no,.code-content{line-height:16px;min-height:16px}}
+    .chip.current {
+      background: var(--active);
+      outline: 3px solid var(--yellow);
+      z-index: 2;
+    }
 
+    .chip.ok {
+      background: var(--ok);
+      outline: 2px solid var(--green);
+    }
+
+    .chip.scan {
+      background: rgba(88, 166, 255, 0.22);
+      outline: 2px solid var(--blue);
+    }
+
+    .chip.skip {
+      background: var(--skip);
+      color: var(--muted);
+    }
+
+    .chip.return {
+      background: rgba(188, 140, 255, 0.22);
+      outline: 2px solid var(--purple);
+    }
+
+    .chip-label {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--muted);
+      font-size: 10px;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .big-step {
+      font-size: 18px;
+      font-weight: 750;
+      margin-bottom: 8px;
+    }
+
+    .message {
+      color: var(--text);
+      line-height: 1.45;
+      min-height: 58px;
+    }
+
+    .mini {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini-card {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      border-radius: 10px;
+      padding: 9px;
+      min-height: 62px;
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .mini-value {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 15px;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: minmax(340px, 0.9fr) minmax(360px, 1.1fr);
+      gap: 16px;
+    }
+
+    .plain-box {
+      margin: 0;
+      padding: 14px;
+      min-height: 260px;
+      max-height: 370px;
+      white-space: pre-wrap;
+      overflow: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text);
+      background: #0d1117;
+      height: 100%;
+    }
+
+    .bucket-list {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+      max-height: 370px;
+      overflow: auto;
+      background: #0d1117;
+    }
+
+    .bucket-row {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 8px;
+      align-items: center;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      border-radius: 10px;
+      padding: 7px 9px;
+    }
+
+    .bucket-row.active {
+      outline: 2px solid var(--yellow);
+      background: var(--active);
+    }
+
+    .bucket-index {
+      color: var(--muted);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+    }
+
+    .bucket-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      min-height: 28px;
+    }
+
+    .small-chip {
+      min-width: 34px;
+      height: 28px;
+      padding: 0 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--cell);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .small-chip.current { background: var(--active); outline: 2px solid var(--yellow); }
+    .small-chip.ok { background: var(--ok); outline: 1px solid var(--green); }
+    .small-chip.return { background: rgba(188, 140, 255, 0.22); outline: 1px solid var(--purple); }
+    .empty-text { color: var(--muted); font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; }
+
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: -1px;
+    }
+    .dot.current { background: var(--yellow); }
+    .dot.scan { background: var(--blue); }
+    .dot.ok { background: var(--green); }
+    .dot.return { background: var(--purple); }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 0 14px 14px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 1080px) {
+      .layout { grid-template-columns: 1fr; min-height: auto; }
+      .code-wrap { max-height: 560px; flex: initial; }
+      .top-state, .bottom-grid { grid-template-columns: 1fr; }
+      .status { margin-left: 0; width: 100%; }
+    }
+
+    @media (max-width: 760px) {
+      header { padding: 14px 16px; }
+      .layout { padding: 12px; }
+      .controls { align-items: stretch; }
+      button, select { flex: 1 1 130px; }
+      .mini { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
   </style>
 </head>
 <body>
-  <div class="top-links">
-    <a href="https://leetcode.com/problems/top-k-frequent-elements/" target="_blank">LeetCode Problem Link ↗</a>
-    <a href="https://neetcode.io/problems/top-k-elements-in-list/question" target="_blank">NeetCode Problem Link ↗</a>
-  </div>
+  <header>
+    <h1>Top K Frequent Elements</h1>
+    <div class="solution-name"><em>Bucket Sort</em></div>
+    <div class="subtitle">Count each number, put numbers into frequency buckets, then scan buckets from high frequency to low frequency.</div>
+  </header>
 
-  <div class="app">
-    <section class="panel editor">
-      <div class="editor-topbar">
-        <span class="dot red"></span>
-        <span class="dot yellow"></span>
-        <span class="dot green"></span>
-        <div class="editor-file">top_k_frequent_bucket_sort.py</div>
-      </div>
-      <div class="code-wrap" id="codeWrap">
-        <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="kw">class</span> <span class="id">Solution</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="kw">def</span> <span class="id">topKFrequent</span><span class="pl">(</span><span class="id">self</span><span class="pl">,</span> <span class="id">nums</span><span class="pl">:</span> <span class="ty">List</span><span class="pl">[</span><span class="ty">int</span><span class="pl">]</span><span class="pl">,</span> <span class="id">k</span><span class="pl">:</span> <span class="ty">int</span><span class="pl">)</span> <span class="pl">-&gt;</span> <span class="ty">List</span><span class="pl">[</span><span class="ty">int</span><span class="pl">]</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-2"><span class="id">d</span> <span class="pl">=</span> <span class="pl">{</span><span class="pl">}</span></code></div>
-        <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="id">freq</span> <span class="pl">=</span> <span class="pl">[</span><span class="pl">[</span><span class="pl">]</span> <span class="kw">for</span> <span class="id">i</span> <span class="kw">in</span> <span class="fn">range</span><span class="pl">(</span><span class="fn">len</span><span class="pl">(</span><span class="id">nums</span><span class="pl">)</span> <span class="pl">+</span> <span class="nu">1</span><span class="pl">)</span><span class="pl">]</span></code></div>
-        <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-2"></code></div>
-        <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">num</span> <span class="kw">in</span> <span class="id">nums</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-3"><span class="id">d</span><span class="pl">[</span><span class="id">num</span><span class="pl">]</span> <span class="pl">=</span> <span class="id">d</span><span class="pl">.</span><span class="fn">get</span><span class="pl">(</span><span class="id">num</span><span class="pl">,</span><span class="nu">0</span><span class="pl">)</span> <span class="pl">+</span> <span class="nu">1</span></code></div>
-        <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-2"></code></div>
-        <div class="code-line" data-line="9"><div class="line-no">9</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">num</span><span class="pl">,</span> <span class="id">cnt</span> <span class="kw">in</span> <span class="id">d</span><span class="pl">.</span><span class="fn">items</span><span class="pl">(</span><span class="pl">)</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="10"><div class="line-no">10</div><code class="code-content indent-3"><span class="id">freq</span><span class="pl">[</span><span class="id">cnt</span><span class="pl">]</span><span class="pl">.</span><span class="fn">append</span><span class="pl">(</span><span class="id">num</span><span class="pl">)</span></code></div>
-        <div class="code-line" data-line="11"><div class="line-no">11</div><code class="code-content indent-2"></code></div>
-        <div class="code-line" data-line="12"><div class="line-no">12</div><code class="code-content indent-2"><span class="id">res</span> <span class="pl">=</span> <span class="pl">[</span><span class="pl">]</span></code></div>
-        <div class="code-line" data-line="13"><div class="line-no">13</div><code class="code-content indent-2"><span class="kw">for</span> <span class="id">i</span> <span class="kw">in</span> <span class="fn">range</span><span class="pl">(</span><span class="fn">len</span><span class="pl">(</span><span class="id">freq</span><span class="pl">)</span><span class="pl">-</span><span class="nu">1</span><span class="pl">,</span> <span class="nu">0</span><span class="pl">,</span> <span class="pl">-</span><span class="nu">1</span><span class="pl">)</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="14"><div class="line-no">14</div><code class="code-content indent-3"><span class="kw">for</span> <span class="id">num</span> <span class="kw">in</span> <span class="id">freq</span><span class="pl">[</span><span class="id">i</span><span class="pl">]</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="15"><div class="line-no">15</div><code class="code-content indent-4"><span class="id">res</span><span class="pl">.</span><span class="fn">append</span><span class="pl">(</span><span class="id">num</span><span class="pl">)</span></code></div>
-        <div class="code-line" data-line="16"><div class="line-no">16</div><code class="code-content indent-4"><span class="kw">if</span> <span class="fn">len</span><span class="pl">(</span><span class="id">res</span><span class="pl">)</span> <span class="pl">==</span> <span class="id">k</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="17"><div class="line-no">17</div><code class="code-content indent-5"><span class="kw">return</span> <span class="id">res</span></code></div>
-        <div class="code-line" data-line="18"><div class="line-no">18</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="19"><div class="line-no">19</div><code class="code-content indent-2"><span class="cm"># time complexity</span></code></div>
-        <div class="code-line" data-line="20"><div class="line-no">20</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="21"><div class="line-no">21</div><code class="code-content indent-2"><span class="str">Let n be the number of elements in nums.</span></code></div>
-        <div class="code-line" data-line="22"><div class="line-no">22</div><code class="code-content indent-2"><span class="str">Let u be the number of unique elements.</span></code></div>
-        <div class="code-line" data-line="23"><div class="line-no">23</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="24"><div class="line-no">24</div><code class="code-content indent-2"><span class="str">1. Build frequency dictionary:</span></code></div>
-        <div class="code-line" data-line="25"><div class="line-no">25</div><code class="code-content indent-2"><span class="str">We iterate through nums once.</span></code></div>
-        <div class="code-line" data-line="26"><div class="line-no">26</div><code class="code-content indent-2"><span class="str">Time: O(n)</span></code></div>
-        <div class="code-line" data-line="27"><div class="line-no">27</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="28"><div class="line-no">28</div><code class="code-content indent-2"><span class="str">2. Build bucket array:</span></code></div>
-        <div class="code-line" data-line="29"><div class="line-no">29</div><code class="code-content indent-2"><span class="str">freq has n + 1 buckets.</span></code></div>
-        <div class="code-line" data-line="30"><div class="line-no">30</div><code class="code-content indent-2"><span class="str">Creating it takes O(n).</span></code></div>
-        <div class="code-line" data-line="31"><div class="line-no">31</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="32"><div class="line-no">32</div><code class="code-content indent-2"><span class="str">3. Put each unique number into its frequency bucket:</span></code></div>
-        <div class="code-line" data-line="33"><div class="line-no">33</div><code class="code-content indent-2"><span class="str">We iterate through d.items(), which has u unique numbers.</span></code></div>
-        <div class="code-line" data-line="34"><div class="line-no">34</div><code class="code-content indent-2"><span class="str">Time: O(u)</span></code></div>
-        <div class="code-line" data-line="35"><div class="line-no">35</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="36"><div class="line-no">36</div><code class="code-content indent-2"><span class="str">4. Scan buckets from high frequency to low frequency:</span></code></div>
-        <div class="code-line" data-line="37"><div class="line-no">37</div><code class="code-content indent-2"><span class="str">In the worst case, we may scan across n bucket indices.</span></code></div>
-        <div class="code-line" data-line="38"><div class="line-no">38</div><code class="code-content indent-2"><span class="str">We append at most k numbers into res.</span></code></div>
-        <div class="code-line" data-line="39"><div class="line-no">39</div><code class="code-content indent-2"><span class="str">Time: O(n + k), which simplifies to O(n) because k &lt;= n.</span></code></div>
-        <div class="code-line" data-line="40"><div class="line-no">40</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="41"><div class="line-no">41</div><code class="code-content indent-2"><span class="str">Total:</span></code></div>
-        <div class="code-line" data-line="42"><div class="line-no">42</div><code class="code-content indent-2"><span class="str">O(n) + O(n) + O(u) + O(n + k)</span></code></div>
-        <div class="code-line" data-line="43"><div class="line-no">43</div><code class="code-content indent-2"><span class="str">= O(n + u + k)</span></code></div>
-        <div class="code-line" data-line="44"><div class="line-no">44</div><code class="code-content indent-2"><span class="str">= O(n), because u &lt;= n and k &lt;= n.</span></code></div>
-        <div class="code-line" data-line="45"><div class="line-no">45</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="46"><div class="line-no">46</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="47"><div class="line-no">47</div><code class="code-content indent-2"><span class="cm"># time complexity interview phrasing:</span></code></div>
-        <div class="code-line" data-line="48"><div class="line-no">48</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="49"><div class="line-no">49</div><code class="code-content indent-2"><span class="str">The algorithm is O(n) time. </span></code></div>
-        <div class="code-line" data-line="50"><div class="line-no">50</div><code class="code-content indent-2"><span class="str">Counting takes O(n), bucket construction takes O(n), </span></code></div>
-        <div class="code-line" data-line="51"><div class="line-no">51</div><code class="code-content indent-2"><span class="str">placing unique numbers into buckets takes O(u), </span></code></div>
-        <div class="code-line" data-line="52"><div class="line-no">52</div><code class="code-content indent-2"><span class="str">and scanning the buckets takes O(n) worst case. </span></code></div>
-        <div class="code-line" data-line="53"><div class="line-no">53</div><code class="code-content indent-2"><span class="str">Although we only append k elements into the result, </span></code></div>
-        <div class="code-line" data-line="54"><div class="line-no">54</div><code class="code-content indent-2"><span class="str">the bucket scan can still pass over empty buckets, </span></code></div>
-        <div class="code-line" data-line="55"><div class="line-no">55</div><code class="code-content indent-2"><span class="str">so the result-building phase is not just O(k) in the worst case.</span></code></div>
-        <div class="code-line" data-line="56"><div class="line-no">56</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="57"><div class="line-no">57</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="58"><div class="line-no">58</div><code class="code-content indent-2"><span class="cm"># space complexity</span></code></div>
-        <div class="code-line" data-line="59"><div class="line-no">59</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="60"><div class="line-no">60</div><code class="code-content indent-2"><span class="str">Let n be the number of elements in nums.</span></code></div>
-        <div class="code-line" data-line="61"><div class="line-no">61</div><code class="code-content indent-2"><span class="str">Let u be the number of unique elements.</span></code></div>
-        <div class="code-line" data-line="62"><div class="line-no">62</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="63"><div class="line-no">63</div><code class="code-content indent-2"><span class="str">1. Frequency dictionary d:</span></code></div>
-        <div class="code-line" data-line="64"><div class="line-no">64</div><code class="code-content indent-2"><span class="str">Stores one key-value pair for each unique number.</span></code></div>
-        <div class="code-line" data-line="65"><div class="line-no">65</div><code class="code-content indent-2"><span class="str">Space: O(u)</span></code></div>
-        <div class="code-line" data-line="66"><div class="line-no">66</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="67"><div class="line-no">67</div><code class="code-content indent-2"><span class="str">2. Frequency bucket array freq:</span></code></div>
-        <div class="code-line" data-line="68"><div class="line-no">68</div><code class="code-content indent-2"><span class="str">freq has n + 1 buckets.</span></code></div>
-        <div class="code-line" data-line="69"><div class="line-no">69</div><code class="code-content indent-2"><span class="str">Creating the outer list takes O(n).</span></code></div>
-        <div class="code-line" data-line="70"><div class="line-no">70</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="71"><div class="line-no">71</div><code class="code-content indent-2"><span class="str">3. Values stored inside the buckets:</span></code></div>
-        <div class="code-line" data-line="72"><div class="line-no">72</div><code class="code-content indent-2"><span class="str">Each unique number appears in exactly one bucket.</span></code></div>
-        <div class="code-line" data-line="73"><div class="line-no">73</div><code class="code-content indent-2"><span class="str">Across all buckets, there are u stored numbers.</span></code></div>
-        <div class="code-line" data-line="74"><div class="line-no">74</div><code class="code-content indent-2"><span class="str">Space: O(u)</span></code></div>
-        <div class="code-line" data-line="75"><div class="line-no">75</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="76"><div class="line-no">76</div><code class="code-content indent-2"><span class="str">4. Result list res:</span></code></div>
-        <div class="code-line" data-line="77"><div class="line-no">77</div><code class="code-content indent-2"><span class="str">Stores k numbers.</span></code></div>
-        <div class="code-line" data-line="78"><div class="line-no">78</div><code class="code-content indent-2"><span class="str">Space: O(k)</span></code></div>
-        <div class="code-line" data-line="79"><div class="line-no">79</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="80"><div class="line-no">80</div><code class="code-content indent-2"><span class="str">Total:</span></code></div>
-        <div class="code-line" data-line="81"><div class="line-no">81</div><code class="code-content indent-2"><span class="str">O(u) + O(n) + O(u) + O(k)</span></code></div>
-        <div class="code-line" data-line="82"><div class="line-no">82</div><code class="code-content indent-2"><span class="str">= O(n + u + k)</span></code></div>
-        <div class="code-line" data-line="83"><div class="line-no">83</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="84"><div class="line-no">84</div><code class="code-content indent-2"><span class="str">Since u &lt;= n and k &lt;= n:</span></code></div>
-        <div class="code-line" data-line="85"><div class="line-no">85</div><code class="code-content indent-2"><span class="str">O(n + u + k) = O(n)</span></code></div>
-        <div class="code-line" data-line="86"><div class="line-no">86</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="87"><div class="line-no">87</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="88"><div class="line-no">88</div><code class="code-content indent-2"><span class="cm"># space complexity interview phrasing:</span></code></div>
-        <div class="code-line" data-line="89"><div class="line-no">89</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="90"><div class="line-no">90</div><code class="code-content indent-2"><span class="str">The space complexity is O(n). </span></code></div>
-        <div class="code-line" data-line="91"><div class="line-no">91</div><code class="code-content indent-2"><span class="str">The frequency dictionary stores up to u unique numbers, </span></code></div>
-        <div class="code-line" data-line="92"><div class="line-no">92</div><code class="code-content indent-2"><span class="str">the bucket array has n + 1 lists, </span></code></div>
-        <div class="code-line" data-line="93"><div class="line-no">93</div><code class="code-content indent-2"><span class="str">the bucket contents store each unique number once, </span></code></div>
-        <div class="code-line" data-line="94"><div class="line-no">94</div><code class="code-content indent-2"><span class="str">and the result stores k elements. </span></code></div>
-        <div class="code-line" data-line="95"><div class="line-no">95</div><code class="code-content indent-2"><span class="str">Since u and k are both at most n,</span></code></div>
-        <div class="code-line" data-line="96"><div class="line-no">96</div><code class="code-content indent-2"><span class="str">the total auxiliary space simplifies to O(n).</span></code></div>
-        <div class="code-line" data-line="97"><div class="line-no">97</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="98"><div class="line-no">98</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="99"><div class="line-no">99</div><code class="code-content indent-2"><span class="cm"># improvement</span></code></div>
-        <div class="code-line" data-line="100"><div class="line-no">100</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="101"><div class="line-no">101</div><code class="code-content indent-2"><span class="str">This bucket sort solution is already optimal in time: O(n),</span></code></div>
-        <div class="code-line" data-line="102"><div class="line-no">102</div><code class="code-content indent-2"><span class="str">since we must scan all nums to build the frequency map.</span></code></div>
-        <div class="code-line" data-line="103"><div class="line-no">103</div><code class="code-content indent-2"><span class="str">The main tradeoff is space: it uses O(n) space for the buckets.</span></code></div>
-        <div class="code-line" data-line="104"><div class="line-no">104</div><code class="code-content indent-2"><span class="str">If memory matters or k is small,</span></code></div>
-        <div class="code-line" data-line="105"><div class="line-no">105</div><code class="code-content indent-2"><span class="str">I could use a min-heap of size k,</span></code></div>
-        <div class="code-line" data-line="106"><div class="line-no">106</div><code class="code-content indent-2"><span class="str">which takes O(u log k) time and O(k) heap space,</span></code></div>
-        <div class="code-line" data-line="107"><div class="line-no">107</div><code class="code-content indent-2"><span class="str">where u is the number of unique values.</span></code></div>
-        <div class="code-line" data-line="108"><div class="line-no">108</div><code class="code-content indent-2"><span class="str">So I would keep bucket sort for fastest time,</span></code></div>
-        <div class="code-line" data-line="109"><div class="line-no">109</div><code class="code-content indent-2"><span class="str">and use heap if space/practicality matters.</span></code></div>
-        <div class="code-line" data-line="110"><div class="line-no">110</div><code class="code-content indent-2"><span class="str">&quot;&quot;&quot;</span></code></div>
-      </div>
+  <main class="layout">
+    <section class="panel">
+      <div class="panel-title">Python code</div>
+      <div class="code-wrap" id="codeWrap"></div>
     </section>
 
-    <section class="panel">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Top K Frequent Elements Visualizer</div>
-          <div class="subtle">Hash map count + bucket sort by frequency + reverse scan</div>
+    <section class="right">
+      <div class="card visualizer-card">
+        <div class="panel-title">Visualizer</div>
+        <div class="controls">
+          <button id="prevBtn" class="secondary">Back</button>
+          <button id="nextBtn">Next</button>
+          <button id="playBtn" class="secondary">Play</button>
+          <button id="resetBtn" class="secondary">Reset</button>
+          <select id="caseSelect" title="Example input">
+            <option value="classic">nums = [1,2,2,3,3,3], k = 2</option>
+            <option value="mixed">nums = [32,21,66,91,95,66,91], k = 2</option>
+            <option value="single">nums = [7,7], k = 1</option>
+            <option value="allUnique">nums = [1,2,3,4], k = 2</option>
+          </select>
+          <div class="status" id="statusText">Step 0 / 0</div>
         </div>
-        <div class="pill">Current example: <span id="exampleLabel">nums=[1, 1, 1, 2, 2, 3], k=2</span></div>
       </div>
 
-      <div class="viz">
-        <div class="input-row">
-          <label class="subtle" for="numsInput">nums:</label>
-          <input id="numsInput" type="text" value="1, 1, 1, 2, 2, 3" />
-          <label class="subtle" for="kInput">k:</label>
-          <input id="kInput" type="number" value="2" min="1" />
-          <button id="applyBtn">Apply</button>
-          <button id="sample1Btn">Classic</button>
-          <button id="sample2Btn">Negatives</button>
-          <button id="sample3Btn">Tie</button>
-        </div>
+      <div class="top-state">
+        <div class="card">
+          <div class="panel-title">Input and result</div>
+          <div class="card-body">
+            <div class="mini-label">nums</div>
+            <div class="number-row" id="numsRow"></div>
 
-        <div class="controls">
-          <button id="prevBtn">◀ Back</button>
-          <button id="nextBtn">Next ▶</button>
-          <button id="resetBtn">Reset</button>
-          <button id="playBtn">Auto Play</button>
-        </div>
+            <div style="height:18px"></div>
 
-        <div class="progress">
-          <span id="stepLabel">Step 1 / 1</span>
-          <div class="bar"><div class="bar-fill" id="barFill"></div></div>
-        </div>
+            <div class="mini-label">res</div>
+            <div class="res-row" id="resRow"></div>
 
-        <div class="grid">
-          <div class="card">
-            <div class="card-title">Input nums</div>
-            <div class="num-row" id="numsView"></div>
             <div class="legend">
-              <div class="legend-item"><span class="legend-box" style="background:var(--tile-active);border-color:#5aa2dd;"></span> Current num</div>
-              <div class="legend-item"><span class="legend-box" style="background:var(--tile-found);border-color:#4aa36d;"></span> Final top k value</div>
-              <div class="legend-item"><span class="legend-box" style="background:var(--tile);"></span> Not processed yet</div>
+              <div><span class="dot current"></span>current num / bucket</div>
+              <div><span class="dot scan"></span>scanning bucket</div>
+              <div><span class="dot ok"></span>counted / placed</div>
+              <div><span class="dot return"></span>returned result</div>
             </div>
           </div>
+        </div>
 
-          <div class="hash-box">
-            <div class="hash-title">count = frequency hash map</div>
-            <div class="dict-grid" id="hashView"></div>
+        <div class="card">
+          <div class="panel-title">Current step</div>
+          <div class="card-body">
+            <div class="big-step" id="bigStep">Initialize</div>
+            <div class="message" id="message">Click Next to start.</div>
+            <div class="mini">
+              <div class="mini-card">
+                <div class="mini-label">num</div>
+                <div class="mini-value" id="numVal">-</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">cnt</div>
+                <div class="mini-value" id="cntVal">-</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">i</div>
+                <div class="mini-value" id="iVal">-</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">k</div>
+                <div class="mini-value" id="kVal">-</div>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div class="card">
-            <div class="card-title">freq = bucket array</div>
-            <div class="subtle" style="margin-bottom:10px">Bucket index means frequency. Example: <code class="inline">freq[3] = [1]</code> means number <code class="inline">1</code> appears 3 times.</div>
-            <div class="bucket-list" id="bucketView"></div>
+      <div class="bottom-grid">
+        <div class="card">
+          <div class="panel-title">Plain-text state</div>
+          <pre class="plain-box" id="stateBox"></pre>
+        </div>
+
+        <div class="card">
+          <div class="panel-title">Frequency buckets</div>
+          <div class="bucket-list" id="bucketList"></div>
+          <div class="footer-note">
+            freq[count] stores the numbers that appeared count times. Empty buckets are normal; the scan simply moves to the next lower frequency.
           </div>
-
-          <div class="card">
-            <div class="card-title">res = collected answer</div>
-            <div class="result-row" id="resultView"></div>
-          </div>
-
-          <div class="state-grid">
-            <div class="mini"><div class="mini-label">Phase</div><div class="mini-value" id="phaseValue">—</div></div>
-            <div class="mini"><div class="mini-label">Current num</div><div class="mini-value" id="numValue">—</div></div>
-            <div class="mini"><div class="mini-label">Bucket index / count</div><div class="mini-value" id="bucketValue">—</div></div>
-            <div class="mini"><div class="mini-label">k / return</div><div class="mini-value" id="returnValue">—</div></div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">Explanation</div>
-            <div class="explain" id="explanation">Create an empty hash map and a bucket array.</div>
-          </div>
-
         </div>
       </div>
     </section>
-  </div>
+  </main>
 
-<script>
-    const codeLines = [...document.querySelectorAll('.code-line')];
-    const numsView = document.getElementById('numsView');
-    const hashView = document.getElementById('hashView');
-    const bucketView = document.getElementById('bucketView');
-    const resultView = document.getElementById('resultView');
-    const explanation = document.getElementById('explanation');
-    const phaseValue = document.getElementById('phaseValue');
-    const numValue = document.getElementById('numValue');
-    const bucketValue = document.getElementById('bucketValue');
-    const returnValue = document.getElementById('returnValue');
-    const stepLabel = document.getElementById('stepLabel');
-    const barFill = document.getElementById('barFill');
-    const exampleLabel = document.getElementById('exampleLabel');
+  <script>
+    const codeLines = [
+      { n: 1, html: '<span class="kw">class</span> <span class="type">Solution</span>:' },
+      { n: 2, html: '    <span class="kw">def</span> <span class="fn">topKFrequent</span>(<span class="var">self</span>, <span class="var">nums</span>: <span class="type">List</span>[<span class="type">int</span>], <span class="var">k</span>: <span class="type">int</span>) -> <span class="type">List</span>[<span class="type">int</span>]:' },
+      { n: 3, html: '        <span class="var">count</span> = {}' },
+      { n: 4, html: '        <span class="var">freq</span> = [[] <span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(<span class="var">nums</span>) + <span class="num">1</span>)]' },
+      { n: 5, html: '' },
+      { n: 6, html: '        <span class="kw">for</span> <span class="var">num</span> <span class="kw">in</span> <span class="var">nums</span>:' },
+      { n: 7, html: '            <span class="var">count</span>[<span class="var">num</span>] = <span class="var">count</span>.<span class="meth">get</span>(<span class="var">num</span>, <span class="num">0</span>) + <span class="num">1</span>' },
+      { n: 8, html: '' },
+      { n: 9, html: '        <span class="kw">for</span> <span class="var">num</span>, <span class="var">cnt</span> <span class="kw">in</span> <span class="var">count</span>.<span class="meth">items</span>():' },
+      { n: 10, html: '            <span class="var">freq</span>[<span class="var">cnt</span>].<span class="meth">append</span>(<span class="var">num</span>)' },
+      { n: 11, html: '' },
+      { n: 12, html: '        <span class="var">res</span> = []' },
+      { n: 13, html: '' },
+      { n: 14, html: '        <span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(<span class="var">freq</span>) - <span class="num">1</span>, <span class="num">0</span>, -<span class="num">1</span>):' },
+      { n: 15, html: '            <span class="kw">for</span> <span class="var">num</span> <span class="kw">in</span> <span class="var">freq</span>[<span class="var">i</span>]:' },
+      { n: 16, html: '                <span class="var">res</span>.<span class="meth">append</span>(<span class="var">num</span>)' },
+      { n: 17, html: '                <span class="kw">if</span> <span class="fn">len</span>(<span class="var">res</span>) == <span class="var">k</span>:' },
+      { n: 18, html: '                    <span class="kw">return</span> <span class="var">res</span>' },
+      { n: 19, html: '' },
+      { n: 20, html: '        <span class="cm"># tc</span>' },
+      { n: 21, html: '        <span class="str">\'\'\'</span>' },
+      { n: 22, html: '        <span class="str">Time complexity is O(n), where n is the length of nums.</span>' },
+      { n: 23, html: '        <span class="str">First, we count each number in nums, which takes O(n).</span>' },
+      { n: 24, html: '        <span class="str">Then we create and fill the frequency buckets.</span>' },
+      { n: 25, html: '        <span class="str">There can be at most n unique numbers, so filling buckets takes O(n).</span>' },
+      { n: 26, html: '        <span class="str">Finally, we scan the buckets from highest frequency to lowest frequency.</span>' },
+      { n: 27, html: '        <span class="str">The total number of bucket slots and appended values is bounded by n.</span>' },
+      { n: 28, html: '        <span class="str">So the total time complexity is O(n).</span>' },
+      { n: 29, html: '        <span class="str">\'\'\'</span>' },
+      { n: 30, html: '        <span class="cm"># sc</span>' },
+      { n: 31, html: '        <span class="str">\'\'\'</span>' },
+      { n: 32, html: '        <span class="str">Space complexity is O(n).</span>' },
+      { n: 33, html: '        <span class="str">The hashmap count can store up to n unique numbers.</span>' },
+      { n: 34, html: '        <span class="str">The freq array has len(nums) + 1 buckets.</span>' },
+      { n: 35, html: '        <span class="str">The result list stores k elements, but k is at most n.</span>' },
+      { n: 36, html: '        <span class="str">So the extra space is O(n).</span>' },
+      { n: 37, html: '        <span class="str">\'\'\'</span>' },
+      { n: 38, html: '        <span class="cm"># optimization</span>' },
+      { n: 39, html: '        <span class="str">\'\'\'</span>' },
+      { n: 40, html: '        <span class="str">This is already the best solution to learn for interviews.</span>' },
+      { n: 41, html: '        <span class="str">It avoids sorting all unique numbers, which would be O(u log u),</span>' },
+      { n: 42, html: '        <span class="str">where u is the number of unique values.</span>' },
+      { n: 43, html: '        <span class="str">A heap solution can be O(n log k), which may use less space when k is small,</span>' },
+      { n: 44, html: '        <span class="str">but this bucket sort solution is simpler and has optimal O(n) time.</span>' },
+      { n: 45, html: '        <span class="str">\'\'\'</span>' }
+    ];
 
-    const numsInput = document.getElementById('numsInput');
-    const kInput = document.getElementById('kInput');
-    const applyBtn = document.getElementById('applyBtn');
-    const sample1Btn = document.getElementById('sample1Btn');
-    const sample2Btn = document.getElementById('sample2Btn');
-    const sample3Btn = document.getElementById('sample3Btn');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const playBtn = document.getElementById('playBtn');
+    const cases = {
+      classic: { nums: [1, 2, 2, 3, 3, 3], k: 2 },
+      mixed: { nums: [32, 21, 66, 91, 95, 66, 91], k: 2 },
+      single: { nums: [7, 7], k: 1 },
+      allUnique: { nums: [1, 2, 3, 4], k: 2 }
+    };
 
-    let nums = [1,1,1,2,2,3];
-    let k = 2;
+    let nums = [...cases.classic.nums];
+    let k = cases.classic.k;
     let steps = [];
     let stepIndex = 0;
     let timer = null;
 
-    function parseNums(text){
-      return text.split(',').map(x => x.trim()).filter(x => x.length > 0).map(Number).filter(x => !Number.isNaN(x));
-    }
-    function cloneObj(obj){ return JSON.parse(JSON.stringify(obj)); }
-    function cloneBuckets(buckets){ return buckets.map(bucket => [...bucket]); }
-    function entriesByNumber(obj){ return Object.entries(obj).sort((a,b) => Number(a[0]) - Number(b[0])); }
-    function listText(arr){ return '[' + arr.join(', ') + ']'; }
+    const codeWrap = document.getElementById('codeWrap');
+    const numsRow = document.getElementById('numsRow');
+    const resRow = document.getElementById('resRow');
+    const bucketList = document.getElementById('bucketList');
+    const stateBox = document.getElementById('stateBox');
+    const bigStep = document.getElementById('bigStep');
+    const message = document.getElementById('message');
+    const statusText = document.getElementById('statusText');
+    const numVal = document.getElementById('numVal');
+    const cntVal = document.getElementById('cntVal');
+    const iVal = document.getElementById('iVal');
+    const kVal = document.getElementById('kVal');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const playBtn = document.getElementById('playBtn');
+    const caseSelect = document.getElementById('caseSelect');
 
-    function buildSteps(arr, kVal){
+    function cloneBuckets(freq) {
+      return freq.map(bucket => [...bucket]);
+    }
+
+    function cloneCount(count) {
+      return Object.fromEntries(Object.entries(count).map(([key, value]) => [key, value]));
+    }
+
+    function formatDict(count) {
+      const entries = Object.entries(count);
+      if (!entries.length) return '{}';
+      return '{' + entries.map(([key, value]) => `${key}: ${value}`).join(', ') + '}';
+    }
+
+    function formatBuckets(freq) {
+      const lines = ['['];
+      for (let i = freq.length - 1; i >= 0; i--) {
+        const values = freq[i];
+        lines.push(`  ${i}: [${values.join(', ')}]`);
+      }
+      lines.push(']');
+      return lines.join('\n');
+    }
+
+    function generateSteps(inputNums, inputK) {
       const out = [];
       const count = {};
-      const freq = Array.from({length: arr.length + 1}, () => []);
+      const freq = Array.from({ length: inputNums.length + 1 }, () => []);
       const res = [];
 
-      out.push({
-        line:3, phase:'init count', currentIndex:null, currentNum:null, bucketIndex:null, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:null, activeBucket:null, selectedNum:null,
-        explanation:`Create <code>count = {}</code>. It will store each number as a key and that number's frequency as the value.`
-      });
-
-      out.push({
-        line:4, phase:'init buckets', currentIndex:null, currentNum:null, bucketIndex:null, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:null, activeBucket:null, selectedNum:null,
-        explanation:`Create <code>freq</code> with <code>len(nums) + 1</code> empty buckets. Index <code>i</code> will hold numbers that appear exactly <code>i</code> times.`
-      });
-
-      for(let i=0;i<arr.length;i++){
-        const num = arr[i];
+      function pushStep(line, title, msg, extra = {}) {
         out.push({
-          line:6, phase:'count loop', currentIndex:i, currentNum:num, bucketIndex:null, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:null, selectedNum:null,
-          explanation:`Read the next number from <code>nums</code>. Current number is <code>${num}</code> at index <code>${i}</code>.`
-        });
-        const oldCount = count[num] || 0;
-        count[num] = oldCount + 1;
-        out.push({
-          line:7, phase:'update count', currentIndex:i, currentNum:num, bucketIndex:count[num], count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:null, selectedNum:null,
-          explanation:`Update <code>count[${num}]</code>. Old count is <code>${oldCount}</code>, so new count is <code>${oldCount} + 1 = ${count[num]}</code>.`
+          line,
+          title,
+          msg,
+          count: cloneCount(count),
+          freq: cloneBuckets(freq),
+          res: [...res],
+          num: null,
+          cnt: null,
+          i: null,
+          currentNumIndex: null,
+          activeBucket: null,
+          bucketNum: null,
+          phase: 'normal',
+          returned: false,
+          ...extra
         });
       }
 
-      const countEntries = Object.entries(count).sort((a,b) => Number(a[0]) - Number(b[0]));
-      for(const [key, value] of countEntries){
-        const num = Number(key);
-        const cnt = Number(value);
-        out.push({
-          line:9, phase:'bucket loop', currentIndex:null, currentNum:num, bucketIndex:cnt, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:cnt, selectedNum:null,
-          explanation:`Take one pair from <code>count.items()</code>: <code>num = ${num}</code>, <code>cnt = ${cnt}</code>. The frequency count tells us the bucket index.`
+      pushStep(3, 'Initialize count = {}', 'count will store how many times each number appears.', { phase: 'init-count' });
+      pushStep(4, 'Create frequency buckets', `freq has len(nums) + 1 buckets, so valid counts can go from 0 to ${inputNums.length}.`, { phase: 'init-freq' });
+
+      for (let index = 0; index < inputNums.length; index++) {
+        const num = inputNums[index];
+        pushStep(6, `Loop over num = ${num}`, `Read nums[${index}] = ${num}.`, {
+          num,
+          currentNumIndex: index,
+          phase: 'count-read'
+        });
+        count[num] = (count[num] || 0) + 1;
+        pushStep(7, `Update d[${num}]`, `count[${num}] becomes ${count[num]}.`, {
+          num,
+          cnt: count[num],
+          currentNumIndex: index,
+          phase: 'count-update'
+        });
+      }
+
+      const entries = Object.entries(count).map(([num, cnt]) => [Number(num), cnt]);
+      for (const [num, cnt] of entries) {
+        pushStep(9, `Loop over ${num}: ${cnt}`, `Read the pair num = ${num}, cnt = ${cnt} from count.items().`, {
+          num,
+          cnt,
+          activeBucket: cnt,
+          phase: 'bucket-read'
         });
         freq[cnt].push(num);
-        out.push({
-          line:10, phase:'place in bucket', currentIndex:null, currentNum:num, bucketIndex:cnt, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:cnt, selectedNum:num,
-          explanation:`Append <code>${num}</code> into <code>freq[${cnt}]</code>. This means number <code>${num}</code> appeared <code>${cnt}</code> time${cnt === 1 ? '' : 's'}.`
+        pushStep(10, `Put ${num} into freq[${cnt}]`, `${num} appeared ${cnt} time(s), so append it into bucket ${cnt}.`, {
+          num,
+          cnt,
+          activeBucket: cnt,
+          bucketNum: num,
+          phase: 'bucket-place'
         });
       }
 
-      out.push({
-        line:12, phase:'init result', currentIndex:null, currentNum:null, bucketIndex:null, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:null, activeBucket:null, selectedNum:null,
-        explanation:`Create <code>res = []</code>. This will collect the top <code>k</code> most frequent numbers.`
-      });
+      pushStep(12, 'Initialize res = []', 'res will collect the answer while scanning from highest frequency to lowest frequency.', { phase: 'init-res' });
 
-      const safeK = Math.max(0, Math.min(kVal, countEntries.length));
-      for(let i=freq.length-1;i>0;i--){
-        out.push({
-          line:13, phase:'scan buckets', currentIndex:null, currentNum:null, bucketIndex:i, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:null, activeBucket:i, selectedNum:null,
-          explanation:`Scan bucket <code>freq[${i}]</code>. We go from high index to low index because larger index means higher frequency.`
+      for (let i = freq.length - 1; i > 0; i--) {
+        pushStep(14, `Scan bucket i = ${i}`, `Check freq[${i}]. Higher i means higher frequency.`, {
+          i,
+          activeBucket: i,
+          phase: freq[i].length ? 'bucket-scan' : 'bucket-empty'
         });
-        for(const num of freq[i]){
-          out.push({
-            line:14, phase:'read bucket', currentIndex:null, currentNum:num, bucketIndex:i, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:i, selectedNum:num,
-            explanation:`Found <code>${num}</code> inside <code>freq[${i}]</code>. Since we are scanning from high frequency to low frequency, this is one of the next most frequent values.`
+
+        for (const num of freq[i]) {
+          pushStep(15, `Read num = ${num} from freq[${i}]`, `${num} has frequency ${i}, so it is one of the most frequent remaining values.`, {
+            num,
+            cnt: i,
+            i,
+            activeBucket: i,
+            bucketNum: num,
+            phase: 'res-read'
           });
           res.push(num);
-          out.push({
-            line:15, phase:'append result', currentIndex:null, currentNum:num, bucketIndex:i, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:i, selectedNum:num,
-            explanation:`Append <code>${num}</code> to <code>res</code>. Current result is <code>${listText(res)}</code>.`
+          pushStep(16, `Append ${num} to res`, `res is now [${res.join(', ')}].`, {
+            num,
+            cnt: i,
+            i,
+            activeBucket: i,
+            bucketNum: num,
+            phase: 'res-append'
           });
-          out.push({
-            line:16, phase:'check k', currentIndex:null, currentNum:num, bucketIndex:i, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:i, selectedNum:num,
-            explanation:`Check whether <code>len(res) == k</code>. Right now <code>len(res) = ${res.length}</code> and <code>k = ${safeK}</code>.`
+          pushStep(17, `Check len(res) == k`, `len(res) is ${res.length}, and k is ${inputK}.`, {
+            num,
+            cnt: i,
+            i,
+            activeBucket: i,
+            bucketNum: num,
+            phase: res.length === inputK ? 'ready-return' : 'not-ready'
           });
-          if(res.length === safeK){
-            out.push({
-              line:17, phase:'return', currentIndex:null, currentNum:num, bucketIndex:i, count:cloneObj(count), freq:cloneBuckets(freq), res:[...res], activeKey:String(num), activeBucket:i, selectedNum:num,
-              explanation:`We collected <code>k</code> values, so return <code>${listText(res)}</code>.`
+          if (res.length === inputK) {
+            pushStep(18, `Return [${res.join(', ')}]`, `We collected exactly k = ${inputK} elements, so return res.`, {
+              num,
+              cnt: i,
+              i,
+              activeBucket: i,
+              bucketNum: num,
+              phase: 'return',
+              returned: true
             });
             return out;
           }
         }
       }
+
+      pushStep(18, `Return [${res.join(', ')}]`, 'The scan finished. Return res.', { phase: 'return', returned: true });
       return out;
     }
 
-    function renderNums(step){
-      numsView.innerHTML = '';
-      if(nums.length === 0){
-        const empty = document.createElement('div');
-        empty.className = 'empty';
-        empty.textContent = '(empty input)';
-        numsView.appendChild(empty);
-        return;
+    function renderCode(activeLine) {
+      codeWrap.innerHTML = codeLines.map(line => `
+        <div class="code-line ${line.n === activeLine ? 'active' : ''}" data-line="${line.n}">
+          <div class="ln">${line.n}</div>
+          <div class="code">${line.html || '&nbsp;'}</div>
+        </div>
+      `).join('');
+
+      const active = codeWrap.querySelector('.code-line.active');
+      if (active) {
+        const targetTop = active.offsetTop - (codeWrap.clientHeight / 2) + (active.clientHeight / 2);
+        codeWrap.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
       }
-      const resultSet = new Set((step.res || []).map(String));
-      nums.forEach((num, index) => {
-        const wrap = document.createElement('div');
-        wrap.className = 'num-wrap';
-        const pointer = document.createElement('div');
-        pointer.className = 'pointer' + (step.currentIndex === index ? '' : ' hidden');
-        pointer.textContent = step.currentIndex === index ? 'current' : '';
-        wrap.appendChild(pointer);
-        const cell = document.createElement('div');
-        cell.className = 'num-cell';
-        if(step.currentIndex === index) cell.classList.add('current');
-        if(step.currentIndex !== null && index < step.currentIndex) cell.classList.add('done');
-        if(step.phase === 'return' && resultSet.has(String(num))) cell.classList.add('result');
-        cell.textContent = num;
-        wrap.appendChild(cell);
-        const idx = document.createElement('div');
-        idx.className = 'index';
-        idx.textContent = `idx ${index}`;
-        wrap.appendChild(idx);
-        numsView.appendChild(wrap);
+    }
+
+    function makeChip(value, classes = [], label = '') {
+      const div = document.createElement('div');
+      div.className = ['chip', ...classes].join(' ');
+      div.textContent = value;
+      if (label) {
+        const span = document.createElement('span');
+        span.className = 'chip-label';
+        span.textContent = label;
+        div.appendChild(span);
+      }
+      return div;
+    }
+
+    function renderNums(step) {
+      numsRow.innerHTML = '';
+      nums.forEach((value, index) => {
+        const classes = [];
+        let label = `i=${index}`;
+        if (step.currentNumIndex === index) {
+          classes.push('current');
+          label = 'num';
+        }
+        if (step.phase === 'count-update' && step.currentNumIndex === index) {
+          classes.push('ok');
+          label = 'counted';
+        }
+        numsRow.appendChild(makeChip(value, classes, label));
       });
     }
 
-    function renderHash(step){
-      hashView.innerHTML = '';
-      const entries = entriesByNumber(step.count);
-      if(entries.length === 0){
-        const empty = document.createElement('div');
-        empty.className = 'empty';
-        empty.textContent = 'count is empty';
-        hashView.appendChild(empty);
+    function renderRes(step) {
+      resRow.innerHTML = '';
+      if (!step.res.length) {
+        resRow.appendChild(makeChip('empty', ['skip']));
         return;
       }
-      entries.forEach(([key, count]) => {
-        const card = document.createElement('div');
-        card.className = 'dict-card';
-        if(step.activeKey === key) card.classList.add('active');
-        card.innerHTML = `<div class="dict-key">${key}</div><div class="dict-val">count: ${count}</div>`;
-        hashView.appendChild(card);
+      step.res.forEach((value, index) => {
+        const classes = [];
+        let label = `res[${index}]`;
+        if (step.returned) classes.push('return');
+        else if (index === step.res.length - 1 && ['res-append', 'ready-return', 'return'].includes(step.phase)) classes.push('ok');
+        resRow.appendChild(makeChip(value, classes, label));
       });
     }
 
-    function renderBuckets(step){
-      bucketView.innerHTML = '';
-      for(let i=step.freq.length-1;i>=0;i--){
+    function renderBuckets(step) {
+      bucketList.innerHTML = '';
+      for (let i = step.freq.length - 1; i >= 0; i--) {
         const row = document.createElement('div');
         row.className = 'bucket-row';
-        if(step.activeBucket === i) row.classList.add(step.phase.includes('scan') || step.phase.includes('read') || step.phase.includes('append') || step.phase.includes('check') || step.phase.includes('return') ? 'scan' : 'active');
-        const label = document.createElement('div');
-        label.innerHTML = `<div class="bucket-index">freq[${i}]</div><div class="bucket-label">${i} time${i === 1 ? '' : 's'}</div>`;
+        if (step.activeBucket === i) row.classList.add('active');
+
+        const index = document.createElement('div');
+        index.className = 'bucket-index';
+        index.textContent = `freq[${i}]`;
+
         const values = document.createElement('div');
         values.className = 'bucket-values';
-        if(step.freq[i].length === 0){
+        if (step.freq[i].length === 0) {
           const empty = document.createElement('span');
-          empty.className = 'empty';
+          empty.className = 'empty-text';
           empty.textContent = '[]';
           values.appendChild(empty);
-        }else{
-          step.freq[i].forEach(num => {
-            const chip = document.createElement('div');
-            chip.className = 'bucket-chip';
-            if(step.selectedNum === num && step.activeBucket === i) chip.classList.add(step.phase === 'place in bucket' ? 'added' : 'selected');
-            chip.textContent = num;
+        } else {
+          step.freq[i].forEach(value => {
+            const chip = document.createElement('span');
+            chip.className = 'small-chip';
+            chip.textContent = value;
+            if (step.activeBucket === i && step.bucketNum === value) {
+              chip.classList.add(step.returned ? 'return' : 'current');
+            } else if (step.phase === 'bucket-place' && step.activeBucket === i) {
+              chip.classList.add('ok');
+            }
             values.appendChild(chip);
           });
         }
-        row.appendChild(label);
+
+        row.appendChild(index);
         row.appendChild(values);
-        bucketView.appendChild(row);
+        bucketList.appendChild(row);
       }
     }
 
-    function renderResult(step){
-      resultView.innerHTML = '';
-      if(!step.res || step.res.length === 0){
-        const empty = document.createElement('div');
-        empty.className = 'empty';
-        empty.textContent = 'res is empty';
-        resultView.appendChild(empty);
-        return;
-      }
-      step.res.forEach(num => {
-        const chip = document.createElement('div');
-        chip.className = 'result-chip';
-        chip.textContent = num;
-        resultView.appendChild(chip);
-      });
+    function renderStateBox(step) {
+      const lines = [];
+      lines.push(`nums = [${nums.join(', ')}]`);
+      lines.push(`k = ${k}`);
+      lines.push('');
+      lines.push(`count = ${formatDict(step.count)}`);
+      lines.push('');
+      lines.push(`freq = ${formatBuckets(step.freq)}`);
+      lines.push('');
+      lines.push(`res = [${step.res.join(', ')}]`);
+      lines.push('');
+      lines.push(`num = ${step.num === null ? '-' : step.num}`);
+      lines.push(`cnt = ${step.cnt === null ? '-' : step.cnt}`);
+      lines.push(`i = ${step.i === null ? '-' : step.i}`);
+      stateBox.textContent = lines.join('\n');
     }
 
-    function renderCode(step){
-      codeLines.forEach(line => line.classList.toggle('active', Number(line.dataset.line) === step.line));
-    }
-
-    function renderMeta(step){
-      phaseValue.textContent = step.phase || '—';
-      numValue.textContent = step.currentNum === null ? '—' : step.currentNum;
-      bucketValue.textContent = step.bucketIndex === null ? '—' : step.bucketIndex;
-      returnValue.textContent = step.phase === 'return' ? listText(step.res) : `k = ${k}`;
-      explanation.innerHTML = step.explanation;
-      stepLabel.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
-      barFill.style.width = `${((stepIndex + 1) / steps.length) * 100}%`;
-    }
-
-    function render(){
+    function renderStep() {
       const step = steps[stepIndex];
+      renderCode(step.line);
       renderNums(step);
-      renderHash(step);
+      renderRes(step);
       renderBuckets(step);
-      renderResult(step);
-      renderCode(step);
-      renderMeta(step);
+      renderStateBox(step);
+
+      bigStep.textContent = step.title;
+      message.textContent = step.msg;
+      numVal.textContent = step.num === null ? '-' : step.num;
+      cntVal.textContent = step.cnt === null ? '-' : step.cnt;
+      iVal.textContent = step.i === null ? '-' : step.i;
+      kVal.textContent = k;
+      statusText.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+
       prevBtn.disabled = stepIndex === 0;
       nextBtn.disabled = stepIndex === steps.length - 1;
     }
 
-    function stopAuto(){
-      if(timer){ clearInterval(timer); timer = null; }
-      playBtn.textContent = 'Auto Play';
-    }
-    function nextStep(){
-      if(stepIndex < steps.length - 1){ stepIndex++; render(); }
-      else stopAuto();
-    }
-    function prevStep(){ if(stepIndex > 0){ stepIndex--; render(); } }
-    function reset(){ stopAuto(); stepIndex = 0; render(); }
-    function rebuild(newNums, newK){
-      stopAuto();
-      nums = newNums.length ? newNums : [1,1,1,2,2,3];
-      k = Math.max(1, Number.isFinite(newK) ? Math.floor(newK) : 1);
-      steps = buildSteps(nums, k);
+    function reset() {
+      stopPlay();
       stepIndex = 0;
-      exampleLabel.textContent = `nums=${listText(nums)}, k=${k}`;
-      render();
+      steps = generateSteps(nums, k);
+      renderStep();
     }
 
-    prevBtn.addEventListener('click', prevStep);
-    nextBtn.addEventListener('click', nextStep);
-    resetBtn.addEventListener('click', reset);
-    playBtn.addEventListener('click', () => {
-      if(timer){ stopAuto(); return; }
-      playBtn.textContent = 'Pause';
-      timer = setInterval(() => {
-        if(stepIndex >= steps.length - 1) stopAuto();
-        else nextStep();
-      }, 1150);
-    });
-    applyBtn.addEventListener('click', () => rebuild(parseNums(numsInput.value), Number(kInput.value)));
-    sample1Btn.addEventListener('click', () => {
-      numsInput.value = '1, 1, 1, 2, 2, 3';
-      kInput.value = 2;
-      rebuild([1,1,1,2,2,3], 2);
-    });
-    sample2Btn.addEventListener('click', () => {
-      numsInput.value = '-1, -1, 2, 2, 2, 3';
-      kInput.value = 2;
-      rebuild([-1,-1,2,2,2,3], 2);
-    });
-    sample3Btn.addEventListener('click', () => {
-      numsInput.value = '4, 4, 5, 5, 6';
-      kInput.value = 2;
-      rebuild([4,4,5,5,6], 2);
-    });
-    [numsInput,kInput].forEach(input => input.addEventListener('keydown', e => { if(e.key === 'Enter') rebuild(parseNums(numsInput.value), Number(kInput.value)); }));
+    function next() {
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        renderStep();
+      } else {
+        stopPlay();
+      }
+    }
 
-    rebuild(nums, k);
+    function prev() {
+      if (stepIndex > 0) {
+        stepIndex--;
+        renderStep();
+      }
+    }
+
+    function stopPlay() {
+      if (timer) clearInterval(timer);
+      timer = null;
+      playBtn.textContent = 'Play';
+    }
+
+    function togglePlay() {
+      if (timer) {
+        stopPlay();
+      } else {
+        playBtn.textContent = 'Pause';
+        timer = setInterval(() => {
+          if (stepIndex >= steps.length - 1) {
+            stopPlay();
+          } else {
+            next();
+          }
+        }, 850);
+      }
+    }
+
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+    resetBtn.addEventListener('click', reset);
+    playBtn.addEventListener('click', togglePlay);
+    caseSelect.addEventListener('change', () => {
+      const selected = cases[caseSelect.value];
+      nums = [...selected.nums];
+      k = selected.k;
+      reset();
+    });
+
+    reset();
   </script>
 </body>
 </html>

@@ -5,1214 +5,795 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Two Sum Visualizer</title>
   <style>
-    :root{
-      --bg:#0f1117;
-      --panel:#151922;
-      --panel-2:#1a1f2b;
-      --editor:#1e1e1e;
-      --line:#2a3142;
-      --text:#d4d4d4;
-      --muted:#8b95a7;
-      --accent:#4fc1ff;
-      --accent-2:#7ee787;
-      --danger:#ff6b81;
-      --warning:#ffd166;
-      --keyword:#c586c0;
-      --func:#dcdcaa;
-      --type:#4ec9b0;
-      --id:#9cdcfe;
-      --plain:#d4d4d4;
-      --bool:#569cd6;
-      --num:#f78c6c;
-      --comment:#6a9955;
-      --border:#283041;
-      --tile:#202736;
-      --tile-active:#264766;
-      --tile-found:#2d5a39;
-      --tile-dup:#61313c;
-      --shadow:0 14px 40px rgba(0,0,0,.35);
-    }
-
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(circle at top, #151b29 0%, #0f1117 55%);
-      color:var(--text);
-      min-height:100vh;
-    }
-
-    .top-links{
-      padding:20px;
-      text-align:center;
-      border-bottom:1px solid var(--border);
-    }
-
-    .top-links a{
-      color:var(--accent);
-      text-decoration:none;
-      font-weight:600;
-      font-size:15px;
-      transition:opacity .2s ease;
-      display:block;
-      margin-bottom:8px;
-    }
-
-    .top-links a:hover{opacity:.78}
-
-    .app{
-      width:min(1440px, 96vw);
-      margin:20px auto;
-      display:grid;
-      grid-template-columns: 1.05fr 1fr;
-      gap:18px;
-    }
-
-    .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border:1px solid var(--border);
-      border-radius:16px;
-      overflow:hidden;
-      box-shadow:var(--shadow);
-      min-height:820px;
-    }
-
-    .panel-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px 16px;
-      border-bottom:1px solid var(--border);
-      background:rgba(255,255,255,.02);
-    }
-
-    .panel-title{
-      font-weight:700;
-      letter-spacing:.2px;
-    }
-
-    .pill{
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      font-size:13px;
-      color:var(--muted);
-      background:rgba(255,255,255,.02);
-      white-space:nowrap;
-    }
-
-    /* LEFT: CODE PANEL */
-    .editor{
-      background:var(--editor);
-      height:100%;
-      display:flex;
-      flex-direction:column;
-    }
-
-    .editor-topbar{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding:10px 14px;
-      border-bottom:1px solid #2c2c2c;
-      background:#191919;
-    }
-
-    .dot{width:12px;height:12px;border-radius:50%}
-    .dot.red{background:#ff5f56}
-    .dot.yellow{background:#ffbd2e}
-    .dot.green{background:#27c93f}
-
-    .editor-file{
-      margin-left:10px;
-      color:#a9b1c6;
-      font-size:14px;
-      letter-spacing:.2px;
-    }
-
-    .code-wrap{
-      padding:14px 0 18px 0;
-      overflow:auto;
-      flex:1;
-      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:17px;
-      line-height:30px;
-      tab-size:4;
-    }
-
-    .code-line{
-      position:relative;
-      display:grid;
-      grid-template-columns:52px max-content;
-      min-height:30px;
-      padding-right:18px;
-      border-left:3px solid transparent;
-    }
-
-    .code-line.active{
-      background:linear-gradient(90deg, rgba(79,193,255,.18), rgba(79,193,255,.055));
-      border-left-color:var(--accent);
-    }
-
-    .line-no{
-      text-align:right;
-      padding-right:14px;
-      color:#5d6578;
-      user-select:none;
-      font-size:14px;
-      line-height:30px;
-    }
-
-    .code-content{
-      position:relative;
-      display:block;
-      white-space:pre;
-      line-height:30px;
-      padding-left:12px;
-    }
-
-    .code-content.indent-1{padding-left:44px;}
-    .code-content.indent-2{padding-left:76px;}
-    .code-content.indent-3{padding-left:108px;}
-    .code-content.indent-4{padding-left:140px;}
-
-    .code-content.indent-1,
-    .code-content.indent-2,
-    .code-content.indent-3,
-    .code-content.indent-4{
-      background-image:linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));
-      background-size:1px 100%;
-      background-repeat:repeat-y;
-      background-position:28px 0;
-    }
-    .code-content.indent-2{background-position:28px 0, 60px 0; background-image:linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));}
-    .code-content.indent-3{background-position:28px 0, 60px 0, 92px 0; background-image:linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));}
-    .code-content.indent-4{background-position:28px 0, 60px 0, 92px 0, 124px 0; background-image:linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12)),linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));}
-
-    .kw{color:var(--keyword)}
-    .fn{color:var(--func)}
-    .ty{color:var(--type)}
-    .id{color:var(--id)}
-    .pl{color:var(--plain)}
-    .bl{color:var(--bool)}
-    .nu{color:var(--num)}
-    .cm{color:var(--comment)}
-
-    /* RIGHT: VISUAL PANEL */
-    .viz{
-      padding:18px;
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-      height:100%;
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-    }
-
-    .controls{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-    }
-
-    button{
-      background:#20283a;
-      color:#e6edf7;
-      border:1px solid #32405d;
-      padding:10px 14px;
-      border-radius:10px;
-      font-weight:600;
-      cursor:pointer;
-      transition:.18s ease;
-    }
-
-    button:hover{transform:translateY(-1px); background:#263149}
-    button:disabled{opacity:.45; cursor:not-allowed; transform:none}
-
-    .input-row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    input[type="text"], input[type="number"]{
-      background:#0f1522;
-      color:var(--text);
-      border:1px solid #334055;
-      border-radius:10px;
-      padding:10px 12px;
-      font-size:14px;
-      outline:none;
-    }
-
-    input[type="text"]{min-width:250px;}
-    input[type="number"]{width:92px;}
-
-    .grid{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:14px;
-    }
-
-    .card{
-      background:var(--panel-2);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:14px;
-    }
-
-    .card-title{
-      font-weight:700;
-      margin-bottom:12px;
-      color:#f1f5ff;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
-    .subtle{
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    .array{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:flex-end;
-    }
-
-    .cell-wrap{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:6px;
-      position:relative;
-      min-width:56px;
-    }
-
-    .pointer{
-      min-height:22px;
-      color:var(--warning);
-      font-size:12px;
-      font-weight:700;
-      letter-spacing:.2px;
-    }
-
-    .pointer.hidden{visibility:hidden}
-
-    .cell{
-      width:56px;
-      height:56px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:12px;
-      background:var(--tile);
-      border:1px solid #354056;
-      font-size:22px;
-      font-weight:800;
-      transition:.2s ease;
-    }
-
-    .cell.current{
-      background:var(--tile-active);
-      border-color:#5aa2dd;
-      box-shadow:0 0 0 3px rgba(79,193,255,.14) inset;
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel2: #0f1620;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --line: #30363d;
+      --blue: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --cell: #101820;
+      --highlight: rgba(88, 166, 255, 0.18);
+      --active: rgba(210, 153, 34, 0.28);
+      --ok: rgba(63, 185, 80, 0.22);
+      --bad: rgba(248, 81, 73, 0.22);
+      --skip: rgba(139, 148, 158, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: auto;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: #090d13;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .solution-name {
+      color: var(--text);
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(460px, 0.92fr) minmax(560px, 1.08fr);
+      gap: 16px;
+      padding: 16px;
+      min-height: calc(100vh - 78px);
+      height: auto;
+      overflow: visible;
+      align-items: stretch;
+    }
+
+    .panel, .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+      min-height: 0;
+    }
+
+    .layout > .panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-title {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      background: #0f141c;
+    }
+
+    .code-wrap {
+      position: relative;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+      max-height: calc(100vh - 132px);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.55;
+      background: #0d1117;
     }
-
-    .cell.done{opacity:.72;}
-
-    .cell.match{
-      background:var(--tile-found);
-      border-color:#6bd889;
-      box-shadow:0 0 0 3px rgba(126,231,135,.14) inset;
-    }
-
-    .index{
-      color:var(--muted);
-      font-size:12px;
-      font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace;
-    }
 
-    .map-box{
-      min-height:96px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:flex-start;
-      align-content:flex-start;
-      padding:6px 0 0 0;
-    }
-
-    .map-item{
-      min-width:86px;
-      padding:10px 12px;
-      border-radius:12px;
-      background:#253049;
-      border:1px solid #3b4d70;
-      text-align:center;
-      font-size:15px;
-      font-weight:700;
-      font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace;
+    .code-line {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      min-height: 24px;
+      border-left: 3px solid transparent;
     }
 
-    .map-item.new{
-      background:#254938;
-      border-color:#4aa36d;
-    }
-
-    .map-item.complement{
-      background:#3b314f;
-      border-color:#a37be6;
-    }
+    .code-line.active {
+      background: var(--highlight);
+      border-left-color: var(--blue);
+    }
+
+    .ln {
+      color: #6e7681;
+      text-align: right;
+      padding-right: 12px;
+      user-select: none;
+    }
 
-    .state-grid{
-      display:grid;
-      grid-template-columns:repeat(4, 1fr);
-      gap:12px;
+    .code {
+      white-space: pre;
+      padding-right: 16px;
     }
 
-    .mini{
-      background:#121826;
-      border:1px solid var(--border);
-      border-radius:12px;
-      padding:12px;
-      min-height:82px;
-    }
+    .kw { color: #ff7b72; }
+    .fn { color: #d2a8ff; }
+    .type { color: #ffa657; }
+    .str { color: #a5d6ff; }
+    .num { color: #79c0ff; }
+    .op { color: #ff7b72; }
+    .cm { color: #8b949e; font-style: italic; }
+    .var { color: #c9d1d9; }
+    .meth { color: #d2a8ff; }
 
-    .mini-label{
-      color:var(--muted);
-      font-size:13px;
-      margin-bottom:10px;
+    .right {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: 16px;
+      min-height: 0;
+      overflow: visible;
     }
 
-    .mini-value{
-      font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace;
-      font-size:22px;
-      font-weight:800;
-      color:#f5f7ff;
-      word-break:break-word;
-    }
+    .visualizer-card { overflow: hidden; }
 
-    .equation{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace;
-      font-size:18px;
-      color:#f5f7ff;
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
     }
 
-    .token{
-      padding:8px 10px;
-      border:1px solid var(--border);
-      border-radius:10px;
-      background:#121826;
+    button {
+      background: #238636;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 9px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-weight: 650;
     }
 
-    .token.need{
-      color:#d8b4fe;
-      border-color:#6d55a0;
-      background:#2b243c;
-    }
+    button.secondary { background: #21262d; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    .explain{
-      line-height:1.6;
-      font-size:15px;
-      color:#dde5f6;
+    select {
+      background: #0d1117;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 9px 11px;
+      min-width: 260px;
     }
 
-    .legend{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:12px;
+    .status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
     }
 
-    .legend-item{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      color:var(--muted);
-      font-size:13px;
+    .top-state {
+      display: grid;
+      grid-template-columns: minmax(340px, 0.9fr) minmax(360px, 1.1fr);
+      gap: 16px;
     }
 
-    .legend-box{
-      width:16px;
-      height:16px;
-      border-radius:4px;
-      border:1px solid #4d5a72;
-    }
+    .card-body { padding: 14px; }
 
-    .progress{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      font-size:14px;
-      color:var(--muted);
+    .number-row, .map-row, .result-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
     }
 
-    .bar{
-      flex:1;
-      height:8px;
-      background:#182030;
-      border-radius:999px;
-      overflow:hidden;
-      border:1px solid #29374f;
+    .chip {
+      min-width: 44px;
+      height: 42px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--cell);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 18px;
+      font-weight: 750;
+      position: relative;
     }
 
-    .bar-fill{
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg, #4fc1ff, #78dfb9);
-      transition:.2s ease;
+    .chip.wide {
+      min-width: 74px;
+      font-size: 15px;
     }
 
-    code.inline{
-      color:#c9d7ff;
-      background:#111827;
-      border:1px solid #2b3548;
-      border-radius:6px;
-      padding:1px 5px;
-      font-family:"JetBrains Mono","Fira Code","Consolas","Menlo",monospace;
-      font-size:.95em;
+    .chip.current {
+      background: var(--active);
+      outline: 3px solid var(--yellow);
+      z-index: 2;
     }
-
 
+    .chip.ok {
+      background: var(--ok);
+      outline: 2px solid var(--green);
+    }
 
-    /* BOTTOM: COMPLEXITY NOTES */
-    .complexity-section{
-      width:min(1440px, 96vw);
-      margin:0 auto 28px auto;
+    .chip.bad {
+      background: var(--bad);
+      outline: 2px solid var(--red);
     }
 
-    .complexity-card{
-      background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.012));
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:22px;
-      box-shadow:var(--shadow);
+    .chip.skip {
+      background: var(--skip);
+      color: var(--muted);
     }
 
-    .complexity-title{
-      font-size:22px;
-      font-weight:800;
-      color:#f5f7ff;
-      margin:0 0 14px 0;
+    .chip.return {
+      background: rgba(188, 140, 255, 0.22);
+      outline: 2px solid var(--purple);
     }
 
-    .complexity-subtitle{
-      color:var(--muted);
-      font-size:14px;
-      margin-bottom:18px;
+    .chip-label {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--muted);
+      font-size: 10px;
+      white-space: nowrap;
+      font-weight: 600;
     }
 
-    .complexity-block{
-      margin:18px 0;
-      line-height:1.65;
-      color:#dde5f6;
-      font-size:15px;
+    .big-step {
+      font-size: 18px;
+      font-weight: 750;
+      margin-bottom: 8px;
     }
 
-    .complexity-block strong{
-      color:#f5f7ff;
+    .message {
+      color: var(--text);
+      line-height: 1.45;
+      min-height: 58px;
     }
 
-    .complexity-code{
-      background:#101318;
-      border:1px solid #2c3444;
-      border-radius:14px;
-      padding:14px 16px;
-      margin:10px 0;
-      overflow:auto;
-      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:14px;
-      line-height:1.7;
-      color:#f5f7ff;
+    .mini {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
     }
 
-    .complexity-code code{
-      color:inherit;
+    .mini-card {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      border-radius: 10px;
+      padding: 9px;
+      min-height: 62px;
     }
 
-    .complexity-inline-code{
-      background:rgba(255,255,255,.12);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:5px;
-      padding:1px 5px;
-      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:.92em;
-      color:#f5f7ff;
+    .mini-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
     }
 
-    .complexity-grid{
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0, 1fr));
-      gap:14px;
-      margin-top:14px;
+    .mini-value {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 15px;
+      color: var(--text);
+      overflow-wrap: anywhere;
     }
 
-    .complexity-mini-card{
-      background:#121826;
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:14px;
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: minmax(340px, 0.9fr) minmax(360px, 1.1fr);
+      gap: 16px;
     }
 
-    .complexity-answer{
-      display:inline-block;
-      margin-top:8px;
-      background:#101318;
-      border:1px solid #2c3444;
-      border-radius:14px;
-      padding:14px 16px;
-      font-family:"JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      line-height:1.7;
-      color:#f5f7ff;
+    .plain-box {
+      margin: 0;
+      padding: 14px;
+      min-height: 260px;
+      max-height: 370px;
+      white-space: pre-wrap;
+      overflow: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text);
+      background: #0d1117;
+      height: 100%;
     }
 
-    @media (max-width:1100px){
-      .app{grid-template-columns:1fr;}
-      .panel{min-height:auto}
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 12px;
     }
 
-    @media (max-width:760px){
-      .state-grid{grid-template-columns:1fr 1fr}
-      .cell{width:50px;height:50px}
-      .code-line{font-size:16px}
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: -1px;
     }
 
-    @media (max-width:560px){
-      .state-grid{grid-template-columns:1fr}
-      .panel-header{align-items:flex-start; flex-direction:column;}
+    .dot.current { background: var(--yellow); }
+    .dot.ok { background: var(--green); }
+    .dot.bad { background: var(--red); }
+    .dot.return { background: var(--purple); }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 0 14px 14px;
+      line-height: 1.45;
     }
 
+    @media (max-width: 1080px) {
+      .layout { grid-template-columns: 1fr; min-height: auto; }
+      .code-wrap { max-height: 560px; flex: initial; }
+      .top-state, .bottom-grid { grid-template-columns: 1fr; }
+      .status { margin-left: 0; width: 100%; }
+    }
 
-    @media (max-width: 700px){
-      .complexity-grid{grid-template-columns:1fr}
+    @media (max-width: 760px) {
+      header { padding: 14px 16px; }
+      .layout { padding: 12px; }
+      .controls { align-items: stretch; }
+      button, select { flex: 1 1 130px; }
+      .mini { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
   </style>
 </head>
 <body>
-  <div class="top-links">
-    <a href="https://leetcode.com/problems/two-sum/" target="_blank">LeetCode Problem Link ↗</a>
-    <a href="https://neetcode.io/problems/two-integer-sum/question" target="_blank">NeetCode Problem Link ↗</a>
-  </div>
+  <header>
+    <h1>Two Sum</h1>
+    <div class="solution-name"><em>One-Pass Hash Map</em></div>
+    <div class="subtitle">Store each number with its index. For each num, check whether target - num was already seen.</div>
+  </header>
 
-  <div class="app">
-    <!-- LEFT PANEL -->
-    <section class="panel editor">
-      <div class="editor-topbar">
-        <span class="dot red"></span>
-        <span class="dot yellow"></span>
-        <span class="dot green"></span>
-        <div class="editor-file">two_sum.py</div>
-      </div>
-
-      <div class="code-wrap" id="codeWrap">
-        <div class="code-line" data-line="1"><div class="line-no">1</div><code class="code-content"><span class="pl"></span><span class="kw">class</span><span class="pl"> </span><span class="id">Solution</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="2"><div class="line-no">2</div><code class="code-content indent-1"><span class="pl"></span><span class="kw">def</span><span class="pl"> </span><span class="id">twoSum</span><span class="pl">(</span><span class="id">self</span><span class="pl">, </span><span class="id">nums</span><span class="pl">: </span><span class="ty">List</span><span class="pl">[</span><span class="ty">int</span><span class="pl">], </span><span class="id">target</span><span class="pl">: </span><span class="ty">int</span><span class="pl">) -&gt; </span><span class="ty">List</span><span class="pl">[</span><span class="ty">int</span><span class="pl">]:</span></code></div>
-        <div class="code-line" data-line="3"><div class="line-no">3</div><code class="code-content indent-2"><span class="pl"></span><span class="id">hashmap</span><span class="pl"> = {}</span></code></div>
-        <div class="code-line" data-line="4"><div class="line-no">4</div><code class="code-content indent-2"><span class="pl"></span><span class="kw">for</span><span class="pl"> </span><span class="id">index</span><span class="pl">, </span><span class="id">num</span><span class="pl"> </span><span class="kw">in</span><span class="pl"> </span><span class="fn">enumerate</span><span class="pl">(</span><span class="id">nums</span><span class="pl">):</span></code></div>
-        <div class="code-line" data-line="5"><div class="line-no">5</div><code class="code-content indent-3"><span class="pl"></span><span class="id">complement</span><span class="pl"> = </span><span class="id">target</span><span class="pl"> - </span><span class="id">num</span><span class="pl"></span></code></div>
-        <div class="code-line" data-line="6"><div class="line-no">6</div><code class="code-content indent-3"><span class="pl"></span><span class="kw">if</span><span class="pl"> </span><span class="id">complement</span><span class="pl"> </span><span class="kw">in</span><span class="pl"> </span><span class="id">hashmap</span><span class="pl">:</span></code></div>
-        <div class="code-line" data-line="7"><div class="line-no">7</div><code class="code-content indent-4"><span class="pl"></span><span class="kw">return</span><span class="pl"> [</span><span class="id">hashmap</span><span class="pl">[</span><span class="id">complement</span><span class="pl">], </span><span class="id">index</span><span class="pl">]</span></code></div>
-        <div class="code-line" data-line="8"><div class="line-no">8</div><code class="code-content indent-3"><span class="pl"></span><span class="id">hashmap</span><span class="pl">[</span><span class="id">num</span><span class="pl">] = </span><span class="id">index</span><span class="pl"></span></code></div>
-        <div class="code-line" data-line="9"><div class="line-no">9</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="10"><div class="line-no">10</div><code class="code-content indent-2"><span class="cm"># time complexity</span></code></div>
-        <div class="code-line" data-line="11"><div class="line-no">11</div><code class="code-content indent-2"><span class="pl">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="12"><div class="line-no">12</div><code class="code-content indent-2"><span class="pl"></span><span class="nu">1</span><span class="pl">. </span><span class="id">Identify</span><span class="pl"> </span><span class="id">the</span><span class="pl"> </span><span class="id">driver</span><span class="pl"> </span><span class="id">of</span><span class="pl"> </span><span class="id">growth</span><span class="pl"></span></code></div>
-        <div class="code-line" data-line="13"><div class="line-no">13</div><code class="code-content indent-3"><span class="pl"></span><span class="id">Ask</span><span class="pl">: “</span><span class="id">What</span><span class="pl"> </span><span class="id">input</span><span class="pl"> </span><span class="id">can</span><span class="pl"> </span><span class="id">get</span><span class="pl"> </span><span class="id">large</span><span class="pl">?”</span></code></div>
-        <div class="code-line" data-line="14"><div class="line-no">14</div><code class="code-content indent-3"><span class="pl"></span><span class="id">Here</span><span class="pl">: </span><span class="id">n</span><span class="pl"> = </span><span class="fn">len</span><span class="pl">(</span><span class="id">nums</span><span class="pl">).</span></code></div>
-        <div class="code-line" data-line="15"><div class="line-no">15</div><code class="code-content indent-2"><span class="pl"></span><span class="nu">2</span><span class="pl">. </span><span class="id">Count</span><span class="pl"> </span><span class="id">repeated</span><span class="pl"> </span><span class="id">work</span><span class="pl"></span></code></div>
-        <div class="code-line" data-line="16"><div class="line-no">16</div><code class="code-content indent-3"><span class="pl"></span><span class="id">Ask</span><span class="pl">: “</span><span class="id">What</span><span class="pl"> </span><span class="id">loops</span><span class="pl"> </span><span class="id">or</span><span class="pl"> </span><span class="id">repeated</span><span class="pl"> </span><span class="id">operations</span><span class="pl"> </span><span class="id">depend</span><span class="pl"> </span><span class="id">on</span><span class="pl"> </span><span class="id">n</span><span class="pl">?”</span></code></div>
-        <div class="code-line" data-line="17"><div class="line-no">17</div><code class="code-content indent-3"><span class="pl"></span><span class="id">Here</span><span class="pl">: </span><span class="id">one</span><span class="pl"> </span><span class="kw">for</span><span class="pl"> </span><span class="id">loop</span><span class="pl"> </span><span class="id">over</span><span class="pl"> </span><span class="id">nums</span><span class="pl">, </span><span class="id">so</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">).</span></code></div>
-        <div class="code-line" data-line="18"><div class="line-no">18</div><code class="code-content indent-2"><span class="pl"></span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">)</span></code></div>
-        <div class="code-line" data-line="19"><div class="line-no">19</div><code class="code-content indent-2"><span class="pl"></span><span class="id">n</span><span class="pl"> = </span><span class="fn">len</span><span class="pl">(</span><span class="id">nums</span><span class="pl">)</span></code></div>
-        <div class="code-line" data-line="20"><div class="line-no">20</div><code class="code-content indent-2"><span class="pl"></span><span class="id">we</span><span class="pl"> </span><span class="id">iterate</span><span class="pl"> </span><span class="id">through</span><span class="pl"> </span><span class="id">nums</span><span class="pl"> </span><span class="id">once</span><span class="pl"> </span><span class="id">using</span><span class="pl"> </span><span class="fn">enumerate</span><span class="pl">(</span><span class="id">nums</span><span class="pl">)</span></code></div>
-        <div class="code-line" data-line="21"><div class="line-no">21</div><code class="code-content indent-2"><span class="pl"></span><span class="id">For</span><span class="pl"> </span><span class="id">each</span><span class="pl"> </span><span class="id">number</span><span class="pl">, </span><span class="id">checking</span><span class="pl"> </span><span class="id">the</span><span class="pl"> </span><span class="id">complement</span><span class="pl"> </span><span class="id">is</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="nu">1</span><span class="pl">) </span><span class="id">average</span><span class="pl"> </span><span class="id">time</span><span class="pl">,</span></code></div>
-        <div class="code-line" data-line="22"><div class="line-no">22</div><code class="code-content indent-2"><span class="pl"></span><span class="id">and</span><span class="pl"> </span><span class="id">inserting</span><span class="pl"> </span><span class="id">d</span><span class="pl">[</span><span class="id">num</span><span class="pl">] = </span><span class="id">i</span><span class="pl"> </span><span class="id">is</span><span class="pl"> </span><span class="id">also</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="nu">1</span><span class="pl">) </span><span class="id">average</span><span class="pl"> </span><span class="id">time</span><span class="pl">.</span></code></div>
-        <div class="code-line" data-line="23"><div class="line-no">23</div><code class="code-content indent-2"><span class="pl"></span><span class="id">Therefore</span><span class="pl">, </span><span class="id">the</span><span class="pl"> </span><span class="id">total</span><span class="pl"> </span><span class="id">time</span><span class="pl"> </span><span class="id">complexity</span><span class="pl"> </span><span class="id">is</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">).</span></code></div>
-        <div class="code-line" data-line="24"><div class="line-no">24</div><code class="code-content indent-2"><span class="pl">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="25"><div class="line-no">25</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="26"><div class="line-no">26</div><code class="code-content indent-2"><span class="cm"># space complexity</span></code></div>
-        <div class="code-line" data-line="27"><div class="line-no">27</div><code class="code-content indent-2"><span class="pl">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="28"><div class="line-no">28</div><code class="code-content indent-2"><span class="pl"></span><span class="nu">3</span><span class="pl">. </span><span class="id">Count</span><span class="pl"> </span><span class="id">extra</span><span class="pl"> </span><span class="id">memory</span><span class="pl"></span></code></div>
-        <div class="code-line" data-line="29"><div class="line-no">29</div><code class="code-content indent-3"><span class="pl"></span><span class="id">Ask</span><span class="pl">: “</span><span class="id">What</span><span class="pl"> </span><span class="id">data</span><span class="pl"> </span><span class="id">structure</span><span class="pl"> </span><span class="id">grows</span><span class="pl"> </span><span class="id">with</span><span class="pl"> </span><span class="id">input</span><span class="pl">?”</span></code></div>
-        <div class="code-line" data-line="30"><div class="line-no">30</div><code class="code-content indent-3"><span class="pl"></span><span class="id">Here</span><span class="pl">: </span><span class="id">dictionary</span><span class="pl"> </span><span class="id">d</span><span class="pl"> </span><span class="id">can</span><span class="pl"> </span><span class="id">store</span><span class="pl"> </span><span class="id">up</span><span class="pl"> </span><span class="id">to</span><span class="pl"> </span><span class="id">n</span><span class="pl"> </span><span class="id">numbers</span><span class="pl">, </span><span class="id">so</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">).</span></code></div>
-        <div class="code-line" data-line="31"><div class="line-no">31</div><code class="code-content indent-2"><span class="pl"></span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">)</span></code></div>
-        <div class="code-line" data-line="32"><div class="line-no">32</div><code class="code-content indent-2"><span class="pl"></span><span class="id">The</span><span class="pl"> </span><span class="id">dictionary</span><span class="pl"> </span><span class="id">stores</span><span class="pl"> </span><span class="id">numbers</span><span class="pl"> </span><span class="id">we</span><span class="pl"> </span><span class="id">have</span><span class="pl"> </span><span class="id">already</span><span class="pl"> </span><span class="id">seen</span><span class="pl">.</span></code></div>
-        <div class="code-line" data-line="33"><div class="line-no">33</div><code class="code-content indent-2"><span class="pl"></span><span class="id">In</span><span class="pl"> </span><span class="id">the</span><span class="pl"> </span><span class="id">worst</span><span class="pl"> </span><span class="id">case</span><span class="pl">, </span><span class="id">we</span><span class="pl"> </span><span class="id">may</span><span class="pl"> </span><span class="id">store</span><span class="pl"> </span><span class="id">almost</span><span class="pl"> </span><span class="id">every</span><span class="pl"> </span><span class="id">number</span><span class="pl"> </span><span class="id">before</span><span class="pl"> </span><span class="id">finding</span><span class="pl"> </span><span class="id">the</span><span class="pl"> </span><span class="id">answer</span><span class="pl">.</span></code></div>
-        <div class="code-line" data-line="34"><div class="line-no">34</div><code class="code-content indent-2"><span class="pl"></span><span class="id">Therefore</span><span class="pl">, </span><span class="id">extra</span><span class="pl"> </span><span class="id">space</span><span class="pl"> </span><span class="id">complexity</span><span class="pl"> </span><span class="id">is</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">).</span></code></div>
-        <div class="code-line" data-line="35"><div class="line-no">35</div><code class="code-content indent-2"><span class="pl">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="36"><div class="line-no">36</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="37"><div class="line-no">37</div><code class="code-content indent-2"><span class="cm"># improvement</span></code></div>
-        <div class="code-line" data-line="38"><div class="line-no">38</div><code class="code-content indent-2"><span class="pl">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="39"><div class="line-no">39</div><code class="code-content indent-2"><span class="pl"></span><span class="id">This</span><span class="pl"> </span><span class="id">is</span><span class="pl"> </span><span class="id">already</span><span class="pl"> </span><span class="id">the</span><span class="pl"> </span><span class="id">optimal</span><span class="pl"> </span><span class="id">solution</span><span class="pl"> </span><span class="id">but</span><span class="pl"> </span><span class="id">can</span><span class="pl"> </span><span class="id">be</span><span class="pl"> </span><span class="id">improved</span><span class="pl"> </span><span class="id">with</span><span class="pl"> </span><span class="id">brute</span><span class="pl"> </span><span class="id">force</span><span class="pl">.</span></code></div>
-        <div class="code-line" data-line="40"><div class="line-no">40</div><code class="code-content indent-2"><span class="pl"></span><span class="id">Brute</span><span class="pl"> </span><span class="id">force</span><span class="pl"> </span><span class="id">would</span><span class="pl"> </span><span class="id">use</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="nu">1</span><span class="pl">) </span><span class="id">extra</span><span class="pl"> </span><span class="id">space</span><span class="pl">, </span><span class="id">but</span><span class="pl"> </span><span class="id">it</span><span class="pl"> </span><span class="id">takes</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">^</span><span class="nu">2</span><span class="pl">) </span><span class="id">because</span><span class="pl"> </span><span class="id">checks</span><span class="pl"> </span><span class="id">every</span><span class="pl"> </span><span class="id">pair</span><span class="pl">.</span></code></div>
-        <div class="code-line" data-line="41"><div class="line-no">41</div><code class="code-content indent-2"><span class="pl"></span><span class="id">This</span><span class="pl"> </span><span class="id">solution</span><span class="pl"> </span><span class="id">would</span><span class="pl"> </span><span class="id">improve</span><span class="pl"> </span><span class="id">the</span><span class="pl"> </span><span class="id">time</span><span class="pl"> </span><span class="id">from</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">^</span><span class="nu">2</span><span class="pl">) </span><span class="id">to</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">) </span><span class="id">by</span><span class="pl"> </span><span class="id">using</span><span class="pl"> </span><span class="id">extra</span><span class="pl"> </span><span class="id">space</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">). </span></code></div>
-        <div class="code-line" data-line="42"><div class="line-no">42</div><code class="code-content indent-2"><span class="pl">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="43"><div class="line-no">43</div><code class="code-content"></code></div>
-        <div class="code-line" data-line="44"><div class="line-no">44</div><code class="code-content indent-2"><span class="cm"># interview wording</span></code></div>
-        <div class="code-line" data-line="45"><div class="line-no">45</div><code class="code-content indent-2"><span class="pl">&quot;&quot;&quot;</span></code></div>
-        <div class="code-line" data-line="46"><div class="line-no">46</div><code class="code-content indent-2">“Let n be the length of nums. </code></div>
-        <div class="code-line" data-line="47"><div class="line-no">47</div><code class="code-content indent-2"><span class="pl"></span><span class="id">I</span><span class="pl"> </span><span class="id">scan</span><span class="pl"> </span><span class="id">the</span><span class="pl"> </span><span class="id">array</span><span class="pl"> </span><span class="id">once</span><span class="pl">, </span><span class="id">so</span><span class="pl"> </span><span class="id">the</span><span class="pl"> </span><span class="id">loop</span><span class="pl"> </span><span class="id">contributes</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">). </span></code></div>
-        <div class="code-line" data-line="48"><div class="line-no">48</div><code class="code-content indent-2"><span class="pl"></span><span class="id">For</span><span class="pl"> </span><span class="id">each</span><span class="pl"> </span><span class="id">element</span><span class="pl">, </span><span class="id">hash</span><span class="pl"> </span><span class="id">map</span><span class="pl"> </span><span class="id">lookup</span><span class="pl"> </span><span class="id">and</span><span class="pl"> </span><span class="id">insertion</span><span class="pl"> </span><span class="id">are</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="nu">1</span><span class="pl">) </span><span class="id">on</span><span class="pl"> </span><span class="id">average</span><span class="pl">. </span></code></div>
-        <div class="code-line" data-line="49"><div class="line-no">49</div><code class="code-content indent-2"><span class="pl"></span><span class="id">Therefore</span><span class="pl"> </span><span class="id">the</span><span class="pl"> </span><span class="id">total</span><span class="pl"> </span><span class="id">time</span><span class="pl"> </span><span class="id">complexity</span><span class="pl"> </span><span class="id">is</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">). </span></code></div>
-        <div class="code-line" data-line="50"><div class="line-no">50</div><code class="code-content indent-2"><span class="pl"></span><span class="id">The</span><span class="pl"> </span><span class="id">space</span><span class="pl"> </span><span class="id">complexity</span><span class="pl"> </span><span class="id">is</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">), </span></code></div>
-        <div class="code-line" data-line="51"><div class="line-no">51</div><code class="code-content indent-2">because in the worst case the hash map stores up to n elements. </code></div>
-        <div class="code-line" data-line="52"><div class="line-no">52</div><code class="code-content indent-2"><span class="pl"></span><span class="id">This</span><span class="pl"> </span><span class="id">is</span><span class="pl"> </span><span class="id">optimal</span><span class="pl"> </span><span class="kw">for</span><span class="pl"> </span><span class="id">time</span><span class="pl">. </span></code></div>
-        <div class="code-line" data-line="53"><div class="line-no">53</div><code class="code-content indent-2"><span class="pl"></span><span class="id">The</span><span class="pl"> </span><span class="id">only</span><span class="pl"> </span><span class="id">real</span><span class="pl"> </span><span class="id">alternative</span><span class="pl"> </span><span class="id">improvement</span><span class="pl"> </span><span class="id">is</span><span class="pl"> </span><span class="id">reducing</span><span class="pl"> </span><span class="id">space</span><span class="pl"> </span><span class="id">with</span><span class="pl"> </span><span class="id">brute</span><span class="pl"> </span><span class="id">force</span><span class="pl">, </span></code></div>
-        <div class="code-line" data-line="54"><div class="line-no">54</div><code class="code-content indent-2"><span class="pl"></span><span class="id">but</span><span class="pl"> </span><span class="id">that</span><span class="pl"> </span><span class="id">worsens</span><span class="pl"> </span><span class="id">time</span><span class="pl"> </span><span class="id">to</span><span class="pl"> </span><span class="id">O</span><span class="pl">(</span><span class="id">n</span><span class="pl">^</span><span class="nu">2</span><span class="pl">), </span><span class="id">so</span><span class="pl"> </span><span class="id">I</span><span class="pl"> </span><span class="id">would</span><span class="pl"> </span><span class="id">keep</span><span class="pl"> </span><span class="id">the</span><span class="pl"> </span><span class="id">hash</span><span class="pl"> </span><span class="id">map</span><span class="pl"> </span><span class="id">solution</span><span class="pl">.”</span></code></div>
-        <div class="code-line" data-line="55"><div class="line-no">55</div><code class="code-content indent-2"><span class="pl">&quot;&quot;&quot;</span></code></div>
-      </div>
-    </section>
-
-    <!-- RIGHT PANEL -->
+  <main class="layout">
     <section class="panel">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Two Sum Visualizer</div>
-          <div class="subtle">Array scan + hash map from number → index</div>
+      <div class="panel-title">Python code</div>
+      <div class="code-wrap" id="codeWrap"></div>
+    </section>
+
+    <section class="right">
+      <div class="card visualizer-card">
+        <div class="panel-title">Visualizer</div>
+        <div class="controls">
+          <button id="prevBtn" class="secondary">Back</button>
+          <button id="nextBtn">Next</button>
+          <button id="playBtn" class="secondary">Play</button>
+          <button id="resetBtn" class="secondary">Reset</button>
+          <select id="caseSelect" title="Example input">
+            <option value="classic">nums = [2,7,11,15], target = 9</option>
+            <option value="middle">nums = [3,2,4], target = 6</option>
+            <option value="duplicate">nums = [3,3], target = 6</option>
+            <option value="negative">nums = [-1,-2,-3,-4,-5], target = -8</option>
+          </select>
+          <div class="status" id="statusText">Step 0 / 0</div>
         </div>
-        <div class="pill">Current example: <span id="exampleLabel">nums = [2, 7, 11, 15], target = 9</span></div>
       </div>
 
-      <div class="viz">
-        <div class="input-row">
-          <label class="subtle" for="numsInput">nums:</label>
-          <input id="numsInput" type="text" value="2, 7, 11, 15" />
-          <label class="subtle" for="targetInput">target:</label>
-          <input id="targetInput" type="number" value="9" />
-          <button id="applyBtn">Apply</button>
-          <button id="sample1Btn">Sample 1</button>
-          <button id="sample2Btn">Sample 2</button>
-        </div>
+      <div class="top-state">
+        <div class="card">
+          <div class="panel-title">Input and result</div>
+          <div class="card-body">
+            <div class="mini-label">nums</div>
+            <div class="number-row" id="numsRow"></div>
 
-        <div class="controls">
-          <button id="prevBtn">◀ Back</button>
-          <button id="nextBtn">Next ▶</button>
-          <button id="resetBtn">Reset</button>
-          <button id="playBtn">Auto Play</button>
-        </div>
+            <div style="height:18px"></div>
 
-        <div class="progress">
-          <span id="stepLabel">Step 1 / 1</span>
-          <div class="bar"><div class="bar-fill" id="barFill"></div></div>
-        </div>
+            <div class="mini-label">return value</div>
+            <div class="result-row" id="resultRow"></div>
 
-        <div class="grid">
-          <div class="card">
-            <div class="card-title">nums array</div>
-            <div class="array" id="arrayView"></div>
             <div class="legend">
-              <div class="legend-item">
-                <span class="legend-box" style="background:var(--tile-active); border-color:#5aa2dd;"></span>
-                Current <code class="inline">num</code>
+              <div><span class="dot current"></span>current num</div>
+              <div><span class="dot ok"></span>stored in hashmap</div>
+              <div><span class="dot bad"></span>complement found</div>
+              <div><span class="dot return"></span>returned result</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="panel-title">Current step</div>
+          <div class="card-body">
+            <div class="big-step" id="bigStep">Initialize</div>
+            <div class="message" id="message">Click Next to start.</div>
+            <div class="mini">
+              <div class="mini-card">
+                <div class="mini-label">index</div>
+                <div class="mini-value" id="indexVal">-</div>
               </div>
-              <div class="legend-item">
-                <span class="legend-box" style="background:var(--tile-found); border-color:#6bd889;"></span>
-                Answer pair
+              <div class="mini-card">
+                <div class="mini-label">num</div>
+                <div class="mini-value" id="numVal">-</div>
               </div>
-              <div class="legend-item">
-                <span class="legend-box" style="background:var(--tile);"></span>
-                Not processed yet
+              <div class="mini-card">
+                <div class="mini-label">complement</div>
+                <div class="mini-value" id="complementVal">-</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">target</div>
+                <div class="mini-value" id="targetVal">-</div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div class="card">
-            <div class="card-title">complement calculation</div>
-            <div class="equation" id="equationView">
-              <span class="token">target</span>
-              <span>−</span>
-              <span class="token">num</span>
-              <span>=</span>
-              <span class="token need">complement</span>
-            </div>
+      <div class="bottom-grid">
+        <div class="card">
+          <div class="panel-title">Plain-text state</div>
+          <pre class="plain-box" id="stateBox"></pre>
+        </div>
+
+        <div class="card">
+          <div class="panel-title">Hash map</div>
+          <div class="card-body">
+            <div class="map-row" id="mapRow"></div>
           </div>
-
-          <div class="card">
-            <div class="card-title">hash map <span class="subtle">hashmap: number → index</span></div>
-            <div class="map-box" id="mapView"></div>
-          </div>
-
-          <div class="state-grid">
-            <div class="mini">
-              <div class="mini-label">Loop index</div>
-              <div class="mini-value" id="iValue">—</div>
-            </div>
-            <div class="mini">
-              <div class="mini-label">Current num</div>
-              <div class="mini-value" id="numValue">—</div>
-            </div>
-            <div class="mini">
-              <div class="mini-label">Complement</div>
-              <div class="mini-value" id="complementValue">—</div>
-            </div>
-            <div class="mini">
-              <div class="mini-label">Return value</div>
-              <div class="mini-value" id="returnValue">—</div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">Explanation</div>
-            <div class="explain" id="explanation">
-              We begin by creating an empty dictionary called <code class="inline">hashmap</code>.
-            </div>
+          <div class="footer-note">
+            hashmap maps number → index. We check the complement before storing the current num so the same element is not used twice.
           </div>
         </div>
       </div>
     </section>
-  </div>
-
-
-  <section class="complexity-section">
-    <div class="complexity-card">
-      <h2 class="complexity-title">Time and Space Complexity</h2>
-      <div class="complexity-subtitle">Interview-ready explanation for the hash map solution.</div>
-
-      <div class="complexity-block">
-        <strong>Time complexity: O(n)</strong>
-      </div>
-
-      <div class="complexity-block">
-        <strong>Reason:</strong>
-        <pre class="complexity-code"><code><span class="kw">for</span> <span class="id">index</span><span class="pl">, </span><span class="id">num</span> <span class="kw">in</span> <span class="fn">enumerate</span><span class="pl">(</span><span class="id">nums</span><span class="pl">):</span></code></pre>
-        This loop can visit each element in <span class="complexity-inline-code">nums</span> once.
-      </div>
-
-      <div class="complexity-block">
-        <strong>Inside the loop:</strong>
-        <pre class="complexity-code"><code><span class="id">complement</span> <span class="pl">=</span> <span class="id">target</span> <span class="pl">-</span> <span class="id">num</span></code></pre>
-        Calculating the complement is <strong>O(1)</strong>.
-        <pre class="complexity-code"><code><span class="kw">if</span> <span class="id">complement</span> <span class="kw">in</span> <span class="id">hashmap</span><span class="pl">:</span></code></pre>
-        Checking whether a key exists in a <span class="complexity-inline-code">dict</span> is <strong>O(1)</strong> on average.
-        <pre class="complexity-code"><code><span class="id">hashmap</span><span class="pl">[</span><span class="id">num</span><span class="pl">] = </span><span class="id">index</span></code></pre>
-        Saving a key-value pair in a <span class="complexity-inline-code">dict</span> is also <strong>O(1)</strong> on average.
-      </div>
-
-      <div class="complexity-block">
-        <strong>So the total is:</strong>
-        <pre class="complexity-code"><code>n elements × O(1) work per element = O(n)</code></pre>
-      </div>
-
-      <div class="complexity-grid">
-        <div class="complexity-mini-card">
-          <div class="complexity-block" style="margin:0;">
-            <strong>Best case: O(1)</strong><br>
-            Example:
-            <pre class="complexity-code"><code><span class="id">nums</span> <span class="pl">= [</span><span class="nu">2</span><span class="pl">, </span><span class="nu">7</span><span class="pl">, </span><span class="nu">11</span><span class="pl">, </span><span class="nu">15</span><span class="pl">], </span><span class="id">target</span> <span class="pl">= </span><span class="nu">9</span></code></pre>
-            It finds the answer at index <span class="complexity-inline-code">1</span> and returns immediately.
-          </div>
-        </div>
-
-        <div class="complexity-mini-card">
-          <div class="complexity-block" style="margin:0;">
-            <strong>Worst case: O(n)</strong><br>
-            Example:
-            <pre class="complexity-code"><code><span class="id">nums</span> <span class="pl">= [</span><span class="nu">3</span><span class="pl">, </span><span class="nu">2</span><span class="pl">, </span><span class="nu">4</span><span class="pl">], </span><span class="id">target</span> <span class="pl">= </span><span class="nu">6</span></code></pre>
-            It may need to scan until a later element completes the pair.
-          </div>
-        </div>
-      </div>
-
-      <div class="complexity-block">
-        <strong>Space complexity: O(n)</strong>
-        <br>
-        Reason: in the worst case, the hash map stores many previous numbers before the answer is found. The map can grow up to <span class="complexity-inline-code">n</span> entries.
-      </div>
-
-
-      <div class="complexity-block">
-        <strong>Can we improve the hash map solution's space?</strong>
-        <br>
-        The hash map solution uses <span class="complexity-inline-code">O(n)</span> extra space because it stores previous numbers and their indices.
-        To reduce extra space to <span class="complexity-inline-code">O(1)</span>, we can use the brute force two-pointer-style idea with two indices, but the tradeoff is much worse time complexity.
-      </div>
-
-      <div class="complexity-block">
-        <strong>Brute force tradeoff:</strong>
-        <pre class="complexity-code"><code><span class="kw">for</span> <span class="id">i</span> <span class="kw">in</span> <span class="fn">range</span><span class="pl">(</span><span class="fn">len</span><span class="pl">(</span><span class="id">nums</span><span class="pl">)):</span>
-    <span class="kw">for</span> <span class="id">j</span> <span class="kw">in</span> <span class="fn">range</span><span class="pl">(</span><span class="id">i</span> <span class="pl">+ </span><span class="nu">1</span><span class="pl">, </span><span class="fn">len</span><span class="pl">(</span><span class="id">nums</span><span class="pl">)):</span>
-        <span class="kw">if</span> <span class="id">nums</span><span class="pl">[</span><span class="id">i</span><span class="pl">] + </span><span class="id">nums</span><span class="pl">[</span><span class="id">j</span><span class="pl">] == </span><span class="id">target</span><span class="pl">:</span>
-            <span class="kw">return</span> <span class="pl">[</span><span class="id">i</span><span class="pl">, </span><span class="id">j</span><span class="pl">]</span></code></pre>
-        This uses only a few variables, so extra space is <span class="complexity-inline-code">O(1)</span>.
-        But it compares many pairs repeatedly, so time becomes <span class="complexity-inline-code">O(n²)</span> instead of <span class="complexity-inline-code">O(n)</span>.
-      </div>
-
-      <div class="complexity-block">
-        <strong>Interview takeaway:</strong>
-        <br>
-        Use the hash map solution as the main optimized solution because it removes redundant pair scanning.
-        The brute force solution improves extra space to <span class="complexity-inline-code">O(1)</span>, but it is usually not preferred because it sacrifices too much time: <span class="complexity-inline-code">O(n²)</span>.
-      </div>
-
-      <div class="complexity-block">
-        <strong>Final answer:</strong><br>
-        <div class="complexity-answer">Time: &nbsp;O(n)<br>Space: O(n)</div>
-      </div>
-    </div>
-  </section>
+  </main>
 
   <script>
-    const codeLines = [...document.querySelectorAll(".code-line")];
-    const arrayView = document.getElementById("arrayView");
-    const mapView = document.getElementById("mapView");
-    const equationView = document.getElementById("equationView");
-    const explanation = document.getElementById("explanation");
-    const iValue = document.getElementById("iValue");
-    const numValue = document.getElementById("numValue");
-    const complementValue = document.getElementById("complementValue");
-    const returnValue = document.getElementById("returnValue");
-    const stepLabel = document.getElementById("stepLabel");
-    const barFill = document.getElementById("barFill");
-    const exampleLabel = document.getElementById("exampleLabel");
+    const codeLines = [
+      { n: 1, html: '<span class="kw">class</span> <span class="type">Solution</span>:' },
+      { n: 2, html: '    <span class="kw">def</span> <span class="fn">twoSum</span>(<span class="var">self</span>, <span class="var">nums</span>: <span class="type">List</span>[<span class="type">int</span>], <span class="var">target</span>: <span class="type">int</span>) -> <span class="type">List</span>[<span class="type">int</span>]:' },
+      { n: 3, html: '        <span class="var">hashmap</span> = {}' },
+      { n: 4, html: '        <span class="kw">for</span> <span class="var">index</span>, <span class="var">num</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="var">nums</span>):' },
+      { n: 5, html: '            <span class="var">complement</span> = <span class="var">target</span> - <span class="var">num</span>' },
+      { n: 6, html: '            <span class="kw">if</span> <span class="var">complement</span> <span class="kw">in</span> <span class="var">hashmap</span>:' },
+      { n: 7, html: '                <span class="kw">return</span> [<span class="var">hashmap</span>[<span class="var">complement</span>], <span class="var">index</span>]' },
+      { n: 8, html: '            <span class="var">hashmap</span>[<span class="var">num</span>] = <span class="var">index</span>' },
+      { n: 9, html: '' },
+      { n: 10, html: '        <span class="cm"># tc</span>' },
+      { n: 11, html: '        <span class="str">\'\'\'</span>' },
+      { n: 12, html: '        <span class="str">Time complexity is O(n), where n is the length of nums.</span>' },
+      { n: 13, html: '        <span class="str">We iterate through nums once using enumerate.</span>' },
+      { n: 14, html: '        <span class="str">For each number, calculating the complement takes O(1).</span>' },
+      { n: 15, html: '        <span class="str">Checking if complement is in hashmap takes O(1) average expected time.</span>' },
+      { n: 16, html: '        <span class="str">Adding hashmap[num] = index also takes O(1) average expected time.</span>' },
+      { n: 17, html: '        <span class="str">So the total time complexity is O(n).</span>' },
+      { n: 18, html: '        <span class="str">\'\'\'</span>' },
+      { n: 19, html: '        <span class="cm"># sc</span>' },
+      { n: 20, html: '        <span class="str">\'\'\'</span>' },
+      { n: 21, html: '        <span class="str">Space complexity is O(n).</span>' },
+      { n: 22, html: '        <span class="str">In the worst case, the hashmap stores every number before finding the answer.</span>' },
+      { n: 23, html: '        <span class="str">So the extra space is O(n).</span>' },
+      { n: 24, html: '        <span class="str">\'\'\'</span>' },
+      { n: 25, html: '        <span class="cm"># optimization</span>' },
+      { n: 26, html: '        <span class="str">\'\'\'</span>' },
+      { n: 27, html: '        <span class="str">This is already the optimal solution for time complexity,</span>' },
+      { n: 28, html: '        <span class="str">because we may need to inspect each number at least once.</span>' },
+      { n: 29, html: '        <span class="str">A brute force solution uses O(1) extra space,</span>' },
+      { n: 30, html: '        <span class="str">but the time complexity worsens to O(n^2).</span>' },
+      { n: 31, html: '        <span class="str">Sorting is not a good optimization here because the problem asks for original indices.</span>' },
+      { n: 32, html: '        <span class="str">\'\'\'</span>' }
+    ];
 
-    const numsInput = document.getElementById("numsInput");
-    const targetInput = document.getElementById("targetInput");
-    const applyBtn = document.getElementById("applyBtn");
-    const sample1Btn = document.getElementById("sample1Btn");
-    const sample2Btn = document.getElementById("sample2Btn");
+    const cases = {
+      classic: { nums: [2, 7, 11, 15], target: 9 },
+      middle: { nums: [3, 2, 4], target: 6 },
+      duplicate: { nums: [3, 3], target: 6 },
+      negative: { nums: [-1, -2, -3, -4, -5], target: -8 }
+    };
 
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const playBtn = document.getElementById("playBtn");
-
-    let nums = [2, 7, 11, 15];
-    let target = 9;
+    let nums = [...cases.classic.nums];
+    let target = cases.classic.target;
     let steps = [];
     let stepIndex = 0;
     let timer = null;
 
-    function parseNums(text){
-      return text
-        .split(",")
-        .map(x => x.trim())
-        .filter(x => x.length > 0)
-        .map(Number)
-        .filter(x => !Number.isNaN(x));
+    const codeWrap = document.getElementById('codeWrap');
+    const numsRow = document.getElementById('numsRow');
+    const resultRow = document.getElementById('resultRow');
+    const mapRow = document.getElementById('mapRow');
+    const stateBox = document.getElementById('stateBox');
+    const bigStep = document.getElementById('bigStep');
+    const message = document.getElementById('message');
+    const statusText = document.getElementById('statusText');
+    const indexVal = document.getElementById('indexVal');
+    const numVal = document.getElementById('numVal');
+    const complementVal = document.getElementById('complementVal');
+    const targetVal = document.getElementById('targetVal');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const playBtn = document.getElementById('playBtn');
+    const caseSelect = document.getElementById('caseSelect');
+
+    function cloneMap(map) {
+      return Object.fromEntries(Object.entries(map).map(([key, value]) => [key, value]));
     }
 
-    function cloneMap(mapObj){
-      return Object.entries(mapObj).map(([num, index]) => ({ num:Number(num), index }));
+    function formatMap(map) {
+      const entries = Object.entries(map);
+      if (!entries.length) return '{}';
+      return '{' + entries.map(([key, value]) => `${key}: ${value}`).join(', ') + '}';
     }
 
-    function buildSteps(arr, tgt){
+    function generateSteps(inputNums, inputTarget) {
       const out = [];
       const hashmap = {};
+      let result = null;
 
-      out.push({
-        line:3,
-        i:null,
-        currentIndex:null,
-        currentNum:null,
-        complement:null,
-        map:cloneMap(hashmap),
-        returnVal:null,
-        answerIndices:[],
-        phase:"init",
-        explanation:`Create an empty dictionary called <code class="inline">hashmap</code>. It will store each previous number as the key and that number's index as the value.`
-      });
-
-      for(let i = 0; i < arr.length; i++){
-        const num = arr[i];
-        const complement = tgt - num;
-
+      function pushStep(line, title, msg, extra = {}) {
         out.push({
-          line:4,
-          i,
-          currentIndex:i,
-          currentNum:num,
-          complement:null,
-          map:cloneMap(hashmap),
-          returnVal:null,
-          answerIndices:[],
-          phase:"loop",
-          explanation:`<code class="inline">enumerate(nums)</code> gives us both values: <code class="inline">i = ${i}</code> and <code class="inline">num = ${num}</code>.`
+          line,
+          title,
+          msg,
+          hashmap: cloneMap(hashmap),
+          index: null,
+          num: null,
+          complement: null,
+          result,
+          currentIndex: null,
+          complementIndex: null,
+          phase: 'normal',
+          ...extra
+        });
+      }
+
+      pushStep(3, 'Initialize hashmap = {}', 'hashmap starts empty. It will store number → index for values we have already seen.', { phase: 'init' });
+
+      for (let index = 0; index < inputNums.length; index++) {
+        const num = inputNums[index];
+        const complement = inputTarget - num;
+
+        pushStep(4, `Loop over index = ${index}, num = ${num}`, `Read nums[${index}] = ${num}.`, {
+          index,
+          num,
+          currentIndex: index,
+          phase: 'read'
         });
 
-        out.push({
-          line:5,
-          i,
-          currentIndex:i,
-          currentNum:num,
+        pushStep(5, `Calculate complement = ${complement}`, `target - num = ${inputTarget} - ${num} = ${complement}.`, {
+          index,
+          num,
           complement,
-          map:cloneMap(hashmap),
-          returnVal:null,
-          answerIndices:[],
-          phase:"calculate",
-          explanation:`Calculate the missing number: <code class="inline">complement = target - num = ${tgt} - ${num} = ${complement}</code>.`
+          currentIndex: index,
+          phase: 'complement'
         });
 
         const found = Object.prototype.hasOwnProperty.call(hashmap, complement);
-
-        out.push({
-          line:6,
-          i,
-          currentIndex:i,
-          currentNum:num,
+        pushStep(6, `Check if ${complement} is in hashmap`, found ? `${complement} was already seen at index ${hashmap[complement]}.` : `${complement} is not in hashmap yet, so store the current num.`, {
+          index,
+          num,
           complement,
-          map:cloneMap(hashmap),
-          returnVal:null,
-          answerIndices:found ? [hashmap[complement], i] : [],
-          phase:"check",
-          found,
-          explanation:found
-            ? `Check whether <code class="inline">${complement}</code> is already in <code class="inline">hashmap</code>. It is there at index <code class="inline">${hashmap[complement]}</code>, so we have the pair.`
-            : `Check whether <code class="inline">${complement}</code> is already in <code class="inline">hashmap</code>. It is not there yet, so store the current number next.`
+          currentIndex: index,
+          complementIndex: found ? Number(hashmap[complement]) : null,
+          phase: found ? 'found' : 'not-found'
         });
 
-        if(found){
-          out.push({
-            line:7,
-            i,
-            currentIndex:i,
-            currentNum:num,
+        if (found) {
+          result = [Number(hashmap[complement]), index];
+          pushStep(7, `Return [${result.join(', ')}]`, `The two numbers are nums[${result[0]}] + nums[${result[1]}] = ${complement} + ${num} = ${inputTarget}.`, {
+            index,
+            num,
             complement,
-            map:cloneMap(hashmap),
-            returnVal:`[${hashmap[complement]}, ${i}]`,
-            answerIndices:[hashmap[complement], i],
-            phase:"return",
-            found:true,
-            explanation:`Return the previous index from the map and the current index: <code class="inline">[hashmap[complement], i] = [${hashmap[complement]}, ${i}]</code>.`
+            result,
+            currentIndex: index,
+            complementIndex: result[0],
+            phase: 'return'
           });
           return out;
         }
 
-        hashmap[num] = i;
-        out.push({
-          line:8,
-          i,
-          currentIndex:i,
-          currentNum:num,
+        hashmap[num] = index;
+        pushStep(8, `Store ${num}: ${index}`, `Add hashmap[${num}] = ${index}.`, {
+          index,
+          num,
           complement,
-          map:cloneMap(hashmap),
-          newlyAdded:num,
-          returnVal:null,
-          answerIndices:[],
-          phase:"add",
-          explanation:`Store the current number for future checks: <code class="inline">hashmap[${num}] = ${i}</code>.`
+          currentIndex: index,
+          phase: 'store'
         });
       }
-
-      out.push({
-        line:8,
-        i:null,
-        currentIndex:null,
-        currentNum:null,
-        complement:null,
-        map:cloneMap(hashmap),
-        returnVal:"No pair",
-        answerIndices:[],
-        phase:"no-answer",
-        explanation:`The original Two Sum problem guarantees one solution, but this custom input has no pair that adds to <code class="inline">${tgt}</code>.`
-      });
 
       return out;
     }
 
-    function renderArray(step){
-      arrayView.innerHTML = "";
+    function renderCode(activeLine) {
+      codeWrap.innerHTML = codeLines.map(line => `
+        <div class="code-line ${line.n === activeLine ? 'active' : ''}" data-line="${line.n}">
+          <div class="ln">${line.n}</div>
+          <div class="code">${line.html || '&nbsp;'}</div>
+        </div>
+      `).join('');
 
+      const active = codeWrap.querySelector('.code-line.active');
+      if (active) {
+        const targetTop = active.offsetTop - (codeWrap.clientHeight / 2) + (active.clientHeight / 2);
+        codeWrap.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+      }
+    }
+
+    function makeChip(value, classes = [], label = '') {
+      const div = document.createElement('div');
+      div.className = ['chip', ...classes].join(' ');
+      div.textContent = value;
+      if (label) {
+        const span = document.createElement('span');
+        span.className = 'chip-label';
+        span.textContent = label;
+        div.appendChild(span);
+      }
+      return div;
+    }
+
+    function renderNums(step) {
+      numsRow.innerHTML = '';
       nums.forEach((value, index) => {
-        const wrap = document.createElement("div");
-        wrap.className = "cell-wrap";
-
-        const pointer = document.createElement("div");
-        pointer.className = "pointer" + (step.currentIndex === index ? "" : " hidden");
-        pointer.textContent = step.currentIndex === index ? "current" : "";
-        wrap.appendChild(pointer);
-
-        const cell = document.createElement("div");
-        cell.className = "cell";
-
-        if(step.currentIndex === index) cell.classList.add("current");
-        if(step.answerIndices && step.answerIndices.includes(index)) cell.classList.add("match");
-        if(step.currentIndex !== null && index < step.currentIndex && !(step.answerIndices || []).includes(index)) cell.classList.add("done");
-
-        cell.textContent = value;
-        wrap.appendChild(cell);
-
-        const idx = document.createElement("div");
-        idx.className = "index";
-        idx.textContent = `idx ${index}`;
-        wrap.appendChild(idx);
-
-        arrayView.appendChild(wrap);
+        const classes = [];
+        let label = `i=${index}`;
+        if (step.currentIndex === index) {
+          classes.push('current');
+          label = 'num';
+        }
+        if (step.phase === 'store' && step.currentIndex === index) {
+          classes.push('ok');
+          label = 'stored';
+        }
+        if (step.phase === 'found' && step.complementIndex === index) {
+          classes.push('bad');
+          label = 'match';
+        }
+        if (step.phase === 'return' && (step.currentIndex === index || step.complementIndex === index)) {
+          classes.push('return');
+          label = step.currentIndex === index ? 'num' : 'match';
+        }
+        numsRow.appendChild(makeChip(value, classes, label));
       });
     }
 
-    function renderMap(step){
-      mapView.innerHTML = "";
-
-      if(step.map.length === 0){
-        const empty = document.createElement("div");
-        empty.className = "subtle";
-        empty.textContent = "hashmap is empty";
-        mapView.appendChild(empty);
+    function renderResult(step) {
+      resultRow.innerHTML = '';
+      if (step.result === null) {
+        resultRow.appendChild(makeChip('not returned yet', ['skip']));
         return;
       }
-
-      step.map.forEach(({num, index}) => {
-        const item = document.createElement("div");
-        item.className = "map-item";
-        if(step.newlyAdded === num) item.classList.add("new");
-        if(step.complement === num && (step.phase === "check" || step.phase === "return")) item.classList.add("complement");
-        item.innerHTML = `<span>${num}</span> <span class="subtle">→</span> <span>${index}</span>`;
-        mapView.appendChild(item);
-      });
+      resultRow.appendChild(makeChip(`[${step.result.join(', ')}]`, ['return'], 'answer'));
     }
 
-    function renderEquation(step){
-      if(step.currentNum === null || step.complement === null){
-        equationView.innerHTML = `
-          <span class="token">target</span>
-          <span>−</span>
-          <span class="token">num</span>
-          <span>=</span>
-          <span class="token need">complement</span>
-        `;
+    function renderMap(step) {
+      mapRow.innerHTML = '';
+      const entries = Object.entries(step.hashmap);
+      if (!entries.length) {
+        mapRow.appendChild(makeChip('empty', ['skip']));
         return;
       }
-
-      equationView.innerHTML = `
-        <span class="token">${target}</span>
-        <span>−</span>
-        <span class="token">${step.currentNum}</span>
-        <span>=</span>
-        <span class="token need">${step.complement}</span>
-      `;
-    }
-
-    function renderCode(step){
-      codeLines.forEach(line => {
-        line.classList.toggle("active", Number(line.dataset.line) === step.line);
+      entries.forEach(([key, value]) => {
+        const classes = ['wide'];
+        if (step.phase === 'store' && String(step.num) === key) classes.push('ok');
+        if ((step.phase === 'found' || step.phase === 'return') && String(step.complement) === key) classes.push(step.phase === 'return' ? 'return' : 'bad');
+        mapRow.appendChild(makeChip(`${key}: ${value}`, classes));
       });
     }
 
-    function renderMeta(step){
-      iValue.textContent = step.i === null ? "—" : step.i;
-      numValue.textContent = step.currentNum === null ? "—" : step.currentNum;
-      complementValue.textContent = step.complement === null ? "—" : step.complement;
-      returnValue.textContent = step.returnVal === null ? "—" : String(step.returnVal);
-      explanation.innerHTML = step.explanation;
-
-      stepLabel.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
-      barFill.style.width = `${((stepIndex + 1) / steps.length) * 100}%`;
+    function renderStateBox(step) {
+      const lines = [];
+      lines.push(`nums = [${nums.join(', ')}]`);
+      lines.push(`target = ${target}`);
+      lines.push('');
+      lines.push(`hashmap = ${formatMap(step.hashmap)}`);
+      lines.push('');
+      lines.push(`index = ${step.index === null ? '-' : step.index}`);
+      lines.push(`num = ${step.num === null ? '-' : step.num}`);
+      lines.push(`complement = ${step.complement === null ? '-' : step.complement}`);
+      lines.push(`return = ${step.result === null ? '-' : '[' + step.result.join(', ') + ']'}`);
+      stateBox.textContent = lines.join('\n');
     }
 
-    function render(){
+    function renderStep() {
       const step = steps[stepIndex];
-      renderArray(step);
+      renderCode(step.line);
+      renderNums(step);
+      renderResult(step);
       renderMap(step);
-      renderEquation(step);
-      renderCode(step);
-      renderMeta(step);
+      renderStateBox(step);
+
+      bigStep.textContent = step.title;
+      message.textContent = step.msg;
+      indexVal.textContent = step.index === null ? '-' : step.index;
+      numVal.textContent = step.num === null ? '-' : step.num;
+      complementVal.textContent = step.complement === null ? '-' : step.complement;
+      targetVal.textContent = target;
+      statusText.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
 
       prevBtn.disabled = stepIndex === 0;
       nextBtn.disabled = stepIndex === steps.length - 1;
     }
 
-    function stopAuto(){
-      if(timer){
-        clearInterval(timer);
-        timer = null;
-      }
-      playBtn.textContent = "Auto Play";
+    function reset() {
+      stopPlay();
+      stepIndex = 0;
+      steps = generateSteps(nums, target);
+      renderStep();
     }
 
-    function nextStep(){
-      if(stepIndex < steps.length - 1){
+    function next() {
+      if (stepIndex < steps.length - 1) {
         stepIndex++;
-        render();
+        renderStep();
       } else {
-        stopAuto();
+        stopPlay();
       }
     }
 
-    function prevStep(){
-      if(stepIndex > 0){
+    function prev() {
+      if (stepIndex > 0) {
         stepIndex--;
-        render();
+        renderStep();
       }
     }
 
-    function reset(){
-      stopAuto();
-      stepIndex = 0;
-      render();
+    function stopPlay() {
+      if (timer) clearInterval(timer);
+      timer = null;
+      playBtn.textContent = 'Play';
     }
 
-    function rebuild(newNums, newTarget){
-      nums = newNums.length ? newNums : [2, 7, 11, 15];
-      target = Number.isFinite(newTarget) ? newTarget : 9;
-      steps = buildSteps(nums, target);
-      stepIndex = 0;
-      exampleLabel.textContent = `nums = [${nums.join(", ")}], target = ${target}`;
-      render();
+    function togglePlay() {
+      if (timer) {
+        stopPlay();
+      } else {
+        playBtn.textContent = 'Pause';
+        timer = setInterval(() => {
+          if (stepIndex >= steps.length - 1) {
+            stopPlay();
+          } else {
+            next();
+          }
+        }, 850);
+      }
     }
 
-    prevBtn.addEventListener("click", prevStep);
-    nextBtn.addEventListener("click", nextStep);
-    resetBtn.addEventListener("click", reset);
-
-    playBtn.addEventListener("click", () => {
-      if(timer){
-        stopAuto();
-        return;
-      }
-      playBtn.textContent = "Pause";
-      timer = setInterval(() => {
-        if(stepIndex >= steps.length - 1){
-          stopAuto();
-        } else {
-          nextStep();
-        }
-      }, 1200);
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+    resetBtn.addEventListener('click', reset);
+    playBtn.addEventListener('click', togglePlay);
+    caseSelect.addEventListener('change', () => {
+      const selected = cases[caseSelect.value];
+      nums = [...selected.nums];
+      target = selected.target;
+      reset();
     });
 
-    applyBtn.addEventListener("click", () => {
-      const parsedNums = parseNums(numsInput.value);
-      const parsedTarget = Number(targetInput.value);
-      rebuild(parsedNums, parsedTarget);
-    });
-
-    sample1Btn.addEventListener("click", () => {
-      numsInput.value = "2, 7, 11, 15";
-      targetInput.value = "9";
-      rebuild([2,7,11,15], 9);
-    });
-
-    sample2Btn.addEventListener("click", () => {
-      numsInput.value = "3, 2, 4";
-      targetInput.value = "6";
-      rebuild([3,2,4], 6);
-    });
-
-    numsInput.addEventListener("keydown", (e) => {
-      if(e.key === "Enter"){
-        const parsedNums = parseNums(numsInput.value);
-        const parsedTarget = Number(targetInput.value);
-        rebuild(parsedNums, parsedTarget);
-      }
-    });
-
-    targetInput.addEventListener("keydown", (e) => {
-      if(e.key === "Enter"){
-        const parsedNums = parseNums(numsInput.value);
-        const parsedTarget = Number(targetInput.value);
-        rebuild(parsedNums, parsedTarget);
-      }
-    });
-
-    rebuild(nums, target);
+    reset();
   </script>
 </body>
 </html>
