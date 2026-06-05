@@ -30,8 +30,9 @@
     * { box-sizing: border-box; }
 
     html, body {
-      height: 100%;
-      overflow: hidden;
+      min-height: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     body {
@@ -73,9 +74,9 @@
       grid-template-columns: minmax(430px, 0.94fr) minmax(620px, 1.06fr);
       gap: 16px;
       padding: 16px;
-      height: calc(100vh - 83px);
-      overflow: hidden;
-      min-height: 0;
+      min-height: calc(100vh - 83px);
+      height: auto;
+      overflow: visible;
     }
 
     .panel {
