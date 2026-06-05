@@ -421,7 +421,7 @@
     <div class="subtitle">First binary search finds the possible row. Then a second binary search checks inside that row using l, r, and m.</div>
   </header>
 
-  <main class="layout">
+  <main class="layout" tabindex="0">
     <section class="panel">
       <div class="panel-title">Python code</div>
       <div class="code-wrap" id="codeWrap"></div>
@@ -1120,14 +1120,24 @@
       reset();
     });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') next();
-      if (e.key === 'ArrowLeft') prev();
-      if (e.key === ' ') {
-        e.preventDefault();
-        togglePlay();
+    (function() {
+      const layoutEl = document.querySelector('.layout');
+      const _keyHandler = (e) => {
+        const active = document.activeElement;
+        if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
+        if (e.key === 'ArrowRight') next();
+        if (e.key === 'ArrowLeft') prev();
+        if (e.code === 'Space' || e.key === ' ') {
+          e.preventDefault();
+          togglePlay();
+        }
+      };
+      if (layoutEl) {
+        layoutEl.addEventListener('keydown', _keyHandler);
+      } else {
+        document.addEventListener('keydown', _keyHandler);
       }
-    });
+    })();
 
     reset();
   </script>
