@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Binary Search Visualizer</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel2: #0f1620;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --line: #30363d;
+      --blue: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --orange: #ffa657;
+      --highlight: rgba(88, 166, 255, 0.18);
+      --active: rgba(210, 153, 34, 0.28);
+      --ok: rgba(63, 185, 80, 0.22);
+      --bad: rgba(248, 81, 73, 0.22);
+      --midbg: rgba(188, 140, 255, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: #090d13;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .solution-name {
+      color: var(--text);
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(420px, 0.95fr) minmax(600px, 1.05fr);
+      gap: 16px;
+      padding: 16px;
+      height: calc(100vh - 83px);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+      min-height: 0;
+    }
+
+    .layout > .panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-title {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      background: #0f141c;
+    }
+
+    .code-wrap {
+      position: relative;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.55;
+      background: #0d1117;
+    }
+
+    .code-line {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      min-height: 24px;
+      border-left: 3px solid transparent;
+    }
+
+    .code-line.active {
+      background: var(--highlight);
+      border-left-color: var(--blue);
+    }
+
+    .ln {
+      color: #6e7681;
+      text-align: right;
+      padding-right: 12px;
+      user-select: none;
+    }
+
+    .code {
+      white-space: pre;
+      padding-right: 16px;
+    }
+
+    .kw { color: #ff7b72; }
+    .fn { color: #d2a8ff; }
+    .type { color: #ffa657; }
+    .str { color: #a5d6ff; }
+    .num { color: #79c0ff; }
+    .var { color: #c9d1d9; }
+    .cm { color: #8b949e; font-style: italic; }
+
+    .right {
+      display: grid;
+      grid-template-rows: auto auto auto auto auto;
+      align-content: start;
+      gap: 16px;
+      min-height: 0;
+      overflow: auto;
+      overscroll-behavior: contain;
+      padding-bottom: 16px;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+    }
+
+    button {
+      background: #238636;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 9px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    button.secondary { background: #21262d; }
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    select {
+      background: #0d1117;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 9px 11px;
+      min-width: 240px;
+    }
+
+    .status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .visualizer-card, .array-card, .explain-card, .state-card, .note-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .array-body, .explain-body, .state-body, .note-body {
+      padding: 14px;
+    }
+
+    .array-wrap {
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .array-grid {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(64px, 64px);
+      gap: 10px;
+      align-items: start;
+      min-width: max-content;
+    }
+
+    .array-cell {
+      text-align: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #0d1117;
+      overflow: hidden;
+      transition: transform 0.15s ease;
+    }
+
+    .array-cell.outside {
+      opacity: 0.38;
+      background: #0a0f14;
+    }
+
+    .array-cell.current-range {
+      box-shadow: inset 0 0 0 1px rgba(88,166,255,0.35);
+    }
+
+    .array-cell.mid {
+      background: var(--midbg);
+      outline: 2px solid var(--purple);
+    }
+
+    .array-cell.found {
+      background: var(--ok);
+      outline: 2px solid var(--green);
+    }
+
+    .array-cell.discard-left {
+      background: rgba(248, 81, 73, 0.1);
+    }
+
+    .array-cell.discard-right {
+      background: rgba(248, 81, 73, 0.1);
+    }
+
+    .index-row {
+      font-size: 12px;
+      color: var(--muted);
+      background: #090d13;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    .value-row {
+      font-size: 20px;
+      font-weight: 750;
+      padding: 12px 0 10px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    .badge-row {
+      min-height: 38px;
+      padding: 0 6px 8px;
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .badge.l { background: rgba(88,166,255,0.18); color: #9ecbff; }
+    .badge.r { background: rgba(210,153,34,0.18); color: #ffd580; }
+    .badge.m { background: rgba(188,140,255,0.18); color: #d8b7ff; }
+    .badge.t { background: rgba(63,185,80,0.18); color: #92e29e; }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(4, max-content);
+      gap: 8px 16px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: -1px;
+    }
+
+    .dot.range { background: var(--blue); }
+    .dot.mid { background: var(--purple); }
+    .dot.found { background: var(--green); }
+    .dot.out { background: var(--red); }
+
+    .big-step {
+      font-size: 18px;
+      font-weight: 750;
+      margin-bottom: 8px;
+    }
+
+    .message {
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 66px;
+    }
+
+    .mini {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini-card {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      border-radius: 10px;
+      padding: 9px;
+      min-height: 62px;
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .mini-value {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 15px;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+
+    .state-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 12px;
+    }
+
+    .state-section {
+      border: 1px solid var(--line);
+      background: #0d1117;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .state-heading {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      color: var(--muted);
+      background: #090d13;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .state-content {
+      padding: 10px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .note-body {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow: visible;
+    }
+
+    .emph { color: var(--text); font-weight: 700; }
+
+    @media (max-width: 1120px) {
+      html, body { overflow: auto; }
+      .layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+      }
+      .code-wrap { max-height: 420px; flex: initial; }
+      .right { overflow: visible; }
+      .status { margin-left: 0; width: 100%; }
+      .mini { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .state-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Binary Search</h1>
+    <div class="solution-name"><em>Iterative</em></div>
+    <div class="subtitle">Use two pointers, check the middle value, then cut the sorted search range in half.</div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <div class="panel-title">Python code</div>
+      <div class="code-wrap" id="codeWrap"></div>
+    </section>
+
+    <section class="right">
+      <div class="visualizer-card">
+        <div class="panel-title">Visualizer</div>
+        <div class="controls">
+          <button id="prevBtn" class="secondary">Back</button>
+          <button id="nextBtn">Next</button>
+          <button id="playBtn" class="secondary">Play</button>
+          <button id="resetBtn" class="secondary">Reset</button>
+          <select id="caseSelect" title="Example case">
+            <option value="foundMiddle">Found: target in the middle</option>
+            <option value="foundLeft">Found: target on the left side</option>
+            <option value="foundRight">Found: target on the right side</option>
+            <option value="notFound">Not found</option>
+          </select>
+          <div class="status" id="statusText">Step 0 / 0</div>
+        </div>
+      </div>
+
+      <div class="array-card">
+        <div class="panel-title">Array view</div>
+        <div class="array-body">
+          <div class="array-wrap">
+            <div class="array-grid" id="arrayGrid"></div>
+          </div>
+          <div class="legend">
+            <div><span class="dot range"></span>inside current search range</div>
+            <div><span class="dot mid"></span>middle index m</div>
+            <div><span class="dot found"></span>target found</div>
+            <div><span class="dot out"></span>discarded area</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="explain-card">
+        <div class="panel-title">Current step</div>
+        <div class="explain-body">
+          <div class="big-step" id="bigStep">Initialize</div>
+          <div class="message" id="message">Click Next to start the algorithm.</div>
+          <div class="mini">
+            <div class="mini-card">
+              <div class="mini-label">target</div>
+              <div class="mini-value" id="targetVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">l</div>
+              <div class="mini-value" id="lVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">r</div>
+              <div class="mini-value" id="rVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">m</div>
+              <div class="mini-value" id="mVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">nums[m]</div>
+              <div class="mini-value" id="midNumVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">comparison</div>
+              <div class="mini-value" id="cmpVal">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="state-card">
+        <div class="panel-title">State details</div>
+        <div class="state-body">
+          <div class="state-grid">
+            <div class="state-section">
+              <div class="state-heading">Search interval</div>
+              <div class="state-content" id="rangeText"></div>
+            </div>
+            <div class="state-section">
+              <div class="state-heading">Middle calculation</div>
+              <div class="state-content" id="calcText"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note-card">
+        <div class="panel-title">Key idea</div>
+        <div class="note-body">
+          Binary search only works because the array is <span class="emph">sorted</span>. If <code>nums[m]</code> is too small, everything left of <code>m</code> is also too small, so we move <code>l</code> to <code>m + 1</code>. If <code>nums[m]</code> is too large, everything right of <code>m</code> is also too large, so we move <code>r</code> to <code>m - 1</code>.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const codeLines = [
+      { n: 1, html: '<span class="kw">class</span> <span class="type">Solution</span>:' },
+      { n: 2, html: '    <span class="kw">def</span> <span class="fn">search</span>(<span class="var">self</span>, <span class="var">nums</span>: <span class="type">List</span>[<span class="type">int</span>], <span class="var">target</span>: <span class="type">int</span>) -> <span class="type">int</span>:' },
+      { n: 3, html: '        <span class="var">l</span> = <span class="num">0</span>' },
+      { n: 4, html: '        <span class="var">r</span> = <span class="fn">len</span>(<span class="var">nums</span>) - <span class="num">1</span>' },
+      { n: 5, html: '' },
+      { n: 6, html: '        <span class="kw">while</span> <span class="var">l</span> <= <span class="var">r</span>:' },
+      { n: 7, html: '            <span class="var">m</span> = (<span class="var">l</span> + <span class="var">r</span>) // <span class="num">2</span>' },
+      { n: 8, html: '' },
+      { n: 9, html: '            <span class="kw">if</span> <span class="var">nums</span>[<span class="var">m</span>] < <span class="var">target</span>:' },
+      { n: 10, html: '                <span class="var">l</span> = <span class="var">m</span> + <span class="num">1</span>' },
+      { n: 11, html: '            <span class="kw">elif</span> <span class="var">nums</span>[<span class="var">m</span>] > <span class="var">target</span>:' },
+      { n: 12, html: '                <span class="var">r</span> = <span class="var">m</span> - <span class="num">1</span>' },
+      { n: 13, html: '            <span class="kw">else</span>:' },
+      { n: 14, html: '                <span class="kw">return</span> <span class="var">m</span>' },
+      { n: 15, html: '' },
+      { n: 16, html: '        <span class="kw">return</span> -<span class="num">1</span>' },
+      { n: 17, html: '        <span class="cm"># tc</span>' },
+      { n: 18, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 19, html: '        <span class="str">Time complexity is O(log n), where n is the length of nums.</span>' },
+      { n: 20, html: '        <span class="str">Each loop checks the middle value, then cuts the search range in half.</span>' },
+      { n: 21, html: '        <span class="str">Because the search space keeps getting divided by 2,</span>' },
+      { n: 22, html: '        <span class="str">the loop runs about log n times.</span>' },
+      { n: 23, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 24, html: '        <span class="cm"># sc</span>' },
+      { n: 25, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 26, html: '        <span class="str">Space complexity is O(1) because we only use a few variables:</span>' },
+      { n: 27, html: '        <span class="str">l, r, and m.</span>' },
+      { n: 28, html: '        <span class="str">No extra data structure is created.</span>' },
+      { n: 29, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 30, html: '        <span class="cm"># optimization</span>' },
+      { n: 31, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 32, html: '        <span class="str">This is already the optimal solution for a sorted array.</span>' },
+      { n: 33, html: '        <span class="str">We cannot do better than O(log n) search time using comparisons</span>' },
+      { n: 34, html: '        <span class="str">because binary search already removes half of the remaining elements each step.</span>' },
+      { n: 35, html: '        <span class="str">If the array was not sorted, we would need to sort first or use a different approach.</span>' },
+      { n: 36, html: '        <span class="str">&#39;&#39;&#39;</span>' }
+    ];
+
+    const cases = {
+      foundMiddle: {
+        nums: [-9, -2, 0, 3, 5, 8, 12, 17, 21],
+        target: 5,
+        label: 'Found: target in the middle'
+      },
+      foundLeft: {
+        nums: [1, 4, 6, 9, 13, 18, 22, 31, 44],
+        target: 4,
+        label: 'Found: target on the left side'
+      },
+      foundRight: {
+        nums: [2, 7, 11, 16, 19, 24, 28, 33, 41, 56],
+        target: 56,
+        label: 'Found: target on the right side'
+      },
+      notFound: {
+        nums: [1, 5, 8, 12, 16, 20, 25, 31, 42],
+        target: 14,
+        label: 'Not found'
+      }
+    };
+
+    let activeCase = cases.foundMiddle;
+    let steps = [];
+    let stepIndex = 0;
+    let timer = null;
+
+    const codeWrap = document.getElementById('codeWrap');
+    const arrayGrid = document.getElementById('arrayGrid');
+    const bigStep = document.getElementById('bigStep');
+    const message = document.getElementById('message');
+    const statusText = document.getElementById('statusText');
+    const targetVal = document.getElementById('targetVal');
+    const lVal = document.getElementById('lVal');
+    const rVal = document.getElementById('rVal');
+    const mVal = document.getElementById('mVal');
+    const midNumVal = document.getElementById('midNumVal');
+    const cmpVal = document.getElementById('cmpVal');
+    const rangeText = document.getElementById('rangeText');
+    const calcText = document.getElementById('calcText');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const playBtn = document.getElementById('playBtn');
+    const caseSelect = document.getElementById('caseSelect');
+
+    function pushStep(out, data) {
+      out.push({
+        comparison: '-',
+        decision: '',
+        result: null,
+        ...data
+      });
+    }
+
+    function generateSteps(nums, target) {
+      const out = [];
+      let l = 0;
+      let r = nums.length - 1;
+
+      pushStep(out, {
+        line: 3,
+        title: 'Initialize l',
+        msg: 'Set l = 0. The left pointer starts at the first index.',
+        nums, target, l, r: null, m: null,
+        calculation: 'm has not been computed yet.'
+      });
+
+      pushStep(out, {
+        line: 4,
+        title: 'Initialize r',
+        msg: `Set r = len(nums) - 1 = ${nums.length} - 1 = ${r}. The right pointer starts at the last index.`,
+        nums, target, l, r, m: null,
+        calculation: 'm has not been computed yet.'
+      });
+
+      while (true) {
+        pushStep(out, {
+          line: 6,
+          title: 'Check loop condition',
+          msg: `Check whether l <= r. Right now ${l} <= ${r} is ${l <= r}.`,
+          nums, target, l, r, m: null,
+          comparison: `${l} <= ${r} -> ${l <= r}`,
+          calculation: 'The algorithm only continues while there is still at least one index left to check.'
+        });
+
+        if (!(l <= r)) {
+          pushStep(out, {
+            line: 16,
+            title: 'Search space is empty',
+            msg: 'l became larger than r, so there is nothing left to search. Return -1.',
+            nums, target, l, r, m: null,
+            comparison: `${l} <= ${r} -> false`,
+            result: -1,
+            calculation: 'No valid middle index exists anymore because the interval is empty.'
+          });
+          break;
+        }
+
+        const m = Math.floor((l + r) / 2);
+        const midVal = nums[m];
+
+        pushStep(out, {
+          line: 7,
+          title: 'Compute middle index m',
+          msg: `Compute m = (l + r) // 2 = (${l} + ${r}) // 2 = ${(l + r)} // 2 = ${m}.`,
+          nums, target, l, r, m,
+          comparison: `nums[${m}] = ${midVal}`,
+          calculation: `(${l} + ${r}) // 2 = ${(l + r)} // 2 = ${m}\n// means divide by 2 and round down.`
+        });
+
+        pushStep(out, {
+          line: 9,
+          title: 'Compare nums[m] with target',
+          msg: `Check if nums[m] < target. Here nums[${m}] = ${midVal} and target = ${target}.`,
+          nums, target, l, r, m,
+          comparison: `${midVal} < ${target} -> ${midVal < target}`,
+          calculation: `middle index = ${m}\nmiddle value = nums[${m}] = ${midVal}`
+        });
+
+        if (midVal < target) {
+          const newL = m + 1;
+          pushStep(out, {
+            line: 10,
+            title: 'Move l to the right',
+            msg: `${midVal} is too small, so the target must be to the right of index ${m}. Set l = m + 1 = ${newL}.`,
+            nums, target, l, r, m,
+            comparison: `${midVal} < ${target} -> true`,
+            decision: `Discard indices ${l} through ${m}. Keep searching ${newL} through ${r}.`,
+            discardLeftEnd: m,
+            nextL: newL,
+            nextR: r,
+            calculation: `new l = m + 1 = ${m} + 1 = ${newL}`
+          });
+          l = newL;
+          continue;
+        }
+
+        pushStep(out, {
+          line: 11,
+          title: 'Check nums[m] > target',
+          msg: `Since nums[m] < target was false, now check whether nums[m] > target.`,
+          nums, target, l, r, m,
+          comparison: `${midVal} > ${target} -> ${midVal > target}`,
+          calculation: `middle value = ${midVal}\ntarget = ${target}`
+        });
+
+        if (midVal > target) {
+          const newR = m - 1;
+          pushStep(out, {
+            line: 12,
+            title: 'Move r to the left',
+            msg: `${midVal} is too large, so the target must be to the left of index ${m}. Set r = m - 1 = ${newR}.`,
+            nums, target, l, r, m,
+            comparison: `${midVal} > ${target} -> true`,
+            decision: `Discard indices ${m} through ${r}. Keep searching ${l} through ${newR}.`,
+            discardRightStart: m,
+            nextL: l,
+            nextR: newR,
+            calculation: `new r = m - 1 = ${m} - 1 = ${newR}`
+          });
+          r = newR;
+          continue;
+        }
+
+        pushStep(out, {
+          line: 14,
+          title: 'Target found',
+          msg: `nums[m] is neither smaller nor larger than target, so it must be equal. Return m = ${m}.`,
+          nums, target, l, r, m,
+          comparison: `${midVal} == ${target} -> true`,
+          result: m,
+          found: true,
+          calculation: `Found target at index ${m}.\nnums[${m}] = ${midVal}`
+        });
+        break;
+      }
+
+      return out;
+    }
+
+    function renderCode(activeLine) {
+      codeWrap.innerHTML = codeLines.map(line => `
+        <div class="code-line ${line.n === activeLine ? 'active' : ''}" data-line="${line.n}">
+          <div class="ln">${line.n}</div>
+          <div class="code">${line.html || '&nbsp;'}</div>
+        </div>
+      `).join('');
+
+      const active = codeWrap.querySelector('.code-line.active');
+      if (active) {
+        const targetTop = active.offsetTop - (codeWrap.clientHeight / 2) + (active.clientHeight / 2);
+        codeWrap.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+      }
+    }
+
+    function renderArray(step) {
+      const nums = step.nums;
+      arrayGrid.innerHTML = '';
+
+      for (let i = 0; i < nums.length; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'array-cell';
+
+        const inRange = step.l !== null && step.r !== null && i >= step.l && i <= step.r;
+        if (step.l !== null && step.r !== null) {
+          cell.classList.add(inRange ? 'current-range' : 'outside');
+        }
+
+        if (typeof step.discardLeftEnd === 'number' && i <= step.discardLeftEnd) {
+          cell.classList.add('discard-left');
+        }
+        if (typeof step.discardRightStart === 'number' && i >= step.discardRightStart) {
+          cell.classList.add('discard-right');
+        }
+        if (step.m === i) {
+          cell.classList.add('mid');
+        }
+        if (step.found && step.m === i) {
+          cell.classList.remove('mid');
+          cell.classList.add('found');
+        }
+
+        const labels = [];
+        if (step.l === i) labels.push('<span class="badge l">L</span>');
+        if (step.m === i) labels.push(`<span class="badge m">${step.found ? 'FOUND' : 'M'}</span>`);
+        if (step.r === i) labels.push('<span class="badge r">R</span>');
+        if (nums[i] === step.target) labels.push('<span class="badge t">target value</span>');
+
+        cell.innerHTML = `
+          <div class="index-row">idx ${i}</div>
+          <div class="value-row">${nums[i]}</div>
+          <div class="badge-row">${labels.join('')}</div>
+        `;
+
+        arrayGrid.appendChild(cell);
+      }
+    }
+
+    function intervalText(step) {
+      if (step.l === null || step.r === null) {
+        return 'Search interval not available yet.';
+      }
+      const nums = step.nums;
+      const inside = [];
+      for (let i = step.l; i <= step.r && i < nums.length; i++) {
+        if (i >= 0) inside.push(`index ${i} -> ${nums[i]}`);
+      }
+      if (inside.length === 0) {
+        return `Current interval: [${step.l}, ${step.r}]\nThis interval is empty.`;
+      }
+      return `Current interval: [${step.l}, ${step.r}]\n${inside.join('\n')}${step.decision ? `\n\n${step.decision}` : ''}`;
+    }
+
+    function renderStep() {
+      const step = steps[stepIndex];
+      renderCode(step.line);
+      renderArray(step);
+
+      bigStep.textContent = step.title;
+      message.textContent = step.msg;
+      targetVal.textContent = step.target;
+      lVal.textContent = step.l ?? '-';
+      rVal.textContent = step.r ?? '-';
+      mVal.textContent = step.m ?? '-';
+      midNumVal.textContent = step.m === null ? '-' : step.nums[step.m];
+      cmpVal.textContent = step.comparison || '-';
+      rangeText.textContent = intervalText(step);
+      calcText.textContent = step.calculation || '-';
+      statusText.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+
+      prevBtn.disabled = stepIndex === 0;
+      nextBtn.disabled = stepIndex === steps.length - 1;
+    }
+
+    function stopPlay() {
+      if (timer) clearInterval(timer);
+      timer = null;
+      playBtn.textContent = 'Play';
+    }
+
+    function next() {
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        renderStep();
+      } else {
+        stopPlay();
+      }
+    }
+
+    function prev() {
+      if (stepIndex > 0) {
+        stepIndex--;
+        renderStep();
+      }
+    }
+
+    function reset() {
+      stopPlay();
+      stepIndex = 0;
+      steps = generateSteps(activeCase.nums, activeCase.target);
+      renderStep();
+    }
+
+    function togglePlay() {
+      if (timer) {
+        stopPlay();
+      } else {
+        playBtn.textContent = 'Pause';
+        timer = setInterval(() => {
+          if (stepIndex >= steps.length - 1) {
+            stopPlay();
+          } else {
+            next();
+          }
+        }, 1100);
+      }
+    }
+
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+    resetBtn.addEventListener('click', reset);
+    playBtn.addEventListener('click', togglePlay);
+    caseSelect.addEventListener('change', () => {
+      activeCase = cases[caseSelect.value];
+      reset();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') prev();
+      if (e.key === ' ') {
+        e.preventDefault();
+        togglePlay();
+      }
+    });
+
+    reset();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search a 2D Matrix Visualizer</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel2: #0f1620;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --line: #30363d;
+      --blue: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --orange: #ffa657;
+      --highlight: rgba(88, 166, 255, 0.18);
+      --active: rgba(210, 153, 34, 0.28);
+      --ok: rgba(63, 185, 80, 0.22);
+      --bad: rgba(248, 81, 73, 0.22);
+      --midbg: rgba(188, 140, 255, 0.18);
+      --rowbg: rgba(88, 166, 255, 0.10);
+      --colbg: rgba(255, 166, 87, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: #090d13;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    code { color: var(--text); }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .solution-name {
+      color: var(--text);
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(430px, 0.94fr) minmax(620px, 1.06fr);
+      gap: 16px;
+      padding: 16px;
+      height: calc(100vh - 83px);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+      min-height: 0;
+    }
+
+    .layout > .panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-title {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      background: #0f141c;
+    }
+
+    .code-wrap {
+      position: relative;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.55;
+      background: #0d1117;
+    }
+
+    .code-line {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      min-height: 24px;
+      border-left: 3px solid transparent;
+    }
+
+    .code-line.active {
+      background: var(--highlight);
+      border-left-color: var(--blue);
+    }
+
+    .ln {
+      color: #6e7681;
+      text-align: right;
+      padding-right: 12px;
+      user-select: none;
+    }
+
+    .code {
+      white-space: pre;
+      padding-right: 16px;
+    }
+
+    .kw { color: #ff7b72; }
+    .fn { color: #d2a8ff; }
+    .type { color: #ffa657; }
+    .str { color: #a5d6ff; }
+    .num { color: #79c0ff; }
+    .var { color: #c9d1d9; }
+    .comment, .cm { color: #8b949e; font-style: italic; }
+
+    .right {
+      display: grid;
+      grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+      gap: 16px;
+      min-height: 0;
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+    }
+
+    button {
+      background: #238636;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 9px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    button.secondary { background: #21262d; }
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    select {
+      background: #0d1117;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 9px 11px;
+      min-width: 255px;
+    }
+
+    .status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .visualizer-card, .matrix-card, .explain-card, .state-card, .note-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .matrix-body, .explain-body, .state-body, .note-body {
+      padding: 14px;
+    }
+
+    .matrix-scroll {
+      overflow: auto;
+      padding-bottom: 6px;
+    }
+
+    .matrix-grid {
+      display: grid;
+      gap: 10px;
+      min-width: max-content;
+      width: max-content;
+    }
+
+    .matrix-row {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(72px, 72px);
+      gap: 10px;
+      align-items: stretch;
+      position: relative;
+    }
+
+    .matrix-cell {
+      text-align: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #0d1117;
+      overflow: hidden;
+      min-height: 82px;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .matrix-cell.outside-row-search,
+    .matrix-cell.outside-col-search {
+      opacity: 0.34;
+      background: #0a0f14;
+    }
+
+    .matrix-cell.row-range { box-shadow: inset 0 0 0 1px rgba(88,166,255,0.36); }
+    .matrix-cell.selected-row { background: var(--rowbg); outline: 2px solid var(--blue); }
+    .matrix-cell.col-range { box-shadow: inset 0 0 0 1px rgba(255,166,87,0.42); }
+    .matrix-cell.mid { background: var(--midbg); outline: 2px solid var(--purple); }
+    .matrix-cell.row-mid { background: rgba(188,140,255,0.12); outline: 2px solid var(--purple); }
+    .matrix-cell.found { background: var(--ok); outline: 2px solid var(--green); opacity: 1; }
+    .matrix-cell.bad { background: var(--bad); }
+
+    .index-row {
+      font-size: 11px;
+      color: var(--muted);
+      background: #090d13;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    .value-row {
+      font-size: 20px;
+      font-weight: 750;
+      padding: 10px 0 8px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    .badge-row {
+      min-height: 34px;
+      padding: 0 5px 8px;
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .badge.top { background: rgba(88,166,255,0.18); color: #9ecbff; }
+    .badge.bot { background: rgba(210,153,34,0.18); color: #ffd580; }
+    .badge.row { background: rgba(88,166,255,0.18); color: #9ecbff; }
+    .badge.l { background: rgba(88,166,255,0.18); color: #9ecbff; }
+    .badge.r { background: rgba(210,153,34,0.18); color: #ffd580; }
+    .badge.m { background: rgba(188,140,255,0.18); color: #d8b7ff; }
+    .badge.t { background: rgba(63,185,80,0.18); color: #92e29e; }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(5, max-content);
+      gap: 8px 16px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: -1px;
+    }
+
+    .dot.row { background: var(--blue); }
+    .dot.col { background: var(--orange); }
+    .dot.mid { background: var(--purple); }
+    .dot.found { background: var(--green); }
+    .dot.out { background: var(--red); }
+
+    .big-step {
+      font-size: 18px;
+      font-weight: 750;
+      margin-bottom: 8px;
+    }
+
+    .message {
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 66px;
+    }
+
+    .mini {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini-card {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      border-radius: 10px;
+      padding: 9px;
+      min-height: 62px;
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .mini-value {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 15px;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+
+    .state-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 12px;
+    }
+
+    .state-section {
+      border: 1px solid var(--line);
+      background: #0d1117;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .state-heading {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      color: var(--muted);
+      background: #090d13;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .state-content {
+      padding: 10px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .note-body {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .emph { color: var(--text); font-weight: 700; }
+
+    @media (max-width: 1160px) {
+      html, body { overflow: auto; }
+      .layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+      }
+      .code-wrap { max-height: 430px; flex: initial; }
+      .right { overflow: visible; }
+      .status { margin-left: 0; width: 100%; }
+      .mini { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .state-grid { grid-template-columns: 1fr; }
+      .legend { grid-template-columns: repeat(2, max-content); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Search a 2D Matrix</h1>
+    <div class="solution-name"><em>Binary Search</em></div>
+    <div class="subtitle">First binary search finds the possible row. Then a second binary search checks inside that row using l, r, and m.</div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <div class="panel-title">Python code</div>
+      <div class="code-wrap" id="codeWrap"></div>
+    </section>
+
+    <section class="right">
+      <div class="visualizer-card">
+        <div class="panel-title">Visualizer</div>
+        <div class="controls">
+          <button id="prevBtn" class="secondary">Back</button>
+          <button id="nextBtn">Next</button>
+          <button id="playBtn" class="secondary">Play</button>
+          <button id="resetBtn" class="secondary">Reset</button>
+          <select id="caseSelect" title="Example case">
+            <option value="foundMiddle">Found: target in middle row</option>
+            <option value="foundFirstRow">Found: target in first row</option>
+            <option value="foundLastRow">Found: target in last row</option>
+            <option value="notFoundRow">Not found: no possible row</option>
+            <option value="notFoundInsideRow">Not found: row exists, value missing</option>
+          </select>
+          <div class="status" id="statusText">Step 0 / 0</div>
+        </div>
+      </div>
+
+      <div class="matrix-card">
+        <div class="panel-title">Matrix view</div>
+        <div class="matrix-body">
+          <div class="matrix-scroll">
+            <div class="matrix-grid" id="matrixGrid"></div>
+          </div>
+          <div class="legend">
+            <div><span class="dot row"></span>row search range</div>
+            <div><span class="dot col"></span>column search range</div>
+            <div><span class="dot mid"></span>middle row/cell</div>
+            <div><span class="dot found"></span>target found</div>
+            <div><span class="dot out"></span>discarded</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="explain-card">
+        <div class="panel-title">Current step</div>
+        <div class="explain-body">
+          <div class="big-step" id="bigStep">Initialize</div>
+          <div class="message" id="message">Click Next to start the algorithm.</div>
+          <div class="mini">
+            <div class="mini-card">
+              <div class="mini-label">target</div>
+              <div class="mini-value" id="targetVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">top</div>
+              <div class="mini-value" id="topVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">bot</div>
+              <div class="mini-value" id="botVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">row</div>
+              <div class="mini-value" id="rowVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">l</div>
+              <div class="mini-value" id="lVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">r</div>
+              <div class="mini-value" id="rVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">m</div>
+              <div class="mini-value" id="mVal">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="state-card">
+        <div class="panel-title">State details</div>
+        <div class="state-body">
+          <div class="state-grid">
+            <div class="state-section">
+              <div class="state-heading">Search interval</div>
+              <div class="state-content" id="rangeText"></div>
+            </div>
+            <div class="state-section">
+              <div class="state-heading">Calculation / comparison</div>
+              <div class="state-content" id="calcText"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note-card">
+        <div class="panel-title">Key idea</div>
+        <div class="note-body">
+          The matrix behaves like sorted rows stacked in sorted order. First, compare the target with each row's first and last value to find the only possible row. Then run normal binary search inside that row.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const codeLines = [
+      { n: 1, html: '<span class="kw">class</span> <span class="type">Solution</span>:' },
+      { n: 2, html: '    <span class="kw">def</span> <span class="fn">searchMatrix</span>(<span class="var">self</span>, <span class="var">matrix</span>: <span class="type">List</span>[<span class="type">List</span>[<span class="type">int</span>]], <span class="var">target</span>: <span class="type">int</span>) -> <span class="type">bool</span>:' },
+      { n: 3, html: '        <span class="var">ROWS</span> = <span class="fn">len</span>(<span class="var">matrix</span>)' },
+      { n: 4, html: '        <span class="var">COLS</span> = <span class="fn">len</span>(<span class="var">matrix</span>[<span class="num">0</span>])' },
+      { n: 5, html: '' },
+      { n: 6, html: '        <span class="var">top</span> = <span class="num">0</span>' },
+      { n: 7, html: '        <span class="var">bot</span> = <span class="var">ROWS</span> - <span class="num">1</span>' },
+      { n: 8, html: '' },
+      { n: 9, html: '        <span class="kw">while</span> <span class="var">top</span> <= <span class="var">bot</span>:' },
+      { n: 10, html: '            <span class="var">row</span> = (<span class="var">top</span> + <span class="var">bot</span>) // <span class="num">2</span>' },
+      { n: 11, html: '' },
+      { n: 12, html: '            <span class="kw">if</span> <span class="var">target</span> > <span class="var">matrix</span>[<span class="var">row</span>][-<span class="num">1</span>]:' },
+      { n: 13, html: '                <span class="var">top</span> = <span class="var">row</span> + <span class="num">1</span>' },
+      { n: 14, html: '            <span class="kw">elif</span> <span class="var">target</span> < <span class="var">matrix</span>[<span class="var">row</span>][<span class="num">0</span>]:' },
+      { n: 15, html: '                <span class="var">bot</span> = <span class="var">row</span> - <span class="num">1</span>' },
+      { n: 16, html: '            <span class="kw">else</span>:' },
+      { n: 17, html: '                <span class="kw">break</span>' },
+      { n: 18, html: '' },
+      { n: 19, html: '        <span class="kw">if</span> <span class="kw">not</span> (<span class="var">top</span> <= <span class="var">bot</span>):' },
+      { n: 20, html: '            <span class="kw">return</span> <span class="kw">False</span>' },
+      { n: 21, html: '' },
+      { n: 22, html: '        <span class="var">row</span> = (<span class="var">top</span> + <span class="var">bot</span>) // <span class="num">2</span>' },
+      { n: 23, html: '        <span class="var">l</span> = <span class="num">0</span>' },
+      { n: 24, html: '        <span class="var">r</span> = <span class="var">COLS</span> - <span class="num">1</span>' },
+      { n: 25, html: '' },
+      { n: 26, html: '        <span class="kw">while</span> <span class="var">l</span> <= <span class="var">r</span>:' },
+      { n: 27, html: '            <span class="var">m</span> = (<span class="var">l</span> + <span class="var">r</span>) // <span class="num">2</span>' },
+      { n: 28, html: '' },
+      { n: 29, html: '            <span class="kw">if</span> <span class="var">target</span> > <span class="var">matrix</span>[<span class="var">row</span>][<span class="var">m</span>]:' },
+      { n: 30, html: '                <span class="var">l</span> = <span class="var">m</span> + <span class="num">1</span>' },
+      { n: 31, html: '            <span class="kw">elif</span> <span class="var">target</span> < <span class="var">matrix</span>[<span class="var">row</span>][<span class="var">m</span>]:' },
+      { n: 32, html: '                <span class="var">r</span> = <span class="var">m</span> - <span class="num">1</span>' },
+      { n: 33, html: '            <span class="kw">else</span>:' },
+      { n: 34, html: '                <span class="kw">return</span> <span class="kw">True</span>' },
+      { n: 35, html: '' },
+      { n: 36, html: '        <span class="kw">return</span> <span class="kw">False</span>' },
+      { n: 37, html: '        <span class="cm"># tc</span>' },
+      { n: 38, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 39, html: '        <span class="str">Time complexity is O(log ROWS + log COLS).</span>' },
+      { n: 40, html: '        <span class="str">First, we binary search through the rows to find the possible row.</span>' },
+      { n: 41, html: '        <span class="str">Then, we binary search through the columns in that row.</span>' },
+      { n: 42, html: '        <span class="str">Both searches keep cutting the search space in half.</span>' },
+      { n: 43, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 44, html: '        <span class="cm"># sc</span>' },
+      { n: 45, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 46, html: '        <span class="str">Space complexity is O(1) because we only use variables like</span>' },
+      { n: 47, html: '        <span class="str">ROWS, COLS, top, bot, row, l, r, and m.</span>' },
+      { n: 48, html: '        <span class="str">No extra data structure is created.</span>' },
+      { n: 49, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 50, html: '        <span class="cm"># optimization</span>' },
+      { n: 51, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 52, html: '        <span class="str">This is already optimal for a sorted matrix with this structure.</span>' },
+      { n: 53, html: '        <span class="str">Another valid solution is treating the matrix like one flattened sorted array</span>' },
+      { n: 54, html: '        <span class="str">and doing one binary search, but the time complexity is still O(log(ROWS * COLS)).</span>' },
+      { n: 55, html: '        <span class="str">Since O(log(ROWS * COLS)) equals O(log ROWS + log COLS),</span>' },
+      { n: 56, html: '        <span class="str">it is the same asymptotic time complexity.</span>' },
+      { n: 57, html: '        <span class="str">&#39;&#39;&#39;</span>' }
+    ];
+
+    const cases = {
+      foundMiddle: {
+        matrix: [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]],
+        target: 16
+      },
+      foundFirstRow: {
+        matrix: [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]],
+        target: 3
+      },
+      foundLastRow: {
+        matrix: [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]],
+        target: 60
+      },
+      notFoundRow: {
+        matrix: [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]],
+        target: 100
+      },
+      notFoundInsideRow: {
+        matrix: [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]],
+        target: 13
+      }
+    };
+
+    let activeCase = cases.foundMiddle;
+    let steps = [];
+    let stepIndex = 0;
+    let timer = null;
+
+    const codeWrap = document.getElementById('codeWrap');
+    const matrixGrid = document.getElementById('matrixGrid');
+    const bigStep = document.getElementById('bigStep');
+    const message = document.getElementById('message');
+    const statusText = document.getElementById('statusText');
+    const targetVal = document.getElementById('targetVal');
+    const topVal = document.getElementById('topVal');
+    const botVal = document.getElementById('botVal');
+    const rowVal = document.getElementById('rowVal');
+    const lVal = document.getElementById('lVal');
+    const rVal = document.getElementById('rVal');
+    const mVal = document.getElementById('mVal');
+    const rangeText = document.getElementById('rangeText');
+    const calcText = document.getElementById('calcText');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const playBtn = document.getElementById('playBtn');
+    const caseSelect = document.getElementById('caseSelect');
+
+    function pushStep(out, data) {
+      out.push({
+        phase: 'row',
+        line: 1,
+        title: '',
+        msg: '',
+        matrix: activeCase.matrix,
+        target: activeCase.target,
+        top: null,
+        bot: null,
+        row: null,
+        l: null,
+        r: null,
+        m: null,
+        calculation: '-',
+        decision: '',
+        found: false,
+        result: null,
+        ...data
+      });
+    }
+
+    function generateSteps(matrix, target) {
+      const out = [];
+      const ROWS = matrix.length;
+      const COLS = matrix[0].length;
+      let top = 0;
+      let bot = ROWS - 1;
+      let row = null;
+
+      pushStep(out, {
+        line: 3,
+        title: 'Get number of rows',
+        msg: `ROWS = len(matrix) = ${ROWS}.`,
+        matrix, target,
+        calculation: `ROWS = ${ROWS}`
+      });
+
+      pushStep(out, {
+        line: 4,
+        title: 'Get number of columns',
+        msg: `COLS = len(matrix[0]) = ${COLS}.`,
+        matrix, target,
+        calculation: `COLS = ${COLS}`
+      });
+
+      pushStep(out, {
+        line: 6,
+        title: 'Initialize top',
+        msg: 'Set top = 0. The row search starts at the first row.',
+        matrix, target, top, bot: null,
+        calculation: 'top = 0'
+      });
+
+      pushStep(out, {
+        line: 7,
+        title: 'Initialize bot',
+        msg: `Set bot = ROWS - 1 = ${ROWS} - 1 = ${bot}.`,
+        matrix, target, top, bot,
+        calculation: `bot = ${bot}`
+      });
+
+      let rowFound = false;
+      while (true) {
+        pushStep(out, {
+          line: 9,
+          title: 'Check row-search loop',
+          msg: `Check whether top <= bot. Right now ${top} <= ${bot} is ${top <= bot}.`,
+          matrix, target, top, bot,
+          calculation: `${top} <= ${bot} -> ${top <= bot}`
+        });
+
+        if (!(top <= bot)) break;
+
+        row = Math.floor((top + bot) / 2);
+        const first = matrix[row][0];
+        const last = matrix[row][COLS - 1];
+
+        pushStep(out, {
+          line: 10,
+          title: 'Pick middle row',
+          msg: `Compute row = (top + bot) // 2 = (${top} + ${bot}) // 2 = ${row}.`,
+          matrix, target, top, bot, row,
+          calculation: `row = (${top} + ${bot}) // 2 = ${row}\nrow range = [${first}, ${last}]`
+        });
+
+        pushStep(out, {
+          line: 12,
+          title: 'Check if target is after this row',
+          msg: `Compare target with the last value of row ${row}. ${target} > ${last} is ${target > last}.`,
+          matrix, target, top, bot, row,
+          calculation: `target > matrix[row][-1]\n${target} > ${last} -> ${target > last}`
+        });
+
+        if (target > last) {
+          const newTop = row + 1;
+          pushStep(out, {
+            line: 13,
+            title: 'Move top down',
+            msg: `${target} is bigger than the last value in row ${row}, so all rows above and including row ${row} are too small.`,
+            matrix, target, top, bot, row,
+            nextTop: newTop,
+            nextBot: bot,
+            discardRowsBefore: row,
+            decision: `Set top = row + 1 = ${newTop}.`,
+            calculation: `top = ${row} + 1 = ${newTop}`
+          });
+          top = newTop;
+          continue;
+        }
+
+        pushStep(out, {
+          line: 14,
+          title: 'Check if target is before this row',
+          msg: `Compare target with the first value of row ${row}. ${target} < ${first} is ${target < first}.`,
+          matrix, target, top, bot, row,
+          calculation: `target < matrix[row][0]\n${target} < ${first} -> ${target < first}`
+        });
+
+        if (target < first) {
+          const newBot = row - 1;
+          pushStep(out, {
+            line: 15,
+            title: 'Move bot up',
+            msg: `${target} is smaller than the first value in row ${row}, so all rows below and including row ${row} are too large.`,
+            matrix, target, top, bot, row,
+            nextTop: top,
+            nextBot: newBot,
+            discardRowsAfter: row,
+            decision: `Set bot = row - 1 = ${newBot}.`,
+            calculation: `bot = ${row} - 1 = ${newBot}`
+          });
+          bot = newBot;
+          continue;
+        }
+
+        pushStep(out, {
+          line: 17,
+          title: 'Possible row found',
+          msg: `The target could be in row ${row}, because ${first} <= ${target} <= ${last}. Break out of the row search.`,
+          matrix, target, top, bot, row,
+          selectedRow: row,
+          calculation: `${first} <= ${target} <= ${last}\nThis is the only possible row.`
+        });
+        rowFound = true;
+        break;
+      }
+
+      pushStep(out, {
+        line: 19,
+        title: 'Check if a row was found',
+        msg: `Check if not (top <= bot). Right now top = ${top}, bot = ${bot}.`,
+        matrix, target, top, bot, row: rowFound ? row : null,
+        calculation: `not (${top} <= ${bot}) -> ${!(top <= bot)}`
+      });
+
+      if (!(top <= bot)) {
+        pushStep(out, {
+          line: 20,
+          title: 'No possible row',
+          msg: 'The row-search interval is empty, so the target cannot exist in the matrix. Return False.',
+          matrix, target, top, bot, row: null,
+          result: false,
+          calculation: 'return False'
+        });
+        return out;
+      }
+
+      row = Math.floor((top + bot) / 2);
+      pushStep(out, {
+        line: 22,
+        title: 'Use the possible row',
+        msg: `Set row = (top + bot) // 2 = (${top} + ${bot}) // 2 = ${row}. Now search inside this row.`,
+        matrix, target, top, bot, row,
+        selectedRow: row,
+        phase: 'col',
+        calculation: `row = ${row}\nselected row = [${matrix[row].join(', ')}]`
+      });
+
+      let l = 0;
+      let r = COLS - 1;
+
+      pushStep(out, {
+        line: 23,
+        title: 'Initialize l',
+        msg: 'Set l = 0. The column search starts at the first column of the selected row.',
+        matrix, target, top, bot, row, l, r: null,
+        selectedRow: row,
+        phase: 'col',
+        calculation: 'l = 0'
+      });
+
+      pushStep(out, {
+        line: 24,
+        title: 'Initialize r',
+        msg: `Set r = COLS - 1 = ${COLS} - 1 = ${r}.`,
+        matrix, target, top, bot, row, l, r,
+        selectedRow: row,
+        phase: 'col',
+        calculation: `r = ${r}`
+      });
+
+      while (true) {
+        pushStep(out, {
+          line: 26,
+          title: 'Check column-search loop',
+          msg: `Check whether l <= r. Right now ${l} <= ${r} is ${l <= r}.`,
+          matrix, target, top, bot, row, l, r,
+          selectedRow: row,
+          phase: 'col',
+          calculation: `${l} <= ${r} -> ${l <= r}`
+        });
+
+        if (!(l <= r)) break;
+
+        const m = Math.floor((l + r) / 2);
+        const value = matrix[row][m];
+
+        pushStep(out, {
+          line: 27,
+          title: 'Compute middle column m',
+          msg: `Compute m = (l + r) // 2 = (${l} + ${r}) // 2 = ${m}.`,
+          matrix, target, top, bot, row, l, r, m,
+          selectedRow: row,
+          phase: 'col',
+          calculation: `m = (${l} + ${r}) // 2 = ${m}\nmatrix[${row}][${m}] = ${value}`
+        });
+
+        pushStep(out, {
+          line: 29,
+          title: 'Check if target is bigger',
+          msg: `Compare target with matrix[row][m]. ${target} > ${value} is ${target > value}.`,
+          matrix, target, top, bot, row, l, r, m,
+          selectedRow: row,
+          phase: 'col',
+          calculation: `target > matrix[row][m]\n${target} > ${value} -> ${target > value}`
+        });
+
+        if (target > value) {
+          const newL = m + 1;
+          pushStep(out, {
+            line: 30,
+            title: 'Move l to the right',
+            msg: `${value} is too small, so discard columns ${l} through ${m}.`,
+            matrix, target, top, bot, row, l, r, m,
+            selectedRow: row,
+            phase: 'col',
+            discardColsBefore: m,
+            nextL: newL,
+            nextR: r,
+            decision: `Set l = m + 1 = ${newL}.`,
+            calculation: `l = ${m} + 1 = ${newL}`
+          });
+          l = newL;
+          continue;
+        }
+
+        pushStep(out, {
+          line: 31,
+          title: 'Check if target is smaller',
+          msg: `Since target > matrix[row][m] was false, check whether ${target} < ${value}.`,
+          matrix, target, top, bot, row, l, r, m,
+          selectedRow: row,
+          phase: 'col',
+          calculation: `target < matrix[row][m]\n${target} < ${value} -> ${target < value}`
+        });
+
+        if (target < value) {
+          const newR = m - 1;
+          pushStep(out, {
+            line: 32,
+            title: 'Move r to the left',
+            msg: `${value} is too large, so discard columns ${m} through ${r}.`,
+            matrix, target, top, bot, row, l, r, m,
+            selectedRow: row,
+            phase: 'col',
+            discardColsAfter: m,
+            nextL: l,
+            nextR: newR,
+            decision: `Set r = m - 1 = ${newR}.`,
+            calculation: `r = ${m} - 1 = ${newR}`
+          });
+          r = newR;
+          continue;
+        }
+
+        pushStep(out, {
+          line: 34,
+          title: 'Target found',
+          msg: `matrix[row][m] equals target. Return True.`,
+          matrix, target, top, bot, row, l, r, m,
+          selectedRow: row,
+          phase: 'col',
+          found: true,
+          result: true,
+          calculation: `matrix[${row}][${m}] = ${value}\nreturn True`
+        });
+        return out;
+      }
+
+      pushStep(out, {
+        line: 36,
+        title: 'Target not found in row',
+        msg: 'The selected row was searched, but the target was not found. Return False.',
+        matrix, target, top, bot, row, l, r,
+        selectedRow: row,
+        phase: 'col',
+        result: false,
+        calculation: `l = ${l}, r = ${r}\nl > r, so the column interval is empty.\nreturn False`
+      });
+
+      return out;
+    }
+
+    function renderCode(activeLine) {
+      codeWrap.innerHTML = codeLines.map(line => `
+        <div class="code-line ${line.n === activeLine ? 'active' : ''}" data-line="${line.n}">
+          <div class="ln">${line.n}</div>
+          <div class="code">${line.html || '&nbsp;'}</div>
+        </div>
+      `).join('');
+
+      const active = codeWrap.querySelector('.code-line.active');
+      if (active) {
+        const targetTop = active.offsetTop - (codeWrap.clientHeight / 2) + (active.clientHeight / 2);
+        codeWrap.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+      }
+    }
+
+    function renderMatrix(step) {
+      const matrix = step.matrix;
+      matrixGrid.innerHTML = '';
+
+      matrix.forEach((rowVals, rIdx) => {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'matrix-row';
+
+        rowVals.forEach((value, cIdx) => {
+          const cell = document.createElement('div');
+          cell.className = 'matrix-cell';
+
+          const inRowRange = step.top !== null && step.bot !== null && rIdx >= step.top && rIdx <= step.bot;
+          const selectedRow = step.selectedRow === rIdx || step.row === rIdx;
+          const inColRange = step.phase === 'col' && selectedRow && step.l !== null && step.r !== null && cIdx >= step.l && cIdx <= step.r;
+
+          if (step.phase === 'row') {
+            if (step.top !== null && step.bot !== null) {
+              cell.classList.add(inRowRange ? 'row-range' : 'outside-row-search');
+            }
+            if (step.row === rIdx) cell.classList.add('row-mid');
+            if (typeof step.discardRowsBefore === 'number' && rIdx <= step.discardRowsBefore) cell.classList.add('bad');
+            if (typeof step.discardRowsAfter === 'number' && rIdx >= step.discardRowsAfter) cell.classList.add('bad');
+          } else {
+            if (!selectedRow) {
+              cell.classList.add('outside-row-search');
+            } else {
+              cell.classList.add('selected-row');
+              if (step.l !== null && step.r !== null) {
+                cell.classList.add(inColRange ? 'col-range' : 'outside-col-search');
+              }
+              if (typeof step.discardColsBefore === 'number' && cIdx <= step.discardColsBefore) cell.classList.add('bad');
+              if (typeof step.discardColsAfter === 'number' && cIdx >= step.discardColsAfter) cell.classList.add('bad');
+            }
+          }
+
+          if (step.phase === 'col' && selectedRow && step.m === cIdx) cell.classList.add('mid');
+          if (step.found && selectedRow && step.m === cIdx) {
+            cell.classList.remove('mid');
+            cell.classList.add('found');
+          }
+
+          const labels = [];
+          if (step.phase === 'row' && step.top === rIdx && cIdx === 0) labels.push('<span class="badge top">top</span>');
+          if (step.phase === 'row' && step.bot === rIdx && cIdx === rowVals.length - 1) labels.push('<span class="badge bot">bot</span>');
+          if (step.row === rIdx && cIdx === 0) labels.push('<span class="badge row">row</span>');
+          if (step.phase === 'col' && selectedRow && step.l === cIdx) labels.push('<span class="badge l">L</span>');
+          if (step.phase === 'col' && selectedRow && step.m === cIdx) labels.push(`<span class="badge m">${step.found ? 'FOUND' : 'M'}</span>`);
+          if (step.phase === 'col' && selectedRow && step.r === cIdx) labels.push('<span class="badge r">R</span>');
+          if (value === step.target) labels.push('<span class="badge t">target</span>');
+
+          cell.innerHTML = `
+            <div class="index-row">[${rIdx}][${cIdx}]</div>
+            <div class="value-row">${value}</div>
+            <div class="badge-row">${labels.join('')}</div>
+          `;
+          rowEl.appendChild(cell);
+        });
+        matrixGrid.appendChild(rowEl);
+      });
+    }
+
+    function intervalText(step) {
+      if (step.phase === 'row') {
+        if (step.top === null || step.bot === null) return 'Row search interval not available yet.';
+        let rows = [];
+        for (let i = Math.max(0, step.top); i <= Math.min(step.bot, step.matrix.length - 1); i++) {
+          rows.push(`row ${i}: [${step.matrix[i].join(', ')}]`);
+        }
+        if (rows.length === 0) return `Current row interval: [${step.top}, ${step.bot}]\nThis interval is empty.`;
+        return `Current row interval: [${step.top}, ${step.bot}]\n${rows.join('\n')}${step.decision ? `\n\n${step.decision}` : ''}`;
+      }
+
+      if (step.l === null || step.r === null) return `Selected row: ${step.row}\nColumn search interval not available yet.`;
+      const vals = [];
+      for (let i = Math.max(0, step.l); i <= Math.min(step.r, step.matrix[step.row].length - 1); i++) {
+        vals.push(`col ${i}: ${step.matrix[step.row][i]}`);
+      }
+      if (vals.length === 0) return `Selected row: ${step.row}\nCurrent column interval: [${step.l}, ${step.r}]\nThis interval is empty.`;
+      return `Selected row: ${step.row}\nCurrent column interval: [${step.l}, ${step.r}]\n${vals.join('\n')}${step.decision ? `\n\n${step.decision}` : ''}`;
+    }
+
+    function renderStep() {
+      const step = steps[stepIndex];
+      renderCode(step.line);
+      renderMatrix(step);
+
+      bigStep.textContent = step.title;
+      message.textContent = step.msg;
+      targetVal.textContent = step.target;
+      topVal.textContent = step.top ?? '-';
+      botVal.textContent = step.bot ?? '-';
+      rowVal.textContent = step.row ?? '-';
+      lVal.textContent = step.l ?? '-';
+      rVal.textContent = step.r ?? '-';
+      mVal.textContent = step.m ?? '-';
+      rangeText.textContent = intervalText(step);
+      calcText.textContent = step.calculation || '-';
+      statusText.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+
+      prevBtn.disabled = stepIndex === 0;
+      nextBtn.disabled = stepIndex === steps.length - 1;
+    }
+
+    function stopPlay() {
+      if (timer) clearInterval(timer);
+      timer = null;
+      playBtn.textContent = 'Play';
+    }
+
+    function next() {
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        renderStep();
+      } else {
+        stopPlay();
+      }
+    }
+
+    function prev() {
+      if (stepIndex > 0) {
+        stepIndex--;
+        renderStep();
+      }
+    }
+
+    function reset() {
+      stopPlay();
+      stepIndex = 0;
+      steps = generateSteps(activeCase.matrix, activeCase.target);
+      renderStep();
+    }
+
+    function togglePlay() {
+      if (timer) {
+        stopPlay();
+      } else {
+        playBtn.textContent = 'Pause';
+        timer = setInterval(() => {
+          if (stepIndex >= steps.length - 1) {
+            stopPlay();
+          } else {
+            next();
+          }
+        }, 1150);
+      }
+    }
+
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+    resetBtn.addEventListener('click', reset);
+    playBtn.addEventListener('click', togglePlay);
+    caseSelect.addEventListener('change', () => {
+      activeCase = cases[caseSelect.value];
+      reset();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') prev();
+      if (e.key === ' ') {
+        e.preventDefault();
+        togglePlay();
+      }
+    });
+
+    reset();
+  </script>
+</body>
+</html>
