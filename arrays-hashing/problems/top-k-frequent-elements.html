@@ -539,39 +539,36 @@
       { n: 10, html: '            <span class="var">freq</span>[<span class="var">cnt</span>].<span class="meth">append</span>(<span class="var">num</span>)' },
       { n: 11, html: '' },
       { n: 12, html: '        <span class="var">res</span> = []' },
-      { n: 13, html: '' },
-      { n: 14, html: '        <span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(<span class="var">freq</span>) - <span class="num">1</span>, <span class="num">0</span>, -<span class="num">1</span>):' },
-      { n: 15, html: '            <span class="kw">for</span> <span class="var">num</span> <span class="kw">in</span> <span class="var">freq</span>[<span class="var">i</span>]:' },
-      { n: 16, html: '                <span class="var">res</span>.<span class="meth">append</span>(<span class="var">num</span>)' },
-      { n: 17, html: '                <span class="kw">if</span> <span class="fn">len</span>(<span class="var">res</span>) == <span class="var">k</span>:' },
-      { n: 18, html: '                    <span class="kw">return</span> <span class="var">res</span>' },
-      { n: 19, html: '' },
-      { n: 20, html: '        <span class="cm"># tc</span>' },
-      { n: 21, html: '        <span class="str">\'\'\'</span>' },
-      { n: 22, html: '        <span class="str">Time complexity is O(n), where n is the length of nums.</span>' },
-      { n: 23, html: '        <span class="str">First, we count each number in nums, which takes O(n).</span>' },
-      { n: 24, html: '        <span class="str">Then we create and fill the frequency buckets.</span>' },
-      { n: 25, html: '        <span class="str">There can be at most n unique numbers, so filling buckets takes O(n).</span>' },
-      { n: 26, html: '        <span class="str">Finally, we scan the buckets from highest frequency to lowest frequency.</span>' },
-      { n: 27, html: '        <span class="str">The total number of bucket slots and appended values is bounded by n.</span>' },
-      { n: 28, html: '        <span class="str">So the total time complexity is O(n).</span>' },
+      { n: 13, html: '        <span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(<span class="var">freq</span>) - <span class="num">1</span>, <span class="num">0</span>, -<span class="num">1</span>):' },
+      { n: 14, html: '            <span class="kw">for</span> <span class="var">num</span> <span class="kw">in</span> <span class="var">freq</span>[<span class="var">i</span>]:' },
+      { n: 15, html: '                <span class="var">res</span>.<span class="meth">append</span>(<span class="var">num</span>)' },
+      { n: 16, html: '                <span class="kw">if</span> <span class="fn">len</span>(<span class="var">res</span>) == <span class="var">k</span>:' },
+      { n: 17, html: '                    <span class="kw">return</span> <span class="var">res</span>' },
+      { n: 18, html: '        <span class="cm"># tc</span>' },
+      { n: 19, html: '        <span class="str">\'\'\'</span>' },
+      { n: 20, html: '        <span class="str">Time complexity is O(n), where n is the length of nums.</span>' },
+      { n: 21, html: '        <span class="str">First, we count each number in nums, which takes O(n).</span>' },
+      { n: 22, html: '        <span class="str">Then we create and fill the frequency buckets.</span>' },
+      { n: 23, html: '        <span class="str">There can be at most n unique numbers, so filling buckets takes O(n).</span>' },
+      { n: 24, html: '        <span class="str">Finally, we scan the buckets from highest frequency to lowest frequency.</span>' },
+      { n: 25, html: '        <span class="str">The total number of bucket slots and appended values is bounded by n.</span>' },
+      { n: 26, html: '        <span class="str">So the total time complexity is O(n).</span>' },
+      { n: 27, html: '        <span class="str">\'\'\'</span>' },
+      { n: 28, html: '        <span class="cm"># sc</span>' },
       { n: 29, html: '        <span class="str">\'\'\'</span>' },
-      { n: 30, html: '        <span class="cm"># sc</span>' },
-      { n: 31, html: '        <span class="str">\'\'\'</span>' },
-      { n: 32, html: '        <span class="str">Space complexity is O(n).</span>' },
-      { n: 33, html: '        <span class="str">The hashmap count can store up to n unique numbers.</span>' },
-      { n: 34, html: '        <span class="str">The freq array has len(nums) + 1 buckets.</span>' },
-      { n: 35, html: '        <span class="str">The result list stores k elements, but k is at most n.</span>' },
-      { n: 36, html: '        <span class="str">So the extra space is O(n).</span>' },
+      { n: 30, html: '        <span class="str">Space complexity is O(n).</span>' },
+      { n: 31, html: '        <span class="str">The hashmap count can store up to n unique numbers.</span>' },
+      { n: 32, html: '        <span class="str">The freq array has len(nums) + 1 buckets.</span>' },
+      { n: 33, html: '        <span class="str">The result list stores k elements, but k is at most n.</span>' },
+      { n: 34, html: '        <span class="str">So the extra space is O(n).</span>' },
+      { n: 35, html: '        <span class="str">\'\'\'</span>' },
+      { n: 36, html: '        <span class="cm"># optimization</span>' },
       { n: 37, html: '        <span class="str">\'\'\'</span>' },
-      { n: 38, html: '        <span class="cm"># optimization</span>' },
-      { n: 39, html: '        <span class="str">\'\'\'</span>' },
-      { n: 40, html: '        <span class="str">This is already the best solution to learn for interviews.</span>' },
-      { n: 41, html: '        <span class="str">It avoids sorting all unique numbers, which would be O(u log u),</span>' },
-      { n: 42, html: '        <span class="str">where u is the number of unique values.</span>' },
-      { n: 43, html: '        <span class="str">A heap solution can be O(n log k), which may use less space when k is small,</span>' },
-      { n: 44, html: '        <span class="str">but this bucket sort solution is simpler and has optimal O(n) time.</span>' },
-      { n: 45, html: '        <span class="str">\'\'\'</span>' }
+      { n: 38, html: '        <span class="str">This is already the best solution to learn for interviews.</span>' },
+      { n: 39, html: '        <span class="str">It avoids sorting all unique numbers, which would be O(u log u),</span>' },
+      { n: 40, html: '        <span class="str">where u is the number of unique values.</span>' },
+      { n: 41, html: '        <span class="str">A heap solution can be O(n log k), which may use less space when k is small,</span>' },
+      { n: 42, html: '        <span class="str">but this bucket sort solution is simpler and has optimal O(n) time.</span>' }
     ];
 
     const cases = {
@@ -695,14 +692,14 @@
       pushStep(12, 'Initialize res = []', 'res will collect the answer while scanning from highest frequency to lowest frequency.', { phase: 'init-res' });
 
       for (let i = freq.length - 1; i > 0; i--) {
-        pushStep(14, `Scan bucket i = ${i}`, `Check freq[${i}]. Higher i means higher frequency.`, {
+        pushStep(13, `Scan bucket i = ${i}`, `Check freq[${i}]. Higher i means higher frequency.`, {
           i,
           activeBucket: i,
           phase: freq[i].length ? 'bucket-scan' : 'bucket-empty'
         });
 
         for (const num of freq[i]) {
-          pushStep(15, `Read num = ${num} from freq[${i}]`, `${num} has frequency ${i}, so it is one of the most frequent remaining values.`, {
+          pushStep(14, `Read num = ${num} from freq[${i}]`, `${num} has frequency ${i}, so it is one of the most frequent remaining values.`, {
             num,
             cnt: i,
             i,
@@ -711,7 +708,7 @@
             phase: 'res-read'
           });
           res.push(num);
-          pushStep(16, `Append ${num} to res`, `res is now [${res.join(', ')}].`, {
+          pushStep(15, `Append ${num} to res`, `res is now [${res.join(', ')}].`, {
             num,
             cnt: i,
             i,
@@ -719,7 +716,7 @@
             bucketNum: num,
             phase: 'res-append'
           });
-          pushStep(17, `Check len(res) == k`, `len(res) is ${res.length}, and k is ${inputK}.`, {
+          pushStep(16, `Check len(res) == k`, `len(res) is ${res.length}, and k is ${inputK}.`, {
             num,
             cnt: i,
             i,
@@ -728,7 +725,7 @@
             phase: res.length === inputK ? 'ready-return' : 'not-ready'
           });
           if (res.length === inputK) {
-            pushStep(18, `Return [${res.join(', ')}]`, `We collected exactly k = ${inputK} elements, so return res.`, {
+            pushStep(17, `Return [${res.join(', ')}]`, `We collected exactly k = ${inputK} elements, so return res.`, {
               num,
               cnt: i,
               i,
@@ -742,7 +739,7 @@
         }
       }
 
-      pushStep(18, `Return [${res.join(', ')}]`, 'The scan finished. Return res.', { phase: 'return', returned: true });
+      pushStep(17, `Return [${res.join(', ')}]`, 'The scan finished. Return res.', { phase: 'return', returned: true });
       return out;
     }
 
