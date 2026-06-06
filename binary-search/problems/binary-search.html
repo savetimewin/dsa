@@ -148,8 +148,7 @@
       align-content: start;
       gap: 16px;
       min-height: 0;
-      overflow: auto;
-      overscroll-behavior: contain;
+      overflow: visible;
       padding-bottom: 16px;
     }
 
@@ -901,8 +900,6 @@
       };
       if (layoutEl) {
         layoutEl.addEventListener('keydown', _keyHandler);
-      } else {
-        document.addEventListener('keydown', _keyHandler);
       }
     })();
 

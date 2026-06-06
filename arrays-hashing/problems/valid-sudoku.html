@@ -148,13 +148,16 @@
 
     .right {
       display: grid;
-      grid-template-rows: auto auto auto;
+      grid-template-rows: auto auto minmax(0, 1fr);
       gap: 16px;
       min-height: 0;
       overflow: visible;
     }
 
     .visualizer-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
       overflow: hidden;
     }
 
@@ -950,8 +953,6 @@
       };
       if (layoutEl) {
         layoutEl.addEventListener('keydown', _keyHandler);
-      } else {
-        document.addEventListener('keydown', _keyHandler);
       }
     })();
 

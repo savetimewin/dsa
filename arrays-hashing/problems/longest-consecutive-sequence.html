@@ -149,8 +149,7 @@
       grid-template-rows: auto auto minmax(0, 1fr);
       gap: 16px;
       min-height: 0;
-      overflow: auto;
-      overscroll-behavior: contain;
+      overflow: visible;
     }
 
     .visualizer-card {
@@ -950,8 +949,6 @@
       };
       if (layoutEl) {
         layoutEl.addEventListener('keydown', _keyHandler);
-      } else {
-        document.addEventListener('keydown', _keyHandler);
       }
     })();
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Search a 2D Matrix Visualizer</title>
+  <title>Search 2D Matrix Visualizer</title>
   <style>
     :root {
       --bg: #0d1117;
@@ -151,8 +151,7 @@
       grid-template-rows: auto auto auto minmax(0, 1fr) auto;
       gap: 16px;
       min-height: 0;
-      overflow: auto;
-      overscroll-behavior: contain;
+      overflow: visible;
     }
 
     .controls {
@@ -1134,8 +1133,6 @@
       };
       if (layoutEl) {
         layoutEl.addEventListener('keydown', _keyHandler);
-      } else {
-        document.addEventListener('keydown', _keyHandler);
       }
     })();
 
