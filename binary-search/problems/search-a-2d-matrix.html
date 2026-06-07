@@ -540,43 +540,42 @@
       { n: 12, html: '            <span class="kw">else</span>:' },
       { n: 13, html: '                <span class="kw">break</span>' },
       { n: 14, html: '' },
-      { n: 15, html: '' },
-      { n: 16, html: '        <span class="kw">if</span> <span class="var">top</span> > <span class="var">bot</span>:' },
-      { n: 17, html: '            <span class="kw">return</span> <span class="kw">False</span>' },
-      { n: 18, html: '' },
-      { n: 19, html: '        <span class="var">l</span> = <span class="num">0</span>' },
-      { n: 20, html: '        <span class="var">r</span> = <span class="fn">len</span>(<span class="var">matrix</span>[<span class="num">0</span>]) - <span class="num">1</span>' },
-      { n: 21, html: '' },
-      { n: 22, html: '        <span class="kw">while</span> <span class="var">l</span> <= <span class="var">r</span>:' },
-      { n: 23, html: '            <span class="var">m</span> = (<span class="var">l</span>+<span class="var">r</span>) // <span class="num">2</span>' },
-      { n: 24, html: '            <span class="kw">if</span> <span class="var">matrix</span>[<span class="var">row</span>][<span class="var">m</span>] < <span class="var">target</span>:' },
-      { n: 25, html: '                <span class="var">l</span> = <span class="var">m</span> + <span class="num">1</span>' },
-      { n: 26, html: '            <span class="kw">elif</span> <span class="var">matrix</span>[<span class="var">row</span>][<span class="var">m</span>] > <span class="var">target</span>:' },
-      { n: 27, html: '                <span class="var">r</span> = <span class="var">m</span> - <span class="num">1</span>' },
-      { n: 28, html: '            <span class="kw">else</span>:' },
-      { n: 29, html: '                <span class="kw">return</span> <span class="kw">True</span>' },
-      { n: 30, html: '        <span class="kw">return</span> <span class="kw">False</span>' },
-      { n: 31, html: '        <span class="cm"># tc</span>' },
-      { n: 32, html: '        <span class="str">&#39;&#39;&#39;</span>' },
-      { n: 33, html: '        <span class="str">Time complexity is O(log ROWS + log COLS).</span>' },
-      { n: 34, html: '        <span class="str">First, we binary search through the rows to find the possible row.</span>' },
-      { n: 35, html: '        <span class="str">Then, we binary search through the columns in that row.</span>' },
-      { n: 36, html: '        <span class="str">Both searches keep cutting the search space in half.</span>' },
-      { n: 37, html: '        <span class="str">&#39;&#39;&#39;</span>' },
-      { n: 38, html: '        <span class="cm"># sc</span>' },
-      { n: 39, html: '        <span class="str">&#39;&#39;&#39;</span>' },
-      { n: 40, html: '        <span class="str">Space complexity is O(1) because we only use variables like</span>' },
-      { n: 41, html: '        <span class="str">top, bot, row, l, r, and m.</span>' },
-      { n: 42, html: '        <span class="str">No extra data structure is created.</span>' },
-      { n: 43, html: '        <span class="str">&#39;&#39;&#39;</span>' },
-      { n: 44, html: '        <span class="cm"># optimization</span>' },
-      { n: 45, html: '        <span class="str">&#39;&#39;&#39;</span>' },
-      { n: 46, html: '        <span class="str">This is already optimal for a sorted matrix with this structure.</span>' },
-      { n: 47, html: '        <span class="str">Another valid solution is treating the matrix like one flattened sorted array</span>' },
-      { n: 48, html: '        <span class="str">and doing one binary search, but the time complexity is still O(log(ROWS * COLS)).</span>' },
-      { n: 49, html: '        <span class="str">Since O(log(ROWS * COLS)) equals O(log ROWS + log COLS),</span>' },
-      { n: 50, html: '        <span class="str">it is the same asymptotic time complexity.</span>' },
-      { n: 51, html: '        <span class="str">&#39;&#39;&#39;</span>' }
+      { n: 15, html: '        <span class="kw">if</span> <span class="var">top</span> > <span class="var">bot</span>:' },
+      { n: 16, html: '            <span class="kw">return</span> <span class="kw">False</span>' },
+      { n: 17, html: '' },
+      { n: 18, html: '        <span class="var">l</span> = <span class="num">0</span>' },
+      { n: 19, html: '        <span class="var">r</span> = <span class="fn">len</span>(<span class="var">matrix</span>[<span class="num">0</span>]) - <span class="num">1</span>' },
+      { n: 20, html: '' },
+      { n: 21, html: '        <span class="kw">while</span> <span class="var">l</span> <= <span class="var">r</span>:' },
+      { n: 22, html: '            <span class="var">m</span> = (<span class="var">l</span>+<span class="var">r</span>) // <span class="num">2</span>' },
+      { n: 23, html: '            <span class="kw">if</span> <span class="var">matrix</span>[<span class="var">row</span>][<span class="var">m</span>] < <span class="var">target</span>:' },
+      { n: 24, html: '                <span class="var">l</span> = <span class="var">m</span> + <span class="num">1</span>' },
+      { n: 25, html: '            <span class="kw">elif</span> <span class="var">matrix</span>[<span class="var">row</span>][<span class="var">m</span>] > <span class="var">target</span>:' },
+      { n: 26, html: '                <span class="var">r</span> = <span class="var">m</span> - <span class="num">1</span>' },
+      { n: 27, html: '            <span class="kw">else</span>:' },
+      { n: 28, html: '                <span class="kw">return</span> <span class="kw">True</span>' },
+      { n: 29, html: '        <span class="kw">return</span> <span class="kw">False</span>' },
+      { n: 30, html: '        <span class="cm"># tc</span>' },
+      { n: 31, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 32, html: '        <span class="str">Time complexity is O(log ROWS + log COLS).</span>' },
+      { n: 33, html: '        <span class="str">First, we binary search through the rows to find the possible row.</span>' },
+      { n: 34, html: '        <span class="str">Then, we binary search through the columns in that row.</span>' },
+      { n: 35, html: '        <span class="str">Both searches keep cutting the search space in half.</span>' },
+      { n: 36, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 37, html: '        <span class="cm"># sc</span>' },
+      { n: 38, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 39, html: '        <span class="str">Space complexity is O(1) because we only use variables like</span>' },
+      { n: 40, html: '        <span class="str">top, bot, row, l, r, and m.</span>' },
+      { n: 41, html: '        <span class="str">No extra data structure is created.</span>' },
+      { n: 42, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 43, html: '        <span class="cm"># optimization</span>' },
+      { n: 44, html: '        <span class="str">&#39;&#39;&#39;</span>' },
+      { n: 45, html: '        <span class="str">This is already optimal for a sorted matrix with this structure.</span>' },
+      { n: 46, html: '        <span class="str">Another valid solution is treating the matrix like one flattened sorted array</span>' },
+      { n: 47, html: '        <span class="str">and doing one binary search, but the time complexity is still O(log(ROWS * COLS)).</span>' },
+      { n: 48, html: '        <span class="str">Since O(log(ROWS * COLS)) equals O(log ROWS + log COLS),</span>' },
+      { n: 49, html: '        <span class="str">it is the same asymptotic time complexity.</span>' },
+      { n: 50, html: '        <span class="str">&#39;&#39;&#39;</span>' }
     ];
 
     const cases = {
@@ -764,7 +763,7 @@ This is the only possible row.`
       }
 
       pushStep(out, {
-        line: 16,
+        line: 15,
         title: 'Check if a row was found',
         msg: `Check if top > bot. Right now top = ${top}, bot = ${bot}.`,
         matrix, target, top, bot, row: rowFound ? row : null,
@@ -773,7 +772,7 @@ This is the only possible row.`
 
       if (top > bot) {
         pushStep(out, {
-          line: 17,
+          line: 16,
           title: 'No possible row',
           msg: 'The row-search interval is empty, so the target cannot exist in the matrix. Return False.',
           matrix, target, top, bot, row: null,
@@ -784,7 +783,7 @@ This is the only possible row.`
       }
 
       pushStep(out, {
-        line: 19,
+        line: 18,
         title: 'Initialize l',
         msg: 'Set l = 0. The column search starts at the first column of the selected row.',
         matrix, target, top, bot, row, l: 0, r: null,
@@ -797,7 +796,7 @@ This is the only possible row.`
       let r = COLS - 1;
 
       pushStep(out, {
-        line: 20,
+        line: 19,
         title: 'Initialize r',
         msg: `Set r = len(matrix[0]) - 1 = ${COLS} - 1 = ${r}.`,
         matrix, target, top, bot, row, l, r,
@@ -808,7 +807,7 @@ This is the only possible row.`
 
       while (true) {
         pushStep(out, {
-          line: 22,
+          line: 21,
           title: 'Check column-search loop',
           msg: `Check whether l <= r. Right now ${l} <= ${r} is ${l <= r}.`,
           matrix, target, top, bot, row, l, r,
@@ -823,31 +822,31 @@ This is the only possible row.`
         const value = matrix[row][m];
 
         pushStep(out, {
-          line: 23,
+          line: 22,
           title: 'Compute middle column m',
           msg: `Compute m = (l + r) // 2 = (${l} + ${r}) // 2 = ${m}.`,
           matrix, target, top, bot, row, l, r, m,
           selectedRow: row,
           phase: 'col',
           calculation: `m = (${l} + ${r}) // 2 = ${m}
-matrix[${row}][${m}] = ${value}`
+      matrix[${row}][${m}] = ${value}`
         });
 
         pushStep(out, {
-          line: 24,
+          line: 23,
           title: 'Check if target is bigger',
           msg: `Compare matrix[row][m] with target. ${value} < ${target} is ${value < target}.`,
           matrix, target, top, bot, row, l, r, m,
           selectedRow: row,
           phase: 'col',
           calculation: `matrix[row][m] < target
-${value} < ${target} -> ${value < target}`
+      ${value} < ${target} -> ${value < target}`
         });
 
         if (value < target) {
           const newL = m + 1;
           pushStep(out, {
-            line: 25,
+            line: 24,
             title: 'Move l to the right',
             msg: `${value} is too small, so discard columns ${l} through ${m}.`,
             matrix, target, top, bot, row, l, r, m,
@@ -864,20 +863,20 @@ ${value} < ${target} -> ${value < target}`
         }
 
         pushStep(out, {
-          line: 26,
+          line: 25,
           title: 'Check if target is smaller',
           msg: `Since matrix[row][m] < target was false, check whether ${value} > ${target}.`,
           matrix, target, top, bot, row, l, r, m,
           selectedRow: row,
           phase: 'col',
           calculation: `matrix[row][m] > target
-${value} > ${target} -> ${value > target}`
+      ${value} > ${target} -> ${value > target}`
         });
 
         if (value > target) {
           const newR = m - 1;
           pushStep(out, {
-            line: 27,
+            line: 26,
             title: 'Move r to the left',
             msg: `${value} is too large, so discard columns ${m} through ${r}.`,
             matrix, target, top, bot, row, l, r, m,
@@ -894,7 +893,7 @@ ${value} > ${target} -> ${value > target}`
         }
 
         pushStep(out, {
-          line: 29,
+          line: 28,
           title: 'Target found',
           msg: `matrix[row][m] equals target. Return True.`,
           matrix, target, top, bot, row, l, r, m,
@@ -903,13 +902,13 @@ ${value} > ${target} -> ${value > target}`
           found: true,
           result: true,
           calculation: `matrix[${row}][${m}] = ${value}
-return True`
+      return True`
         });
         return out;
       }
 
       pushStep(out, {
-        line: 30,
+        line: 29,
         title: 'Target not found in row',
         msg: 'The selected row was searched, but the target was not found. Return False.',
         matrix, target, top, bot, row, l, r,
@@ -917,8 +916,8 @@ return True`
         phase: 'col',
         result: false,
         calculation: `l = ${l}, r = ${r}
-l > r, so the column interval is empty.
-return False`
+    l > r, so the column interval is empty.
+    return False`
       });
 
       return out;
