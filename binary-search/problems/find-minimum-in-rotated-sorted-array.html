@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find Minimum in Rotated Sorted Array Visualizer</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel2: #0f1620;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --line: #30363d;
+      --blue: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --orange: #ffa657;
+      --highlight: rgba(88, 166, 255, 0.18);
+      --ok: rgba(63, 185, 80, 0.22);
+      --bad: rgba(248, 81, 73, 0.22);
+      --midbg: rgba(188, 140, 255, 0.18);
+      --rangebg: rgba(88, 166, 255, 0.12);
+      --rightbg: rgba(255, 166, 87, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      min-height: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: #090d13;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .solution-name {
+      color: var(--text);
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(430px, 0.94fr) minmax(620px, 1.06fr);
+      gap: 16px;
+      padding: 16px;
+      min-height: calc(100vh - 83px);
+      height: auto;
+      overflow: visible;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+      min-height: 0;
+    }
+
+    .layout > .panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-title {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      background: #0f141c;
+    }
+
+    .code-wrap {
+      position: relative;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.55;
+      background: #0d1117;
+    }
+
+    .code-line {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      min-height: 24px;
+      border-left: 3px solid transparent;
+    }
+
+    .code-line.active {
+      background: var(--highlight);
+      border-left-color: var(--blue);
+    }
+
+    .ln {
+      color: #6e7681;
+      text-align: right;
+      padding-right: 12px;
+      user-select: none;
+    }
+
+    .code {
+      white-space: pre;
+      padding-right: 16px;
+    }
+
+    .kw { color: #ff7b72; }
+    .fn { color: #d2a8ff; }
+    .type { color: #ffa657; }
+    .str { color: #a5d6ff; }
+    .num { color: #79c0ff; }
+    .var { color: #c9d1d9; }
+    .comment, .cm { color: #8b949e; font-style: italic; }
+
+    .right {
+      display: grid;
+      grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+      gap: 16px;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .visualizer-card, .array-card, .explain-card, .state-card, .note-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+    }
+
+    button {
+      background: #238636;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 9px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    button.secondary { background: #21262d; }
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    select {
+      background: #0d1117;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 9px 11px;
+      min-width: 255px;
+    }
+
+    .status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .array-body, .explain-body, .state-body, .note-body {
+      padding: 14px;
+    }
+
+    .array-scroll { overflow: auto; padding-bottom: 6px; }
+
+    .array-row {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(76px, 76px);
+      gap: 10px;
+      width: max-content;
+      min-width: max-content;
+    }
+
+    .array-cell {
+      text-align: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #0d1117;
+      overflow: hidden;
+      min-height: 92px;
+      opacity: 0.35;
+    }
+
+    .array-cell.in-range { opacity: 1; background: var(--rangebg); }
+    .array-cell.mid { background: var(--midbg); outline: 2px solid var(--purple); opacity: 1; }
+    .array-cell.right { background: var(--rightbg); outline: 2px solid var(--orange); opacity: 1; }
+    .array-cell.minimum { background: var(--ok); outline: 2px solid var(--green); opacity: 1; }
+    .array-cell.discard { background: var(--bad); outline: 2px solid var(--red); opacity: 0.65; }
+
+    .index-row {
+      font-size: 11px;
+      color: var(--muted);
+      background: #090d13;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    .value-row {
+      font-size: 20px;
+      font-weight: 750;
+      padding: 10px 0 8px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    .badge-row {
+      min-height: 34px;
+      padding: 0 5px 8px;
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .badge.l { background: rgba(88,166,255,0.18); color: #9ecbff; }
+    .badge.r { background: rgba(255,166,87,0.18); color: #ffd0a1; }
+    .badge.m { background: rgba(188,140,255,0.18); color: #d8b7ff; }
+    .badge.min { background: rgba(63,185,80,0.18); color: #92e29e; }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(5, max-content);
+      gap: 8px 16px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: -1px;
+    }
+
+    .dot.range { background: var(--blue); }
+    .dot.m { background: var(--purple); }
+    .dot.r { background: var(--orange); }
+    .dot.min { background: var(--green); }
+    .dot.out { background: var(--red); }
+
+    .big-step {
+      font-size: 18px;
+      font-weight: 750;
+      margin-bottom: 8px;
+    }
+
+    .message {
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 66px;
+    }
+
+    .mini {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini-card {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      border-radius: 10px;
+      padding: 9px;
+      min-height: 62px;
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .mini-value {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 15px;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+
+    .state-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 12px;
+    }
+
+    .state-section {
+      border: 1px solid var(--line);
+      background: #0d1117;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .state-heading {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      color: var(--muted);
+      background: #090d13;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .state-content {
+      padding: 10px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .note-body {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .emph { color: var(--text); font-weight: 700; }
+
+    @media (max-width: 1160px) {
+      html, body { overflow: auto; }
+      .layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+      }
+      .code-wrap { max-height: 430px; flex: initial; }
+      .right { overflow: visible; }
+      .status { margin-left: 0; width: 100%; }
+      .mini { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .state-grid { grid-template-columns: 1fr; }
+      .legend { grid-template-columns: repeat(2, max-content); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Find Minimum in Rotated Sorted Array</h1>
+    <div class="solution-name"><em>Iterative Binary Search</em></div>
+    <div class="subtitle">Compare nums[m] with nums[r]. If nums[m] is bigger, the minimum is to the right. Otherwise, the minimum is at m or to the left.</div>
+  </header>
+
+  <main class="layout" tabindex="0">
+    <section class="panel">
+      <div class="panel-title">Python code</div>
+      <div class="code-wrap" id="codeWrap"></div>
+    </section>
+
+    <section class="right">
+      <div class="visualizer-card">
+        <div class="panel-title">Visualizer</div>
+        <div class="controls">
+          <button id="prevBtn" class="secondary">Back</button>
+          <button id="nextBtn">Next</button>
+          <button id="playBtn" class="secondary">Play</button>
+          <button id="resetBtn" class="secondary">Reset</button>
+          <select id="caseSelect" title="Example case">
+            <option value="case1">nums = [3, 4, 5, 1, 2]</option>
+            <option value="case2">nums = [4, 5, 6, 7, 0, 1, 2]</option>
+            <option value="case3">nums = [11, 13, 15, 17]</option>
+            <option value="case4">nums = [2, 1]</option>
+            <option value="case5">nums = [5, 1, 2, 3, 4]</option>
+          </select>
+          <div class="status" id="statusText">Step 0 / 0</div>
+        </div>
+      </div>
+
+      <div class="array-card">
+        <div class="panel-title">Array view</div>
+        <div class="array-body">
+          <div class="array-scroll">
+            <div class="array-row" id="arrayRow"></div>
+          </div>
+          <div class="legend">
+            <div><span class="dot range"></span>current search range</div>
+            <div><span class="dot m"></span>middle index m</div>
+            <div><span class="dot r"></span>right index r</div>
+            <div><span class="dot min"></span>minimum found</div>
+            <div><span class="dot out"></span>discarded</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="explain-card">
+        <div class="panel-title">Current step</div>
+        <div class="explain-body">
+          <div class="big-step" id="bigStep">Initialize</div>
+          <div class="message" id="message">Click Next to start the algorithm.</div>
+          <div class="mini">
+            <div class="mini-card">
+              <div class="mini-label">l</div>
+              <div class="mini-value" id="lVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">r</div>
+              <div class="mini-value" id="rVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">m</div>
+              <div class="mini-value" id="mVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">nums[m]</div>
+              <div class="mini-value" id="midVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">nums[r]</div>
+              <div class="mini-value" id="rightVal">-</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">return</div>
+              <div class="mini-value" id="returnVal">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="state-card">
+        <div class="panel-title">State details</div>
+        <div class="state-body">
+          <div class="state-grid">
+            <div class="state-section">
+              <div class="state-heading">Search interval</div>
+              <div class="state-content" id="rangeText"></div>
+            </div>
+            <div class="state-section">
+              <div class="state-heading">Calculation / comparison</div>
+              <div class="state-content" id="calcText"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note-card">
+        <div class="panel-title">Key idea</div>
+        <div class="note-body">
+          Use <span class="emph">nums[m] > nums[r]</span> to detect whether the minimum is on the right side. If true, move <span class="emph">l = m + 1</span>. Otherwise, keep m as a possible answer and move <span class="emph">r = m</span>.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const codeLines = [
+      { n: 1, html: '<span class="kw">class</span> <span class="type">Solution</span>:' },
+      { n: 2, html: '    <span class="kw">def</span> <span class="fn">findMin</span>(<span class="var">self</span>, <span class="var">nums</span>: <span class="type">List</span>[<span class="type">int</span>]) -> <span class="type">int</span>:' },
+      { n: 3, html: '        <span class="var">l</span> = <span class="num">0</span>' },
+      { n: 4, html: '        <span class="var">r</span> = <span class="fn">len</span>(<span class="var">nums</span>) - <span class="num">1</span>' },
+      { n: 5, html: '        <span class="kw">while</span> <span class="var">l</span> < <span class="var">r</span>:' },
+      { n: 6, html: '            <span class="var">m</span> = (<span class="var">l</span>+<span class="var">r</span>) // <span class="num">2</span>' },
+      { n: 7, html: '            <span class="kw">if</span> <span class="var">nums</span>[<span class="var">m</span>] > <span class="var">nums</span>[<span class="var">r</span>]:' },
+      { n: 8, html: '                <span class="var">l</span> = <span class="var">m</span> + <span class="num">1</span>' },
+      { n: 9, html: '            <span class="kw">else</span>: <span class="comment"># nums[m] <= nums[r]:</span>' },
+      { n: 10, html: '                <span class="var">r</span> = <span class="var">m</span>' },
+      { n: 11, html: '        <span class="kw">return</span> <span class="var">nums</span>[<span class="var">l</span>]' },
+      { n: 12, html: '        <span class="cm"># tc</span>' },
+      { n: 13, html: '        <span class="str">\'\'\'</span>' },
+      { n: 14, html: '        <span class="str">Time complexity is O(log n),</span>' },
+      { n: 15, html: '        <span class="str">where n is the length of nums.</span>' },
+      { n: 16, html: '        <span class="str">Each loop cuts the search range roughly in half.</span>' },
+      { n: 17, html: '        <span class="str">\'\'\'</span>' },
+      { n: 18, html: '        <span class="cm"># sc</span>' },
+      { n: 19, html: '        <span class="str">\'\'\'</span>' },
+      { n: 20, html: '        <span class="str">Space complexity is O(1),</span>' },
+      { n: 21, html: '        <span class="str">because we only use l, r, and m.</span>' },
+      { n: 22, html: '        <span class="str">\'\'\'</span>' },
+      { n: 23, html: '        <span class="cm"># optimization</span>' },
+      { n: 24, html: '        <span class="str">\'\'\'</span>' },
+      { n: 25, html: '        <span class="str">This is already the optimal solution.</span>' },
+      { n: 26, html: '        <span class="str">A linear scan would be O(n), but binary search improves it to O(log n).</span>' },
+      { n: 27, html: '        <span class="str">\'\'\'</span>' }
+    ];
+
+    const cases = {
+      case1: { nums: [3, 4, 5, 1, 2] },
+      case2: { nums: [4, 5, 6, 7, 0, 1, 2] },
+      case3: { nums: [11, 13, 15, 17] },
+      case4: { nums: [2, 1] },
+      case5: { nums: [5, 1, 2, 3, 4] }
+    };
+
+    let activeCase = cases.case1;
+    let steps = [];
+    let stepIndex = 0;
+    let timer = null;
+
+    const codeWrap = document.getElementById('codeWrap');
+    const arrayRow = document.getElementById('arrayRow');
+    const bigStep = document.getElementById('bigStep');
+    const message = document.getElementById('message');
+    const statusText = document.getElementById('statusText');
+    const lVal = document.getElementById('lVal');
+    const rVal = document.getElementById('rVal');
+    const mVal = document.getElementById('mVal');
+    const midVal = document.getElementById('midVal');
+    const rightVal = document.getElementById('rightVal');
+    const returnVal = document.getElementById('returnVal');
+    const rangeText = document.getElementById('rangeText');
+    const calcText = document.getElementById('calcText');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const playBtn = document.getElementById('playBtn');
+    const caseSelect = document.getElementById('caseSelect');
+
+    function pushStep(out, data) {
+      out.push({
+        line: 1,
+        title: '',
+        msg: '',
+        nums: activeCase.nums,
+        l: null,
+        r: null,
+        m: null,
+        calculation: '-',
+        decision: '',
+        result: null,
+        discardBefore: null,
+        discardAfter: null,
+        ...data
+      });
+    }
+
+    function generateSteps(nums) {
+      const out = [];
+      let l = 0;
+      let r = nums.length - 1;
+
+      pushStep(out, {
+        line: 3,
+        title: 'Initialize l',
+        msg: 'Set l = 0. The search starts at the first index.',
+        nums, l, r: null,
+        calculation: 'l = 0'
+      });
+
+      pushStep(out, {
+        line: 4,
+        title: 'Initialize r',
+        msg: `Set r = len(nums) - 1 = ${nums.length} - 1 = ${r}.`,
+        nums, l, r,
+        calculation: `r = ${nums.length} - 1 = ${r}`
+      });
+
+      while (l < r) {
+        pushStep(out, {
+          line: 5,
+          title: 'Check binary-search loop',
+          msg: `Check whether l < r. Right now ${l} < ${r} is true.`,
+          nums, l, r,
+          calculation: `${l} < ${r} -> true`
+        });
+
+        const m = Math.floor((l + r) / 2);
+        pushStep(out, {
+          line: 6,
+          title: 'Pick middle index m',
+          msg: `Compute m = (l + r) // 2 = (${l} + ${r}) // 2 = ${m}.`,
+          nums, l, r, m,
+          calculation: `m = (${l} + ${r}) // 2 = ${m}`
+        });
+
+        const mid = nums[m];
+        const right = nums[r];
+        const condition = mid > right;
+        pushStep(out, {
+          line: 7,
+          title: 'Compare nums[m] with nums[r]',
+          msg: `Compare nums[m] and nums[r]. ${mid} > ${right} is ${condition}.`,
+          nums, l, r, m,
+          calculation: `nums[m] > nums[r]\nnums[${m}] > nums[${r}]\n${mid} > ${right} -> ${condition}`
+        });
+
+        if (condition) {
+          const oldL = l;
+          const newL = m + 1;
+          pushStep(out, {
+            line: 8,
+            title: 'Minimum is to the right',
+            msg: `nums[m] is bigger than nums[r], so the rotation drop is to the right of m. Discard indices ${oldL} through ${m}.`,
+            nums, l, r, m,
+            nextL: newL,
+            nextR: r,
+            discardBefore: m,
+            decision: `Set l = m + 1 = ${newL}.`,
+            calculation: `l = ${m} + 1 = ${newL}`
+          });
+          l = newL;
+        } else {
+          const oldR = r;
+          const newR = m;
+          pushStep(out, {
+            line: 10,
+            title: 'Minimum is at m or to the left',
+            msg: `nums[m] is less than or equal to nums[r], so m could be the minimum. Keep m and discard indices ${m + 1} through ${oldR}.`,
+            nums, l, r, m,
+            nextL: l,
+            nextR: newR,
+            discardAfter: m + 1,
+            decision: `Set r = m = ${newR}.`,
+            calculation: `r = m\nr = ${m}`
+          });
+          r = newR;
+        }
+      }
+
+      pushStep(out, {
+        line: 5,
+        title: 'Loop ends',
+        msg: `Now l < r is false because l = ${l} and r = ${r}. Both pointers meet at the minimum index.`,
+        nums, l, r,
+        calculation: `${l} < ${r} -> false`
+      });
+
+      pushStep(out, {
+        line: 11,
+        title: 'Return minimum value',
+        msg: `Return nums[l] = nums[${l}] = ${nums[l]}.`,
+        nums, l, r,
+        result: nums[l],
+        calculation: `return nums[l]\nreturn nums[${l}]\nreturn ${nums[l]}`
+      });
+
+      return out;
+    }
+
+    function renderCode(activeLine) {
+      codeWrap.innerHTML = codeLines.map(line => `
+        <div class="code-line ${line.n === activeLine ? 'active' : ''}" data-line="${line.n}">
+          <div class="ln">${line.n}</div>
+          <div class="code">${line.html || '&nbsp;'}</div>
+        </div>
+      `).join('');
+
+      const active = codeWrap.querySelector('.code-line.active');
+      if (active) {
+        const targetTop = active.offsetTop - (codeWrap.clientHeight / 2) + (active.clientHeight / 2);
+        codeWrap.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+      }
+    }
+
+    function renderArray(step) {
+      arrayRow.innerHTML = '';
+      step.nums.forEach((value, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'array-cell';
+
+        const inRange = step.l !== null && step.r !== null && i >= step.l && i <= step.r;
+        if (inRange) cell.classList.add('in-range');
+        if (step.m === i) cell.classList.add('mid');
+        if (step.r === i && step.m !== i) cell.classList.add('right');
+        if (step.result !== null && step.l === i) cell.classList.add('minimum');
+        if (typeof step.discardBefore === 'number' && i <= step.discardBefore) cell.classList.add('discard');
+        if (typeof step.discardAfter === 'number' && i >= step.discardAfter) cell.classList.add('discard');
+
+        const labels = [];
+        if (step.l === i) labels.push('<span class="badge l">L</span>');
+        if (step.m === i) labels.push('<span class="badge m">M</span>');
+        if (step.r === i) labels.push('<span class="badge r">R</span>');
+        if (step.result !== null && step.l === i) labels.push('<span class="badge min">MIN</span>');
+
+        cell.innerHTML = `
+          <div class="index-row">index ${i}</div>
+          <div class="value-row">${value}</div>
+          <div class="badge-row">${labels.join('')}</div>
+        `;
+        arrayRow.appendChild(cell);
+      });
+    }
+
+    function rangeDescription(step) {
+      if (step.l === null || step.r === null) return 'Search interval not fully initialized yet.';
+      let text = '';
+      if (step.l <= step.r) {
+        const vals = [];
+        for (let i = step.l; i <= step.r; i++) vals.push(`index ${i}: ${step.nums[i]}`);
+        text = `Current possible minimum range: [${step.l}, ${step.r}]\n${vals.join('\n')}`;
+      } else {
+        text = `Current possible minimum range: [${step.l}, ${step.r}]\nThis interval is empty.`;
+      }
+      if (step.decision) text += `\n\n${step.decision}`;
+      return text;
+    }
+
+    function renderStep() {
+      const step = steps[stepIndex];
+      renderCode(step.line);
+      renderArray(step);
+
+      bigStep.textContent = step.title;
+      message.textContent = step.msg;
+      lVal.textContent = step.l ?? '-';
+      rVal.textContent = step.r ?? '-';
+      mVal.textContent = step.m ?? '-';
+      midVal.textContent = step.m === null ? '-' : step.nums[step.m];
+      rightVal.textContent = step.r === null ? '-' : step.nums[step.r];
+      returnVal.textContent = step.result ?? '-';
+      rangeText.textContent = rangeDescription(step);
+      calcText.textContent = step.calculation || '-';
+      statusText.textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+
+      prevBtn.disabled = stepIndex === 0;
+      nextBtn.disabled = stepIndex === steps.length - 1;
+    }
+
+    function stopPlay() {
+      if (timer) clearInterval(timer);
+      timer = null;
+      playBtn.textContent = 'Play';
+    }
+
+    function next() {
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        renderStep();
+      } else {
+        stopPlay();
+      }
+    }
+
+    function prev() {
+      if (stepIndex > 0) {
+        stepIndex--;
+        renderStep();
+      }
+    }
+
+    function reset() {
+      stopPlay();
+      stepIndex = 0;
+      steps = generateSteps(activeCase.nums);
+      renderStep();
+    }
+
+    function togglePlay() {
+      if (timer) {
+        stopPlay();
+      } else {
+        playBtn.textContent = 'Pause';
+        timer = setInterval(() => {
+          if (stepIndex >= steps.length - 1) {
+            stopPlay();
+          } else {
+            next();
+          }
+        }, 1150);
+      }
+    }
+
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+    resetBtn.addEventListener('click', reset);
+    playBtn.addEventListener('click', togglePlay);
+    caseSelect.addEventListener('change', () => {
+      activeCase = cases[caseSelect.value];
+      reset();
+    });
+
+    (function() {
+      const layoutEl = document.querySelector('.layout');
+      const keyHandler = (e) => {
+        const active = document.activeElement;
+        if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
+        if (e.key === 'ArrowRight') next();
+        if (e.key === 'ArrowLeft') prev();
+        if (e.code === 'Space' || e.key === ' ') {
+          e.preventDefault();
+          togglePlay();
+        }
+      };
+      if (layoutEl) layoutEl.addEventListener('keydown', keyHandler);
+    })();
+
+    reset();
+  </script>
+</body>
+</html>
